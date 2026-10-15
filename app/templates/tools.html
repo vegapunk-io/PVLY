@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% set active = 'tools' %}
+{% block title %}Text tools{% endblock %}
+{% block content %}
+<h1>Hidden-character scanner &amp; cleaner</h1>
+<p class="muted">Finds zero-width characters, soft hyphens, narrow no-break spaces, bidi controls, homoglyphs and typographic substitutions that get pasted along with text. These are not provider watermarks (keyed statistical watermarks live in word choice and cannot be seen), but they do get flagged by naive detectors and break search, diffs and screen readers.</p>
+
+<div class="grid2" style="margin-top:20px">
+  <div>
+    <label for="u-in">Input</label>
+    <textarea id="u-in" style="min-height:260px" placeholder="Paste text…"></textarea>
+    <label class="check" style="margin-top:8px"><input type="checkbox" id="u-joiners" checked> Keep zero-width joiners inside emoji / Indic scripts</label>
+    <label class="check"><input type="checkbox" id="u-dashes"> Also normalise typographic dashes and quotes to ASCII</label>
+    <div class="row" style="margin-top:10px">
+      <button id="u-run">Scan &amp; clean</button>
+      <button class="secondary" id="u-sample">Load sample with hidden characters</button>
+      <span class="small muted">POST /v1/text/unicode</span>
+    </div>
+  </div>
+  <div>
+    <label for="u-out">Cleaned output</label>
+    <textarea id="u-out" style="min-height:260px" readonly></textarea>
+    <div class="row" style="margin-top:8px"><button class="secondary small" id="u-copy">Copy cleaned text</button></div>
+    <div id="u-result" class="result"></div>
+  </div>
+</div>
+
+<h2>Why this exists</h2>
+<ul class="plain small">
+  <li>Provider text watermarks (SynthID-Text, OpenAI textGrain, Anthropic's model-level mark) are statistical and keyed — <strong>no character-level cleanup touches them</strong>, and only the provider can detect them. This tool is hygiene, not evasion.</li>
+  <li>The April 2025 "U+202F in o3 output" story was a sampling artefact, not a watermark; it is still worth normalising because it breaks grep and CMS search.</li>
+  <li>For document pipelines, call the API from your CMS before publishing; the response includes a per-code-point inventory you can log.</li>
+</ul>
+{% endblock %}
+{% block scripts %}<script>Provenably.toolsPage();</script>{% endblock %}

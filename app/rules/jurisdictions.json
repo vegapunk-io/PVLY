@@ -1,0 +1,141 @@
+{
+  "_meta": {
+    "note": "Deployer-facing disclosure rules used by rules/engine.py disclosure_check(). Not legal advice. Each item has confidence + last_verified; dates are the ones researched on 2026-10-14.",
+    "last_reviewed": "2026-10-14"
+  },
+  "jurisdictions": [
+    {
+      "slug": "eu",
+      "name": "European Union — AI Act Art. 50",
+      "effective": "2026-08-02",
+      "status": "in force (grace to 2026-12-02 for Art. 50(2) marking on systems already on the market; interoperable detection expected by 2027-02-02)",
+      "penalty": "Up to €15M or 3% of worldwide turnover",
+      "obligations": {
+        "provider_marking": "Art. 50(2): outputs must be marked in a machine-readable format and detectable as AI-generated/manipulated. Code of Practice (final 10 Jun 2026): signed, time-stamped metadata (C2PA-style) + imperceptible watermark required; fingerprinting/logging optional.",
+        "deepfake_label": "Art. 50(4): deployers must disclose that image/audio/video deepfakes are artificially generated or manipulated; use the EU 'AI' icon set where available. Artistic/satirical works: disclose in a way that does not hamper display.",
+        "text_public_interest": "Art. 50(4) 2nd para: AI-generated text published to inform the public on matters of public interest must be disclosed unless human-reviewed with editorial responsibility.",
+        "interaction": "Art. 50(1)/(3): chatbot and emotion-recognition/biometric categorisation disclosures.",
+        "retroactive": "No retroactive labelling of content created before the obligations apply."
+      },
+      "content_types": {
+        "image": ["deepfake_label"],
+        "video": ["deepfake_label"],
+        "audio": ["deepfake_label"],
+        "text": ["text_public_interest"]
+      },
+      "confidence": "high",
+      "last_verified": "2026-10-14",
+      "sources": ["artificialintelligenceact.eu", "EU Code of Practice on AI-generated content (10 Jun 2026)"]
+    },
+    {
+      "slug": "california",
+      "name": "California — SB 942 / AB 853 (AI Transparency Act)",
+      "effective": "2026-08-02",
+      "status": "operative; platform duties 2027; capture-device duties 2028-01-01",
+      "penalty": "$5,000 per violation per day (AG / city attorney)",
+      "obligations": {
+        "provider_detection_tool": "Covered providers must offer a free, public AI detection tool with an API that reports provider, system + version, timestamp and unique ID when present.",
+        "latent_disclosure": "Covered providers must embed a latent disclosure (provider name, system name + version, creation timestamp, unique identifier) that is permanent/extremely difficult to remove to the extent technically feasible.",
+        "manifest_disclosure": "Optional visible/manifest disclosure that the user may toggle; must be clear and conspicuous.",
+        "licensee_duty": "Licensees who strip latent disclosures lose the licence; providers must revoke within 96 hours.",
+        "platform_duty_2027": "Large online platforms must detect and surface provenance data (or its absence) on uploaded content.",
+        "capture_device_2028": "Capture devices sold in CA must offer provenance embedding (C2PA-style) by 1 Jan 2028."
+      },
+      "content_types": {
+        "image": ["latent_disclosure", "manifest_disclosure"],
+        "video": ["latent_disclosure", "manifest_disclosure"],
+        "audio": ["latent_disclosure", "manifest_disclosure"],
+        "text": []
+      },
+      "notes": "Monthly-user threshold for 'covered provider' reported both as >1M and as removed — verify against the enrolled text before relying on it.",
+      "confidence": "medium",
+      "last_verified": "2026-10-14",
+      "sources": ["secureprivacy.ai", "verda.ai", "techtimes"]
+    },
+    {
+      "slug": "india",
+      "name": "India — IT (Intermediary Guidelines) Amendment Rules 2026 (Synthetically Generated Information)",
+      "effective": "2026-02-20",
+      "status": "in force; 21 Apr 2026 draft proposes a continuous visible label",
+      "penalty": "Loss of safe harbour (Sec. 79) for intermediaries; takedown within 3 hours of order",
+      "obligations": {
+        "label": "SGI must carry a prominent label (visible for visual media / audible for audio; the 2025 draft specified ≥10% of the display area — the enrolled rule says 'prominent').",
+        "metadata": "Permanent unique metadata/identifier embedded in SGI that identifies it as synthetic and, where feasible, the generating service.",
+        "no_removal": "Intermediaries must not enable modification, suppression or removal of the label/metadata.",
+        "ssmi_verification": "Significant social media intermediaries must obtain a user declaration on upload and deploy reasonable technical measures to verify it.",
+        "takedown": "Unlawful SGI must be removed within 3 hours of a government/court order."
+      },
+      "content_types": {
+        "image": ["label", "metadata"],
+        "video": ["label", "metadata"],
+        "audio": ["label", "metadata"],
+        "text": ["label"]
+      },
+      "confidence": "high",
+      "last_verified": "2026-10-14",
+      "sources": ["MeitY notification (Feb 2026)", "hlc.com", "legal500", "dsci.in"]
+    },
+    {
+      "slug": "china",
+      "name": "China — Labeling Measures + GB 45438-2025",
+      "effective": "2025-09-01",
+      "status": "in force (mandatory national standard)",
+      "penalty": "Administrative penalties under CAC rules; platforms must enforce",
+      "obligations": {
+        "explicit_label": "Explicit labels: text ≥5% of shortest side for images; voice prompts for audio; start-of-video markers; AI-interaction notices.",
+        "implicit_label": "Implicit metadata: producer name, content ID, and service provider in file metadata (GB 45438 defines field names).",
+        "platform_verify": "Platforms must check implicit labels on upload and add their own label if missing or suspected.",
+        "no_removal": "Removal, alteration or forgery of labels is prohibited; 6-month logs."
+      },
+      "content_types": {
+        "image": ["explicit_label", "implicit_label"],
+        "video": ["explicit_label", "implicit_label"],
+        "audio": ["explicit_label", "implicit_label"],
+        "text": ["explicit_label", "implicit_label"]
+      },
+      "confidence": "high",
+      "last_verified": "2026-10-14",
+      "sources": ["societyforaisecurity", "aipolicytracker"]
+    },
+    {
+      "slug": "south_korea",
+      "name": "South Korea — AI Basic Act",
+      "effective": "2026-01-22",
+      "status": "in force; enforcement decree details labelling",
+      "penalty": "Up to KRW 30M administrative fine",
+      "obligations": {
+        "label": "Generative AI outputs must be labelled; deepfakes that are hard to distinguish from reality require clear notice.",
+        "notice": "Users must be notified when a product/service is AI-driven."
+      },
+      "content_types": {
+        "image": ["label"],
+        "video": ["label"],
+        "audio": ["label"],
+        "text": ["label"]
+      },
+      "confidence": "medium",
+      "last_verified": "2026-10-14",
+      "sources": ["Korea AI Basic Act coverage"]
+    },
+    {
+      "slug": "us_federal",
+      "name": "United States (federal) — TAKE IT DOWN Act + FTC Act §5",
+      "effective": "2025-05-19",
+      "status": "in force (platform 48h removal duty for intimate deepfakes from May 2026)",
+      "penalty": "Criminal penalties (TAKE IT DOWN); FTC enforcement for deceptive practices",
+      "obligations": {
+        "ncii_removal": "Covered platforms must remove non-consensual intimate imagery (incl. AI) within 48 hours of a valid request.",
+        "deception": "Presenting synthetic media as authentic in commerce can be a deceptive practice (FTC Act §5); no general labelling mandate."
+      },
+      "content_types": {
+        "image": ["deception"],
+        "video": ["deception"],
+        "audio": ["deception"],
+        "text": ["deception"]
+      },
+      "confidence": "high",
+      "last_verified": "2026-10-14",
+      "sources": ["TAKE IT DOWN Act (19 May 2025)"]
+    }
+  ]
+}

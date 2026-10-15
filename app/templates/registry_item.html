@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% set active = 'registry' %}
+{% block title %}Does {{ e.tool }} watermark its output?{% endblock %}
+{% block content %}
+<p class="small"><a href="/registry">← Registry</a></p>
+<h1>Does {{ e.tool }} watermark or sign its output?</h1>
+<p class="muted">{{ e.vendor }} · {{ e.modality }} · confidence <span class="tag {{ {'high':'ok','medium':'warn','low':'bad'}[e.confidence] }}">{{ e.confidence }}</span> · last verified {{ e.last_verified }}</p>
+
+<dl class="kv" style="margin-top:18px">
+  <dt>Visible mark</dt><dd>{{ e.visible_mark }}</dd>
+  <dt>Invisible watermark</dt><dd>{{ e.invisible_watermark }}</dd>
+  <dt>Content Credentials (C2PA)</dt><dd>{{ e.c2pa }}</dd>
+  <dt>IPTC digital source type</dt><dd>{{ e.iptc }}</dd>
+  <dt>Public detector</dt><dd>{{ e.public_detector }}</dd>
+  <dt>Robustness notes</dt><dd>{{ e.survives }}</dd>
+  {% if e.notes %}<dt>Notes</dt><dd>{{ e.notes }}</dd>{% endif %}
+</dl>
+
+<h2>How Provenably checks for it</h2>
+<ul class="plain small">
+  {% if 'C2PA' in e.c2pa or 'yes' in e.c2pa %}<li>Content Credential validation runs live (c2pa-rs). Trusted only if the signer chains to a configured trust anchor — fetch the official list with <code>tools/fetch_trust_list.py</code>.</li>{% endif %}
+  {% if 'SynthID' in e.invisible_watermark %}<li>SynthID is vendor-keyed: enable the Google SynthID Detector / OpenAI Verify connectors (manual integration) to get a definitive answer; without them the report says <em>not configured</em>, never "no watermark".</li>{% endif %}
+  {% if 'dwtDct' in e.invisible_watermark or 'invisible-watermark' in e.invisible_watermark %}<li>The DWT-DCT decoder runs live and reports bit accuracy + a binomial p-value.</li>{% endif %}
+  {% if 'AudioSeal' in e.invisible_watermark or 'Video Seal' in e.invisible_watermark %}<li>Open detector exists; it auto-enables once the torch package is installed on the worker.</li>{% endif %}
+  {% if 'none' in e.invisible_watermark and 'no' in e.c2pa %}<li>No technical signal exists for this tool: only passive classifiers (manual, GPU) or platform context can help — and they should be reported with a false-positive rate.</li>{% endif %}
+  <li>Unsigned metadata (IPTC/XMP/PNG text) is always read and shown, graded <em>weak</em>.</li>
+</ul>
+<p class="small muted">JSON: <a href="/v1/registry/{{ e.slug }}">/v1/registry/{{ e.slug }}</a></p>
+{% endblock %}

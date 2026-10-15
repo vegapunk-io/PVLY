@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% set active = 'demo' %}
+{% block title %}Demo files{% endblock %}
+{% block content %}
+<h1>Demo files</h1>
+<p class="muted">Every fixture is generated locally by <code>tools/make_demo_assets.py</code> and signed with the test certificate from <code>tools/dev_cert.py</code> (issuer "Provenably Demo Signer", trust anchor = the demo root CA, clearly labelled in every report). Together they exercise each branch of the aggregator: declared-AI, declared-capture, composite with ingredient, tampered-after-signing, stripped, metadata-only, open watermark (pristine vs. JPEG), hidden characters, keyed text watermark, signed audio and signed video.</p>
+<table style="margin-top:16px">
+  <tr><th>Type</th><th>File</th><th>What it demonstrates</th><th>Size</th><th></th></tr>
+  {% for d in demo_files %}
+  <tr>
+    <td><span class="tag">{{ d.modality }}</span></td>
+    <td><a class="mono" href="/demo-assets/{{ d.name }}">{{ d.name }}</a></td>
+    <td class="small">{{ d.desc }}</td>
+    <td class="small muted num">{{ d.size|kb }}</td>
+    <td class="num"><form method="post" action="/v1/scans/demo/{{ d.name }}"><button class="small">Scan</button></form></td>
+  </tr>
+  {% endfor %}
+</table>
+<h2>Regenerate</h2>
+<pre>python tools/dev_cert.py          # once: test CA + signer (data/certs)
+python tools/make_demo_assets.py  # writes demo_assets/</pre>
+<p class="small muted" style="margin-top:8px">To test against real-world files, drop any image exported from ChatGPT, Gemini, Firefly or a Pixel/Leica camera into the scanner: they carry production C2PA manifests. They will show as <em>Valid (moderate)</em> rather than <em>Trusted (strong)</em> until you run <code>tools/fetch_trust_list.py</code> to install the official C2PA trust anchors.</p>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% set active = 'scan' %}
+{% block title %}Report {{ scan.id }}{% endblock %}
+{% block content %}
+{% set gmap = {'strong':'ok','moderate':'accent','weak':'warn','none':''} %}
+{% set smap = {'detected':'ok','absent':'','info':'accent','inconclusive':'warn','error':'bad','not_installed':'manual','not_configured':'manual','skipped':''} %}
+<div class="row" style="justify-content:space-between">
+  <div>
+    <h1 class="mono" style="font-size:1.25rem">{{ scan.filename }}</h1>
+    <p class="small muted">scan <span class="mono">{{ scan.id }}</span> · {{ scan.modality }} · {{ scan.mime }} · {{ scan.size|kb }} · created {{ scan.created_at|ts }}</p>
+  </div>
+  <div class="row">
+    {% if report %}<a class="btn secondary small" href="/v1/scans/{{ scan.id }}/report.json">Download JSON</a>{% endif %}
+    <a class="btn secondary small" href="/">New scan</a>
+  </div>
+</div>
+
+{% if not report %}
+  <div class="box" id="pending" data-scan="{{ scan.id }}">
+    {% if scan.status == 'error' %}
+      <p><span class="dot bad"></span>Scan failed: <span class="mono">{{ scan.error }}</span></p>
+    {% else %}
+      <p><span class="dot accent"></span>Status: <strong id="status">{{ scan.status }}</strong> — analyzers are running; this page refreshes automatically.</p>
+      <div class="progress"><span></span></div>
+    {% endif %}
+  </div>
+{% else %}
+{% set c = report.conclusion %}
+<div class="conclusion {{ 'tampered' if c.provenance_class == 'tampered_after_signing' else c.evidence_grade }}">
+  <div class="row" style="justify-content:space-between">
+    <div class="label">{{ c.label }}</div>
+    <div><span class="tag {{ gmap[c.evidence_grade] }}">evidence: {{ c.evidence_grade }}</span></div>
+  </div>
+  <p class="small muted" style="margin:4px 0 8px">class <span class="mono">{{ c.provenance_class }}</span>{% if c.decisive_signal %} · decided by: {{ c.decisive_signal }}{% endif %}</p>
+  {% for n in c.notes %}<p class="small">{{ n }}</p>{% endfor %}
+  <p class="small muted" style="margin:8px 0 0">Coverage: {{ report.coverage.live }} live checks ran, {{ report.coverage.manual }} modules need manual integration in this deployment{% if report.coverage.errors %}, {{ report.coverage.errors }} errored{% endif %}. {{ report.duration_ms }} ms.</p>
+</div>
+
+<div class="grid2" style="margin-top:22px">
+  <div>
+    <h2 style="margin-top:0">File</h2>
+    <dl class="kv">
+      <dt>SHA-256</dt><dd class="mono">{{ report.file.sha256 }}</dd>
+      <dt>MIME (sniffed)</dt><dd>{{ report.file.mime }}</dd>
+      <dt>Size</dt><dd>{{ report.file.size|kb }}</dd>
+      <dt>Retention</dt><dd>{% if report.hash_only %}hash-only — bytes deleted after analysis{% else %}bytes kept {{ 24 }} h then deleted (reports stay){% endif %}</dd>
+      <dt>Trust anchors</dt><dd class="small">{{ report.trust_sources|join(', ') if report.trust_sources else 'none configured' }}</dd>
+    </dl>
+    {% if report.modality == 'image' %}<p style="margin-top:12px"><img src="/v1/scans/{{ scan.id }}/preview.jpg" alt="" style="max-width:100%;max-height:260px;border:1px solid var(--line)" onerror="this.style.display='none'"><br><span class="small muted">preview rendered from the retained bytes (not shown for hash-only scans)</span></p>{% endif %}
+  </div>
+  <div>
+    <h2 style="margin-top:0">Platform label preview</h2>
+    <table>
+      <tr><th>Platform</th><th>Label likely?</th><th>Why</th></tr>
+      {% for p in report.platform_preview %}
+      <tr>
+        <td>{{ p.platform }}<br><span class="small muted">{{ p.label_text }}</span></td>
+        <td><span class="tag {{ {'yes':'ok','no':'','unknown':'warn'}[p.likely_label] }}">{{ p.likely_label }}</span></td>
+        <td class="small">{{ p.reasons|join('; ') }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <p class="small muted" style="margin-top:6px">Derived from the signals above and <a href="/laws#platforms">platform rules</a> (confidence and last-verified dates shown there).</p>
+  </div>
+</div>
+
+<h2>Signals</h2>
+{% set live = report.signals|rejectattr('status','in',['not_installed','not_configured'])|list %}
+{% set manual = report.signals|selectattr('status','in',['not_installed','not_configured'])|list %}
+{% for s in live %}
+<div class="signal">
+  <div>
+    <div class="name">{{ s.name }}</div>
+    <div class="meta">{{ s.kind }} · {{ s.duration_ms }} ms</div>
+    <div style="margin-top:6px"><span class="tag {{ smap.get(s.status,'') }}">{{ s.status }}</span>
+      {% if s.status in ['detected','inconclusive'] %}<span class="tag {{ gmap[s.evidence_grade] }}">{{ s.evidence_grade }}</span>{% endif %}</div>
+  </div>
+  <div>
+    <div>{{ s.summary }}</div>
+    {% if s.method %}<div class="small muted">method: {{ s.method }}</div>{% endif %}
+    {% if s.kind == 'c2pa' and s.data.manifests %}
+      {% for label, m in s.data.manifests.items() %}
+      <div class="box small" style="margin-top:8px">
+        <div><strong>{{ m.title or label }}</strong> {% if label == s.data.active_manifest %}<span class="tag accent">active manifest</span>{% endif %} <span class="muted mono">{{ label }}</span></div>
+        <dl class="kv" style="margin-top:6px">
+          <dt>Claim generator</dt><dd>{{ m.claim_generator or '—' }}</dd>
+          <dt>Signer</dt><dd>{{ m.signer.issuer or '—' }}{% if m.signer.common_name %} · {{ m.signer.common_name }}{% endif %}{% if m.signer.alg %} · {{ m.signer.alg }}{% endif %}{% if m.signer.time %} · {{ m.signer.time }}{% endif %}</dd>
+          <dt>Source classes</dt><dd>{{ m.dst_classes|join(', ') or '—' }}</dd>
+          <dt>Actions</dt><dd>{% if m.actions %}{% for a in m.actions %}<div><span class="mono">{{ a.action }}</span>{% if a.softwareAgent %} · {{ a.softwareAgent }}{% endif %}{% if a.digitalSourceType %}<br><span class="muted mono">{{ a.digitalSourceType }}</span>{% endif %}</div>{% endfor %}{% else %}—{% endif %}</dd>
+          <dt>Ingredients</dt><dd>{% if m.ingredients %}{% for i in m.ingredients %}{{ i.title }} <span class="muted">[{{ i.relationship }}{% if i.validation_status %}, {{ i.validation_status|length }} status item(s){% endif %}]</span>{% if not loop.last %}, {% endif %}{% endfor %}{% else %}—{% endif %}</dd>
+          <dt>Assertions</dt><dd class="mono">{{ m.assertion_labels|join(', ') }}</dd>
+          {% if m.soft_bindings %}<dt>Soft bindings</dt><dd>{% for b in m.soft_bindings %}{{ b.alg }} ({{ b.blocks }} blocks){% endfor %}</dd>{% endif %}
+          {% if m.training_mining %}<dt>Training/mining</dt><dd class="mono">{{ m.training_mining|tojson }}</dd>{% endif %}
+        </dl>
+      </div>
+      {% endfor %}
+      {% set vc = s.data.validation_codes %}
+      {% if vc %}<div class="small" style="margin-top:6px">
+        {% if vc.failure %}<div><span class="tag bad">failures</span> {% for c in vc.failure %}<span class="mono">{{ c.code }}</span> {% endfor %}</div>{% endif %}
+        {% if vc.success %}<div class="muted"><span class="tag ok">passed</span> {% for c in vc.success %}<span class="mono">{{ c.code }}</span> {% endfor %}</div>{% endif %}
+        {% if vc.informational %}<div class="muted"><span class="tag">info</span> {% for c in vc.informational %}<span class="mono">{{ c.code }}</span> {% endfor %}</div>{% endif %}
+      </div>{% endif %}
+      {% if s.data.remote_manifest_url %}<div class="small muted">remote manifest: {{ s.data.remote_manifest_url }}</div>{% endif %}
+    {% endif %}
+    {% if s.data %}<details><summary>raw data</summary><pre>{{ s.data|tojson(indent=2) }}</pre></details>{% endif %}
+  </div>
+</div>
+{% endfor %}
+
+{% if manual %}
+<h2>Not run in this deployment — manual integration</h2>
+<p class="small muted">These modules are wired into the pipeline and report honestly as unavailable. Each shows what it would add and how to enable it.</p>
+{% for s in manual %}
+<div class="signal">
+  <div><div class="name">{{ s.name }}</div><div class="meta">{{ s.kind }}</div><div style="margin-top:6px"><span class="tag manual">{{ s.status }}</span></div></div>
+  <div><div class="small">{{ s.summary }}</div>{% if s.manual_integration %}<div class="how">→ {{ s.manual_integration }}</div>{% endif %}</div>
+</div>
+{% endfor %}
+{% endif %}
+
+<h2>Next step</h2>
+<div class="row">
+  <a class="btn secondary" href="/laws?from={{ scan.id }}&ct={{ report.modality }}&ai={{ 'true' if c.provenance_class in ['ai_generated_declared','ai_assisted_declared','ai_generated_watermark','ai_generated_metadata'] else 'false' }}&c2pa={{ 'true' if report.facts.c2pa_any else 'false' }}">Run the disclosure checklist for this file</a>
+  <a class="btn secondary" href="/v1/scans/{{ scan.id }}">API view</a>
+</div>
+{% endif %}
+{% endblock %}

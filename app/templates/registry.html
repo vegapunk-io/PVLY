@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set active = 'registry' %}
+{% block title %}AI watermark registry{% endblock %}
+{% block content %}
+<h1>AI watermark &amp; provenance registry</h1>
+<p class="muted">What each generator actually embeds — visible marks, invisible watermarks, Content Credentials, IPTC — and whether a public detector exists. Every row carries an editorial confidence and a last-verified date; low-confidence rows are the ones to re-check first. Last review: {{ meta.last_reviewed }}.</p>
+<div class="row" style="margin:14px 0">
+  <a class="btn small {{ 'secondary' if modality else '' }}" href="/registry">All</a>
+  {% for m in ['image','video','audio','text'] %}<a class="btn small {{ '' if modality==m else 'secondary' }}" href="/registry?modality={{ m }}">{{ m }}</a>{% endfor %}
+  <span class="small muted">{{ entries|length }} entries · <a href="/v1/registry{% if modality %}?modality={{ modality }}{% endif %}">JSON</a></span>
+</div>
+<table>
+  <tr><th>Vendor / tool</th><th>Type</th><th>Visible mark</th><th>Invisible watermark</th><th>C2PA</th><th>Public detector</th><th>Confidence</th></tr>
+  {% for e in entries %}
+  <tr>
+    <td><a href="/registry/{{ e.slug }}"><strong>{{ e.vendor }}</strong><br>{{ e.tool }}</a></td>
+    <td>{{ e.modality }}</td>
+    <td class="small">{{ e.visible_mark }}</td>
+    <td class="small">{{ e.invisible_watermark }}</td>
+    <td class="small">{{ e.c2pa }}</td>
+    <td class="small">{{ e.public_detector }}</td>
+    <td><span class="tag {{ {'high':'ok','medium':'warn','low':'bad'}[e.confidence] }}">{{ e.confidence }}</span><br><span class="small muted">{{ e.last_verified }}</span></td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="small muted" style="margin-top:14px">{{ meta.note }}</p>
+{% endblock %}

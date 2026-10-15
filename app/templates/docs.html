@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% set active = 'docs' %}
+{% block title %}API & deployment status{% endblock %}
+{% block content %}
+<h1>API &amp; deployment status</h1>
+<p class="muted">Everything the UI does goes through the JSON API. Interactive OpenAPI: <a href="/api/docs">/api/docs</a>. Authentication is a pluggable dependency (<code>X-API-Key</code>) that is only enforced when <code>PROVENABLY_API_KEYS</code> is set.</p>
+
+<h2>Live in this deployment</h2>
+<table>
+  {% for k, v in caps.live.items() %}
+  <tr><td class="mono" style="width:320px">{{ k }}</td><td>{% if v is sameas true %}<span class="dot ok"></span>live{% elif v is sameas false %}<span class="dot bad"></span>unavailable{% else %}{{ v }}{% endif %}</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Manual integration required</h2>
+<p class="small muted">Each is wired in (config + connector + report rendering) but disabled until you supply what only you can: credentials, GPU workers, a production certificate or a billing provider.</p>
+<table>
+  <tr><th>Module</th><th>State</th><th>What to do</th></tr>
+  {% set how = {
+    'openai_verify_connector': 'Set OPENAI_VERIFY_API_KEY + OPENAI_VERIFY_ENDPOINT (.env). Confirm endpoint + response fields against OpenAI docs; connector normalises `detected`/`watermark_detected`.',
+    'google_synthid_connector': 'Apply for SynthID Detector partner API access; set GOOGLE_ACCESS_TOKEN + GOOGLE_SYNTHID_ENDPOINT.',
+    'official_c2pa_trust_list': 'Run `python tools/fetch_trust_list.py` (downloads the C2PA conformance trust list to data/trust/anchors.pem). Until then only the demo anchor is trusted.',
+    'audioseal_torch': 'pip install torch torchaudio audioseal on the worker — the analyzer auto-enables.',
+    'videoseal_torch': 'pip install torch + videoseal; add extractor call in analyzers/video_an.py where marked.',
+    'trustmark_torch': 'pip install trustmark; add decoder in analyzers/imwm_an.py where marked.',
+    'stable_signature_torch': 'Needs Meta weights + torch; decoder stub in analyzers/imwm_an.py.',
+    'passive_image_classifier_gpu': 'Deploy a UnivFD/CLIP-ViT or GenImage-trained classifier as a GPU service; expose calibrated FPR; call from analyzers/forensics_an.py.',
+    'zero_shot_text_detector_gpu': 'Deploy Binoculars / Fast-DetectGPT on a GPU service; call from analyzers/text_an.py.',
+    'ffmpeg_audio_demux': 'apt-get install ffmpeg; enable audio-track extraction in analyzers/video_an.py.',
+    'auth_and_billing': 'Set PROVENABLY_API_KEYS for a static allowlist, or replace require_api_key() in app/main.py with your IdP/JWT + Stripe metering.',
+    'production_signing_cert_tsa_kms': 'Replace demo cert in sign_file() with a CA-issued claim-signing cert, an RFC 3161 TSA URL and a KMS-backed key.',
+  } %}
+  {% for k, v in caps.manual_integration.items() %}
+  <tr><td class="mono">{{ k }}</td><td>{% if v %}<span class="dot ok"></span>enabled{% else %}<span class="dot warn"></span>manual{% endif %}</td><td class="small">{{ how.get(k, '') }}</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Endpoints</h2>
+<table class="small">
+  <tr><th>Method</th><th>Path</th><th>Purpose</th></tr>
+  <tr><td>POST</td><td class="mono">/v1/scans</td><td>multipart <code>file</code> | form <code>text</code> | form <code>url</code>; options <code>hash_only</code>, <code>greenlist_key</code>, <code>wait=true</code> (synchronous). Returns scan id.</td></tr>
+  <tr><td>GET</td><td class="mono">/v1/scans/{id}</td><td>status + report when done</td></tr>
+  <tr><td>GET</td><td class="mono">/v1/scans/{id}/report.json</td><td>download report</td></tr>
+  <tr><td>GET</td><td class="mono">/v1/scans</td><td>recent scans</td></tr>
+  <tr><td>POST</td><td class="mono">/v1/scans/demo/{name}</td><td>scan a bundled fixture</td></tr>
+  <tr><td>GET</td><td class="mono">/v1/registry · /v1/registry/{slug}</td><td>watermark registry</td></tr>
+  <tr><td>GET</td><td class="mono">/v1/rules/platforms · /v1/rules/jurisdictions</td><td>rule data</td></tr>
+  <tr><td>POST</td><td class="mono">/v1/disclosure/check</td><td>obligations checklist (JSON body)</td></tr>
+  <tr><td>POST</td><td class="mono">/v1/platforms/preview</td><td>label preview from <code>scan_id</code> or explicit facts</td></tr>
+  <tr><td>POST</td><td class="mono">/v1/text/unicode</td><td>hidden-character scan + cleaned text</td></tr>
+  <tr><td>POST</td><td class="mono">/v1/lab/greenlist</td><td>educational text watermark generate/detect</td></tr>
+  <tr><td>GET</td><td class="mono">/v1/capabilities · /health</td><td>deployment status</td></tr>
+</table>
+
+<h2>Examples</h2>
+<pre># synchronous scan of a file
+curl -s -F "file=@photo.jpg" -F "wait=true" {{ request.base_url }}v1/scans | jq .conclusion
+
+# async: create, then poll
+curl -s -F "file=@clip.mp4" {{ request.base_url }}v1/scans
+curl -s {{ request.base_url }}v1/scans/&lt;id&gt;
+
+# disclosure checklist
+curl -s -X POST {{ request.base_url }}v1/disclosure/check -H "content-type: application/json" \
+  -d '{"content_type":"video","is_ai_generated":true,"depicts_real_person":true,"has_c2pa":false}'</pre>
+
+<h2>Report schema (abridged)</h2>
+<pre>{
+  "scan_id", "file": {"filename","mime","size","sha256"}, "modality",
+  "conclusion": {"provenance_class", "label", "evidence_grade", "decisive_signal", "notes": []},
+  "signals": [{"kind","name","status","evidence_grade","summary","data","method","manual_integration","duration_ms"}],
+  "coverage": {"live","manual","errors","manual_modules": []},
+  "platform_preview": [{"platform","likely_label","reasons": [],"removal_policy","confidence","last_verified"}],
+  "facts": {"c2pa_any","c2pa_ai","iptc_ai","vendor_watermark","open_watermark","tampered"},
+  "trust_sources": [], "timings": [], "hash_only"
+}</pre>
+{% endblock %}

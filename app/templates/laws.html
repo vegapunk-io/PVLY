@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% set active = 'laws' %}
+{% block title %}Disclosure rules{% endblock %}
+{% block content %}
+<h1>Disclosure checklist &amp; platform rules</h1>
+<p class="muted">Answer a few facts about what you are about to publish; the engine returns the obligations that apply per jurisdiction, what is already satisfied, and concrete next steps. Summaries researched 2026-10-14 — not legal advice.</p>
+
+<div class="grid2" style="margin-top:20px">
+  <form id="disc-form" class="box" onsubmit="return false">
+    <h3 style="margin-top:0">Your content</h3>
+    <label for="ct">Content type</label>
+    <select id="ct" name="content_type">
+      <option value="image">image</option><option value="video">video</option><option value="audio">audio</option><option value="text">text</option>
+    </select>
+    <label class="check"><input type="checkbox" name="is_ai_generated" checked> Fully AI-generated</label>
+    <label class="check"><input type="checkbox" name="is_ai_edited"> AI-edited / composite (generative fill, face swap, voice conversion)</label>
+    <label class="check"><input type="checkbox" name="depicts_real_person"> Depicts a real, identifiable person, place or event</label>
+    <label class="check"><input type="checkbox" name="public_interest_text"> Text informs the public on a matter of public interest</label>
+    <label class="check"><input type="checkbox" name="human_reviewed"> Human editorial review with responsibility</label>
+    <label class="check"><input type="checkbox" name="artistic"> Evidently artistic / satirical work</label>
+    <h3>What you already have</h3>
+    <label class="check"><input type="checkbox" name="has_c2pa"> Content Credential (C2PA) attached</label>
+    <label class="check"><input type="checkbox" name="has_visible_label"> Visible / audible label</label>
+    <label class="check"><input type="checkbox" name="has_metadata_id"> Metadata identifier (IPTC DigitalSourceType / provider ID)</label>
+    <h3>Jurisdictions</h3>
+    {% for j in jurisdictions %}<label class="check"><input type="checkbox" name="jurisdictions" value="{{ j.slug }}" checked> {{ j.name }}</label>{% endfor %}
+    <div class="row" style="margin-top:12px"><button type="button" id="disc-run">Check obligations</button><span class="small muted">POST /v1/disclosure/check</span></div>
+  </form>
+  <div id="disc-result"><p class="muted small">Results appear here.</p></div>
+</div>
+
+<h2 id="jurisdictions">Jurisdiction summaries</h2>
+{% for j in jurisdictions %}
+<details>
+  <summary><strong>{{ j.name }}</strong> · effective {{ j.effective }} · <span class="tag {{ {'high':'ok','medium':'warn','low':'bad'}[j.confidence] }}">{{ j.confidence }}</span> <span class="small muted">verified {{ j.last_verified }}</span></summary>
+  <p class="small" style="margin-top:8px"><strong>Status:</strong> {{ j.status }} · <strong>Penalty:</strong> {{ j.penalty }}</p>
+  <table class="small">
+    {% for k, v in j.obligations.items() %}<tr><td class="mono" style="width:200px">{{ k }}</td><td>{{ v }}</td></tr>{% endfor %}
+  </table>
+  {% if j.notes %}<p class="small notice" style="margin-top:8px">{{ j.notes }}</p>{% endif %}
+  <p class="small muted">Sources: {{ j.sources|join('; ') }}</p>
+</details>
+{% endfor %}
+
+<h2 id="platforms">Platform labelling rules</h2>
+<table>
+  <tr><th>Platform</th><th>Label</th><th>Auto-label triggers</th><th>On edits</th><th>Removal</th><th>Monetization</th><th>Confidence</th></tr>
+  {% for p in platforms %}
+  <tr>
+    <td><strong>{{ p.name }}</strong></td>
+    <td class="small">{{ p.label_text }}</td>
+    <td class="small mono">{{ p.auto_label_triggers|join(', ') }}</td>
+    <td class="small">{{ p.label_on_edit }}</td>
+    <td class="small">{{ p.removal_policy }}</td>
+    <td class="small">{{ p.monetization_impact }}</td>
+    <td><span class="tag {{ {'high':'ok','medium':'warn','low':'bad'}[p.confidence] }}">{{ p.confidence }}</span><br><span class="small muted">{{ p.last_verified }}</span></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
+{% block scripts %}<script>Provenably.disclosurePage();</script>{% endblock %}

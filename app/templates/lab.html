@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% set active = 'lab' %}
+{% block title %}Watermark lab{% endblock %}
+{% block content %}
+<h1>Lab: how a statistical text watermark works</h1>
+<p class="muted">An educational, fully transparent implementation of the green-list scheme (Kirchenbauer et al., 2023) that underlies production text watermarks. A toy "language model" picks each next word from random candidates, preferring the keyed green half. The detector counts green tokens and reports a z-score — no model, no training, no secret beyond the key.</p>
+
+<div class="grid2" style="margin-top:20px">
+  <div class="box">
+    <h3 style="margin-top:0">1 · Generate marked text</h3>
+    <label for="g-key">Key</label><input type="text" id="g-key" value="demo-key">
+    <div class="grid3">
+      <div><label for="g-gamma">γ (green fraction)</label><input type="number" id="g-gamma" value="0.5" step="0.05" min="0.1" max="0.9"></div>
+      <div><label for="g-strength">bias strength</label><input type="number" id="g-strength" value="0.9" step="0.05" min="0" max="1"></div>
+      <div><label for="g-n">tokens</label><input type="number" id="g-n" value="300" min="20" max="2000"></div>
+    </div>
+    <div class="row" style="margin-top:10px"><button id="g-run">Generate</button><span class="small muted">POST /v1/lab/greenlist {action: generate}</span></div>
+    <div id="g-stats" class="result small"></div>
+  </div>
+  <div class="box">
+    <h3 style="margin-top:0">2 · Detect</h3>
+    <label for="d-text">Text (edit it, paraphrase it, delete words — then re-run)</label>
+    <textarea id="d-text" style="min-height:160px"></textarea>
+    <label for="d-key">Key used for detection</label><input type="text" id="d-key" value="demo-key">
+    <div class="row" style="margin-top:10px"><button id="d-run">Detect</button><button class="secondary" id="d-wrongkey">Try wrong key</button></div>
+    <div id="d-stats" class="result"></div>
+  </div>
+</div>
+
+<h2>What to notice</h2>
+<ul class="plain small">
+  <li>With the right key the z-score is large (≫ 4) on a few hundred tokens; with a wrong key it collapses to noise — detection is impossible without the key, which is why vendor detectors are closed.</li>
+  <li>Delete or paraphrase half the words: z drops roughly with √(remaining tokens). Short texts (tweets, captions) are undetectable by design.</li>
+  <li>Low-entropy text (code, lists, boilerplate) gives the generator no freedom, so the signal is weak there even in production systems.</li>
+  <li>Production schemes (SynthID-Text tournament sampling, textGrain) hash a longer context and use a distortion-free sampler; the statistics are the same idea.</li>
+</ul>
+{% endblock %}
+{% block scripts %}<script>Provenably.labPage();</script>{% endblock %}

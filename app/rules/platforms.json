@@ -1,0 +1,128 @@
+{
+  "_meta": {
+    "note": "Platform labelling behaviour as researched Oct 2026. Each entry carries confidence + last_verified; re-verify quarterly. Used by rules/engine.py platform_preview().",
+    "last_reviewed": "2026-10-14"
+  },
+  "platforms": [
+    {
+      "slug": "instagram",
+      "name": "Instagram",
+      "label_text": "AI info",
+      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "self_disclosure", "vendor_watermark_meta"],
+      "label_on_edit": "Edits with AI tools surface the same 'AI info' label; label text does not distinguish generated vs edited.",
+      "removal_policy": "Label can be appealed but not removed by the uploader when derived from C2PA/IPTC.",
+      "monetization_impact": "none",
+      "notes": "Auto-applies Content Credentials labels when a C2PA manifest with an AI digital source type is present (rollout confirmed at Google I/O 2026 coverage). Self-disclosure toggle in composer.",
+      "confidence": "high",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "facebook",
+      "name": "Facebook (feed + ads)",
+      "label_text": "AI info / Made with AI",
+      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "self_disclosure", "vendor_watermark_meta", "ad_auto_detect"],
+      "label_on_edit": "Same label; ads auto-detected from 1 Jun 2026.",
+      "removal_policy": "Appeal via support; cannot opt out when C2PA/IPTC-derived.",
+      "monetization_impact": "none",
+      "notes": "Ads: automated AI-content detection for ad creatives from 1 Jun 2026; political/social-issue ads must disclose digitally altered media.",
+      "confidence": "high",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "threads",
+      "name": "Threads",
+      "label_text": "AI info",
+      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "self_disclosure"],
+      "label_on_edit": "Same as Instagram.",
+      "removal_policy": "Same as Instagram.",
+      "monetization_impact": "none",
+      "notes": "Shares Meta's provenance pipeline.",
+      "confidence": "medium",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "youtube",
+      "name": "YouTube",
+      "label_text": "Altered or synthetic content",
+      "auto_label_triggers": ["c2pa_ai", "synthid", "internal_classifier_photoreal", "self_disclosure"],
+      "label_on_edit": "Only 'significant photorealistic' alterations trigger auto-label; beauty filters and colour grading do not.",
+      "removal_policy": "Appeal in YouTube Studio; label is permanent for Veo / Dream Screen / C2PA-declared content.",
+      "monetization_impact": "none",
+      "notes": "Since 27 May 2026: auto-labels significant photorealistic AI via internal signals + SynthID + C2PA; label shown below the player (and in expanded description); creators must self-disclose realistic synthetic content at upload.",
+      "confidence": "high",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "tiktok",
+      "name": "TikTok",
+      "label_text": "AI-generated",
+      "auto_label_triggers": ["c2pa_ai", "self_disclosure", "tiktok_ai_effects"],
+      "label_on_edit": "Content made with TikTok AI effects is labelled automatically.",
+      "removal_policy": "Cannot be removed when C2PA-derived; self-labels can be edited before posting.",
+      "monetization_impact": "none",
+      "notes": "First major platform to read C2PA Content Credentials for auto-labelling (2024); also attaches Content Credentials to downloads of TikTok AI content.",
+      "confidence": "high",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "linkedin",
+      "name": "LinkedIn",
+      "label_text": "CR icon (Content Credentials)",
+      "auto_label_triggers": ["c2pa_any"],
+      "label_on_edit": "Icon shows for any valid manifest; the popover lists AI generation if declared.",
+      "removal_policy": "Not removable; derived from the embedded manifest.",
+      "monetization_impact": "none",
+      "notes": "Shows the CR pin for images with valid C2PA manifests; no independent AI classifier announced.",
+      "confidence": "high",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "x",
+      "name": "X (Twitter)",
+      "label_text": "Community Note / manipulated-media label",
+      "auto_label_triggers": ["manual_review"],
+      "label_on_edit": "Policy-based (synthetic & manipulated media policy); no C2PA reading in production.",
+      "removal_policy": "N/A — labels are enforcement actions.",
+      "monetization_impact": "possible reach reduction when labelled as misleading",
+      "notes": "X strips most metadata (including C2PA) on upload; Grok-generated images carry no C2PA.",
+      "confidence": "medium",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "pinterest",
+      "name": "Pinterest",
+      "label_text": "AI modified",
+      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "internal_classifier"],
+      "label_on_edit": "Edited and generated both labelled 'AI modified'.",
+      "removal_policy": "Appeal via support.",
+      "monetization_impact": "users can tune down AI content in feed (reach impact)",
+      "notes": "Labels since Apr 2025 using metadata + classifiers; 'see fewer' control per category.",
+      "confidence": "medium",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "google_search",
+      "name": "Google Search / Images (About this image)",
+      "label_text": "About this image: 'Made with Google AI' / 'Edited with AI' / Content Credentials",
+      "auto_label_triggers": ["c2pa_any", "synthid", "iptc_ai"],
+      "label_on_edit": "Distinguishes generated vs edited only when the manifest/IPTC says so.",
+      "removal_policy": "Not applicable.",
+      "monetization_impact": "none",
+      "notes": "Since I/O 2026 SynthID + C2PA surfaces inside Search, Chrome and Gemini.",
+      "confidence": "high",
+      "last_verified": "2026-10-14"
+    },
+    {
+      "slug": "amazon_kdp",
+      "name": "Amazon KDP",
+      "label_text": "No public label; mandatory disclosure in publishing form",
+      "auto_label_triggers": ["self_disclosure"],
+      "label_on_edit": "AI-assisted (editing) need not be disclosed; AI-generated text/images/translations must be.",
+      "removal_policy": "N/A",
+      "monetization_impact": "account action if undisclosed",
+      "notes": "KDP distinguishes 'AI-generated' vs 'AI-assisted' at publication.",
+      "confidence": "high",
+      "last_verified": "2026-10-14"
+    }
+  ]
+}

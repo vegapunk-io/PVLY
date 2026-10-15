@@ -1,0 +1,21 @@
+# Core (all pure-pip, CPU only)
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+jinja2>=3.1
+pydantic>=2.6
+# Provenance / media
+c2pa-python>=0.38          # c2pa-rs bindings: manifest validation + demo signing
+Pillow>=10.3
+numpy>=1.26
+opencv-python-headless>=4.9
+PyWavelets>=1.5            # DWT-DCT open watermark decoder
+cryptography>=42           # tools/dev_cert.py (test CA)
+# Dev
+pytest>=8
+httpx>=0.27                # TestClient
+# --- MANUAL INTEGRATION (GPU / heavy; install on workers only) ---
+# torch torchaudio audioseal        -> AudioSeal detector
+# torch videoseal                   -> Video Seal extractor
+# trustmark                         -> Adobe TrustMark decoder
+# transformers                      -> Binoculars / Fast-DetectGPT text detectors
