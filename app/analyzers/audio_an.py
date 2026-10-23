@@ -79,6 +79,27 @@ def _id3_summary(path: str) -> dict:
     return {"id3_version": ver, "frames": frames}
 
 
+def _load_audio_16k(path: str):
+    """Load audio as a mono float tensor shaped (1, samples) at 16 kHz.
+
+    Prefers soundfile (bundles libsndfile; no FFmpeg/torchcodec needed). Falls back
+    to torchaudio.load for formats soundfile cannot open.
+    """
+    import torch
+    try:
+        import soundfile as sf
+        data, sr = sf.read(path, always_2d=True)
+        mono = torch.from_numpy(np.ascontiguousarray(data.mean(axis=1), dtype=np.float32))
+        if sr != 16000:
+            import torchaudio  # type: ignore
+            mono = torchaudio.functional.resample(mono, sr, 16000)
+        return mono.unsqueeze(0)
+    except Exception:
+        import torchaudio  # type: ignore
+        wav, sr = torchaudio.load(path)
+        return torchaudio.functional.resample(wav.mean(0, keepdim=True), sr, 16000)
+
+
 class AudioAnalyzer(Analyzer):
     name = "audio"
     modalities = ("audio",)
@@ -110,9 +131,7 @@ class AudioAnalyzer(Analyzer):
         try:
             import torch  # noqa: F401
             from audioseal import AudioSeal  # type: ignore
-            import torchaudio  # type: ignore
-            wav, sr = torchaudio.load(ctx.path)
-            wav = torchaudio.functional.resample(wav.mean(0, keepdim=True), sr, 16000)
+            wav = _load_audio_16k(ctx.path)
             det = AudioSeal.load_detector("audioseal_detector_16bits")
             result, message = det.detect_watermark(wav.unsqueeze(0), sample_rate=16000)
             prob = float(result)

@@ -2,6 +2,7 @@ data/blobs/
 data/*.sqlite3*
 data/trust/
 data/certs/
+demo_assets/
 __pycache__/
 .pytest_cache/
 .env
