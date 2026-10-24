@@ -1,184 +1,250 @@
-# DESIGN.md — Provenably (PVLY)
+---
+version: 2.0
+name: Provenably-design-system
+description: Provenably's complete design system, reverse-engineered from Zapier's design language (source `zapier/DESIGN.md`, fetched with `npx getdesign@latest add zapier`) and adapted to a forensic Detect → Remove → Verify product. Warm-cream canvas (`#fffefb`), deep coffee ink (`#201515`), one saturated orange CTA (`#ff4f00`), Degular-style display type rendered in Inter 500, 12px middle radius, flat elevation. Product evidence grades are the only semantic colors.
 
-> Product & UX/UI design as it **currently exists** (`0.1.0-prototype`, verified 2026-10-24).
-> Companion docs: [`AGENTS.md`](AGENTS.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md) ·
-> **Read [`PHILOSOPHY.md`](PHILOSOPHY.md) first** — founder philosophy clarified 2026-10-24 (P-011): Detect → Remove → Verify, all formats, platform-ready. Current code is temporarily Detect-only (see PHILOSOPHY §10 gap note).
-> **Every product/UX decision must be logged in §12.** Open decisions live in §11.
+colors:
+  primary: "#ff4f00"        # CTA / conversion ONLY
+  primary-hover: "#d94300"  # derived: hover/active
+  primary-soft: "#ffeee3"   # derived: chips, dropzone drag fill
+  on-primary: "#fffefb"
+  ink: "#201515"
+  ink-soft: "#2f2a26"
+  ink-mid: "#36342e"
+  body: "#605d52"
+  body-mid: "#939084"
+  mute: "#c5c0b1"
+  canvas: "#fffefb"
+  canvas-soft: "#f8f4f0"
+  line: "#e6ded1"           # derived warm hairline
+  grade-strong: "#136f3a"   # semantic only
+  grade-moderate: "#201515" # = ink (deliberate: orange is never a grade)
+  grade-weak: "#a65d00"     # semantic only
+  grade-none: "#939084"     # = body-mid
+  grade-tampered: "#b3261e" # semantic only
+
+typography:
+  display-xl:  { fontFamily: "Degular Display, Inter, system-ui, sans-serif", fontSize: 56px, fontWeight: 500, lineHeight: 56px }
+  display-lg:  { fontFamily: "Degular Display, Inter, system-ui, sans-serif", fontSize: 48px, fontWeight: 500, lineHeight: 48px }
+  display-md:  { fontFamily: "Degular Display, Inter, system-ui, sans-serif", fontSize: 32px, fontWeight: 500, lineHeight: 36px }
+  heading-sm:  { fontFamily: "Inter, system-ui, sans-serif", fontSize: 20px, fontWeight: 700, lineHeight: 25px, letterSpacing: -0.5px }
+  body-lg:     { fontFamily: "Inter, system-ui, sans-serif", fontSize: 20px, fontWeight: 400, lineHeight: 30px, letterSpacing: -0.2px }
+  body-md:     { fontFamily: "Inter, system-ui, sans-serif", fontSize: 18px, fontWeight: 400, lineHeight: 27px }
+  body-sm:     { fontFamily: "Inter, system-ui, sans-serif", fontSize: 16px, fontWeight: 400, lineHeight: 24px }
+  caption:     { fontFamily: "Inter, system-ui, sans-serif", fontSize: 14px, fontWeight: 400, lineHeight: 21px }
+  eyebrow:     { fontFamily: "Degular Display, Inter, system-ui, sans-serif", fontSize: 14px, fontWeight: 500, lineHeight: 14px, letterSpacing: 1px, textTransform: uppercase }
+  button-md:   { fontFamily: "Inter, system-ui, sans-serif", fontSize: 18px, fontWeight: 600, lineHeight: 27px }
+  button-sm:   { fontFamily: "Inter, system-ui, sans-serif", fontSize: 14.4px, fontWeight: 700, lineHeight: 1.2 }
+  mono:        { fontFamily: "JetBrains Mono, ui-monospace, Menlo, monospace", fontSize: 0.86em }
+
+rounded: { none: 0px, sm: 6px, md: 12px, pill: 9999px }
+spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 3xl: 48px, 4xl: 64px }
+---
+
+# DESIGN.md — Provenably design system (complete)
+
+> Status: **v2 applied to the clickable mockup (`mockup/`), pending founder approval** · 2026-10-24 · Decision **P-014**
+> Source reverse-engineered: [`zapier/DESIGN.md`](zapier/DESIGN.md) (identical to the founder-supplied `DESIGN-zapier.md`; fetched via `npx getdesign@latest add zapier`).
+> Companions: [`PHILOSOPHY.md`](PHILOSOPHY.md) · [`WIREFRAME.md`](WIREFRAME.md) · [`AGENTS.md`](AGENTS.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md).
+> Implementation of record for the mockup: `mockup/style.css` (single stylesheet, all 15 pages). **No linear gradients anywhere. No decorative shadows.**
 
 ---
 
-## 1. Product definition (current)
+## 1. How this was reverse-engineered (method, not vibes)
 
-**Provenably — AI content provenance & compliance.** One-liner in force:
-*"One graded Provenance Report per file"* (README).
+1. **Extracted the source system token-by-token** from `zapier/DESIGN.md`: colors, type scale,
+   radii, spacing, 20 named components, bands, elevation, breakpoints, do/don't list.
+2. **Separated brand from mechanism.** Copied *mechanisms* ( warm-neutral temperature, one
+   CTA color, 12px radius, cream-card elevation, display/body two-voice type). Never copied
+   Zapier's name, logo, copy, or illustrations. Provenably keeps its own check-mark logo,
+   forensic components, and honesty copy.
+3. **Resolved the one real conflict — semantics.** Zapier ships no semantic palette; a
+   forensic product's evidence grades *are* content. §3.3 documents the bounded exception.
+4. **Ran the skills protocol** (`AGENTS.md §12`) over the result — §10 is the audit trail.
 
-**Philosophy CLARIFIED — DETECT → REMOVE → VERIFY (founder, 2026-10-24, P-011, see
-`PHILOSOPHY.md`).** Detect is the front door; removal of C2PA/metadata/AI footprints across
-image/video/audio/document/text, verified and platform-ready, completes the job. This
-supersedes the same-day Detect-only call (P-010); until roadmap R0 lands, shipped code is
-Detect-only and copy must not promise removal.
-
-## 2. Target personas (Detect-only, revised 2026-10-24 — unvalidated)
-
-| Persona | Need | Primary surface |
-|---|---|---|
-| Newsroom / OSINT | Verify content provenance before publishing | Scan + Report |
-| Creator / influencer | Know how platforms will label a file before posting | Scan + Rules |
-| Compliance / publisher | EU/CA/India/China/Korea disclosure readiness | Detect + Rules |
-| Platform / moderation | Understand what provenance signals arrive with uploads | Detect + Registry |
-| Developer | Programmatic scan + report via API | `/v1` API + `/api/docs` |
-
-## 3. Design principles (binding)
-
-1. **Show evidence, not verdicts on authorship.** Footer on every page: *"Reports describe
-   signals and their evidence grade; they are not a verdict on authorship… not legal advice."*
-2. **Grade everything.** Conclusion always pairs a human label with its evidence grade and
-   the decisive signal; weak evidence is visually weaker (§7 conclusion block).
-3. **Coverage is part of the result.** what ran vs. what's `not_configured` (dashed "manual"
-   tags) appears on the report and on *API & status* — a clean result must show its limits.
-4. **Honest limits up front.** The Scan page states coverage limits before use (§8);
-   fragility is demonstrated, not hidden (the q75-JPEG watermark-loss demo fixture).
-   Detection is read-only — nothing in the product modifies user files.
-5. **Flat, minimal, fast.** No gradients, no decorative shadows, system fonts, no build
-   step, no tracking/analytics (current state), tables over cards for data density.
-6. **Prototype is labelled.** The `prototype` chip in the nav and TEST-signer labelling stay
-   until trust list + production signing are real.
-
-## 4. Information architecture (current pages)
-
-Nav (`app/templates/base.html`): **Provenably** *"AI content provenance & compliance"* ·
-Scan · Demo files · Registry · Rules · Text tools · Lab · API & status · `prototype` chip.
-
-| Route | Template | Purpose (H1) |
-|---|---|---|
-| `/` = `/scan` | `scan.html` | "Detect AI provenance" — tabs (File dropzone / Text / URL) posting to `/v1/scans`, hash-only + green-list options,"What gets checked", "Honest limits", recent scans |
-| `/demo` | `demo.html` | "Demo files" — 17 fixtures, one-click scan (primary demo entry) |
-| `/report/{id}` | `report.html` | Provenance Report: conclusion block, signals, coverage, platform preview, raw JSON |
-| `/registry`, `/registry/{slug}` | `registry*.html` | "AI watermark & provenance registry" (25) · "Does {tool} watermark or sign its output?" |
-| `/laws` | `laws.html` | "Disclosure checklist & platform rules" (6 jurisdictions, 10 platforms) |
-| `/tools` | `tools.html` | "Hidden-character scanner & cleaner" (unicode hygiene) |
-| `/lab` | `lab.html` | "Lab: how a statistical text watermark works" (green-list generate/detect) |
-| `/docs-guide` | `docs.html` | "API & deployment status" — live vs manual capabilities, curl examples |
-
-## 5. Core user flows (current)
-
-**F1 Scan:** Scan page tabs (file/text/URL) or Demo files → HTML form posts to `/v1/scans` →
-303 redirect to report page → polls until done →
-conclusion (label + grade + decisive signal) → signals (expandable raw data) → coverage →
-platform-label preview → download `report.json`.
-~~**F2 Sanitize**~~ — REMOVED 2026-10-24 (P-010). No flow modifies files.
-**F3 Check a generator:** Registry → filter by modality → generator page (visible mark /
-invisible watermark / C2PA / IPTC / public detector / robustness + confidence + last-verified).
-**F4 Compliance check:** Rules page / `POST /v1/disclosure/check` → per-jurisdiction open items.
-**F5 Text hygiene:** paste text → hidden-char scan → cleaned output (keep-joiners / ASCII-dash options).
-**F6 Learn:** Lab → generate green-list-marked text → detect with right/wrong key (z-score).
-
-## 6. Visual design system (exact, from `app/static/style.css`)
-
-**Tokens**
-```css
---ink:#141414  --muted:#5f6368  --line:#e3e3e3  --soft:#f5f5f4
---accent:#1a4fd6  --ok:#136f3a  --warn:#a65d00  --bad:#b3261e
---sans: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
---mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace
-```
-**Type:** base 16px, line-height 1.5 · H1 1.6rem/600 · H2 1.15rem/600 · H3 1rem/600 ·
-`.small` .86rem · mono at .86em for hashes/IDs/code.
-**Layout:** `.wrap` max-width **1040px**, 20px gutters · nav 52px, brand + items + spacer +
-prototype chip (tagline hidden ≤1100px) · `.grid2`/`.grid3` collapse to 1 col ≤760px ·
-main padding 28px/60px · footer with disclaimer + OpenAPI/health links.
-**Brand mark:** inline SVG favicon — black square, white check path (no logo file exists yet).
-**Motion:** only the indeterminate `.progress` slide animation; nothing else animates.
-
-## 7. Component inventory (reuse these; don't invent new patterns)
-
-| Component | Usage / semantics |
+| Zapier trait (source evidence) | Provenably application |
 |---|---|
-| `.conclusion` block | Report headline. Left border encodes grade: `strong`=green, `moderate`=blue, `weak`=amber, `none`=gray, `tampered`=red. **This mapping is a product-wide convention.** |
-| `.tag` (`ok/warn/bad/accent/manual`) | Statuses & grades; `manual` = dashed border = not-configured module |
-| `.dot` (ok/warn/bad/accent) | Inline status dots in lists |
-| `.signal` row | One analyzer signal: name, meta (method/ms), summary, `.how` = manual-integration instruction (amber) |
-| `details/summary` + `pre` | Progressive disclosure of raw signal JSON (max-height 420px) |
-| `.kv` definition grid (180px labels) | File facts (sha256, mime, size) |
-| `table` | Registry, rules, recent jobs — uppercase muted headers, row hover `#fafaf9` |
-| `.drop` dropzone | Dashed border; `.over` → accent. File input inside (accessible fallback) |
-| `.notice` / `.notice.info` | Warnings (amber tint) / info (blue tint) — used for honest-limits copy |
-| `.box`, `.row`, `.steps` (numbered) | Side panels ("What gets removed", "Honest limits"), how-it-works steps |
-| Buttons | Primary = ink/black fill; `.secondary` = white; `.small` variant. Focus: 2px accent outline |
-| Forms | `.check` checkbox rows; labels above inputs; mono textarea for text tools |
+| Warm cream canvas `#fffefb`, soft `#f8f4f0` — "temperature IS the brand voice" | Page = canvas; cards/sections = canvas-soft; never pure white `#fff`/`#ffffff` surfaces |
+| Coffee ink `#201515`, warm neutral ladder to `#c5c0b1` | Text ladder ink → ink-mid → body → body-mid → mute; no cool grays anywhere |
+| Single orange `#ff4f00` = every primary CTA | Orange = primary buttons, focus, active states, brand mark — and nothing else decorative |
+| Degular Display 500 hero + Inter everything else; sentence-case headlines | Display stack names Degular then Inter (renders Inter 500 — the source file's own named substitute); all headlines sentence-case |
+| Eyebrow: uppercase 14px, +1px tracking | Kept (brief/spec wins — see §10 deviation note), used sparingly, ink-colored |
+| 12px radius on buttons **and** cards — deliberate middle | `--radius:12px` for buttons/cards/panels; 6px inputs & format chips; pill only for badges |
+| Elevation: flat → 1px ink hairline → cream-fill contrast | Same 3 levels; zero box-shadows in the mockup stylesheet |
+| Buttons ~48px (12px pad + 27px line) | `min-height:48px`, padding 10–12/24, `button-md` type |
+| Pricing: white+ink-border default, **dark flipped featured** | `.pricecard` / `.pricecard.featured` exactly so |
+| Footer: dark coffee, cream text | Footer = ink band, canvas-soft text |
+| Container ~1280px, bands 64px, cards 24px | `.wrap:1280px`, `.section:64px`, `.box:24px` |
+| Breakpoints <768 / 768–1023 / ≥1024 | Grids collapse 4→2 at 1023, →1 at 767; hero type steps down |
 
-Client JS (`app/static/app.js`, 185 LOC, no framework): `window.Provenably` namespace with
-per-page initializers (`toolsPage()`, `labPage()`, `disclosurePage()`) plus generic tabs /
-dropzone (`#drop`+`#file-form`, used by Scan) and report polling; `fetch` to `/v1`, `esc()` helper
-— **always** escape interpolated values; the few `innerHTML` sinks rely on it.
+## 2. Brand translation
 
-## 8. Copy & voice rules (binding)
+- **Voice:** confident-warm, plain-spoken. Warm neutrals say "approachable tool", forensic
+  tables/tags say "evidence". The one loud thing per page is the orange primary action
+  (frontend-design: *spend boldness in one place*).
+- **Logo:** Provenably check in an orange rounded square (8px radius at 30px), wordmark in
+  display face 600. Favicon: same mark, `#ff4f00` field.
+- **Product loop as the signature motif:** `Detect → Remove → Verify → Platform-ready`
+  pill sequence (cream pills, orange arrows) replaces any decorative hero art.
 
-- Tone: precise, forensic, understated. State method + grade + limits in the same breath.
-- **Forbidden claims:** "human-made", "100% AI/human", "no watermark", "watermark removed",
-  "undetectable", any legal-advice phrasing. Use: "No provenance signal found **by the
-  checks that ran**", "Absence of provenance is not evidence of human origin".
-- **No removal language anywhere.** Never imply Provenably can strip metadata/manifests or
-  remove/degrade watermarks, or help evade disclosure laws/platform labels. (Detect-only, P-010.)
-- **Required labels:** TEST signer disclosed ("issuer: Provenably Demo"); `prototype` chip;
-  rules data carries "researched 2026-10-14 · not legal advice".
-- Provenance classes render their human `label` (e.g. "AI-generated (declared in a Content
-  Credential)"), never the raw slug alone.
+## 3. Color
 
-## 9. Accessibility & responsive (current state)
+### 3.1 Core (from source, unchanged values)
+| Token | Hex | Role |
+|---|---|---|
+| `primary` | `#ff4f00` | Primary CTA bg, brand mark, focus ring, active indicators, progress fill |
+| `on-primary` | `#fffefb` | Text on primary/ink surfaces |
+| `ink / ink-soft / ink-mid` | `#201515 / #2f2a26 / #36342e` | Headings, dark buttons/cards/footer, emphasized text |
+| `body / body-mid / mute` | `#605d52 / #939084 / #c5c0b1` | Body text, metadata, dividers/disabled |
+| `canvas / canvas-soft` | `#fffefb / #f8f4f0` | Page, cards & bands (elevation by contrast) |
 
-Present: semantic landmarks (nav/main/footer), native controls, visible focus outlines,
-color+text pairing on grades (grade word always shown, not color-only — keep this),
-breakpoints 1100px/760px, viewport meta.
-Gaps (not yet audited): no ARIA live regions for async result injection, dropzone is
-mouse-first (file input is the fallback), contrast of `--muted` on white unverified,
-no reduced-motion handling for `.progress`. Any redesign must close these before launch.
+### 3.2 Derived (introduced here, each justified)
+`primary-hover #d94300` (interactive state needs a step the source omits) ·
+`primary-soft #ffeee3` (chip/drag-state tint of primary) ·
+`line #e6ded1` (hairline between canvas-soft and mute for dense app tables) ·
+orange text accent `#8f2d00` (small orange-tinted labels need ≥4.5:1 on cream — raw
+`#ff4f00` at small sizes is ~3.3:1; see §9).
 
-## 10. Content assets (current)
+### 3.3 Semantic evidence grades — the bounded exception
+Zapier: *"The brand doesn't surface a separate semantic palette."* Provenably must:
+evidence grade is data, and color is never its only channel (grade word always rendered).
+**strong `#136f3a` · moderate = ink `#201515` · weak `#a65d00` · none = body-mid · tampered `#b3261e`.**
+Moderate deliberately takes *ink*, not orange: orange stays unambiguously "act here",
+and close hues (orange vs weak-amber) can't be confused at a glance. Semantic hues appear
+only in grade tags, conclusion left-rules, status dots, and verify diffs — never as
+decoration, backgrounds of marketing sections, or a "second accent".
 
-- **Registry:** 25 generators (image/video/audio/text), fields per §5-F3, `confidence` +
-  `last_verified` 2026-10-14, `_meta` disclaims removal techniques ("public answers only").
-- **Rules:** 10 platforms (Instagram…KDP), 6 jurisdictions (EU, California, India SGI 2026,
-  China, Korea, US federal), each `confidence`/`last_verified`. Quarterly refresh owed.
-- **Demo fixtures (17):** the teaching set — signed AI / signed camera / composite w/
-  ingredient / tampered / stripped / IPTC-only / A1111 PNG / SDXL watermark (+q75 loss) /
-  clean text / hidden-char text / green-list text / signed+plain WAV / signed+plain MP4.
+### 3.4 Color don'ts
+No pure white/black surfaces · no cool-gray tokens · no gradients · no second brand hue ·
+no orange body links at small size (links are ink + underline, hover orange) ·
+no orange grade.
 
-## 11. Open product/design decisions (must be resolved + logged, owner: Founder)
+## 4. Typography
 
-| ID | Decision needed | Why it blocks | Revisit |
+Two voices, strict roles. **Display** (`Degular Display, Inter, …` — proprietary face
+unavailableweights rendered as Inter 500 per the source's substitute note): hero 56/56,
+page H1 48/48 (app pages 40/42), section H2 32/36. **Inter**: body-md 18/27 default page
+text, body-sm 16/24 in app density, caption 14/21, heading-sm 20/700/-0.5px for card titles,
+button-md 18/600, button-sm 14.4/700. **JetBrains Mono**: hashes, IDs, filenames, code,
+format chips only. Sentence-case headlines, always. Line-length: lede ≤720px, prose ≤80ch.
+
+## 5. Layout, spacing, responsive
+
+4px base; tokens 2/4/8/12/16/24/32/48/64. Container 1280px + 24px gutters. Bands pad 64px
+(`.section`, hero); cards pad 24px. Sticky nav (canvas, warm hairline, 64px min-height).
+Grids: `.grid2/3/4` → 2-col ≤1023px → 1-col ≤767px; nav scrolls horizontally when tight;
+signal rows stack ≤767px; hero 56→40px. Touch: buttons ≥48px, small buttons ≥38px,
+tabs ≥44px (ui-ux-pro-max priority-2 rule).
+
+## 6. Elevation & shape
+
+Level 0 flat (bands) → Level 1 hairline (`1px solid ink` on pricing/conclusion/inputs;
+`line` in dense tables) → Level 2 cream card on canvas (default). **Zero shadows.**
+Radius: 12px buttons/cards/panels/notices/pre · 6px inputs/format chips · pill badges/tags/avatars · 0 bands.
+
+## 7. Components (mockup class → spec)
+
+| Component | Spec (all in `mockup/style.css`) |
+|---|---|
+| `button`/`.btn` | primary orange, on-primary text, 12px radius, 10–12×24 pad, ≥48px, button-md; hover `primary-hover` |
+| `.btn.dark` | Zapier button-secondary: ink fill |
+| `.btn.secondary` | Zapier button-tertiary: canvas fill, 1px ink border, ink text |
+| `.btn.small` | button-sm 14.4/700, ≥38px |
+| `.box` (card-content) | canvas-soft, 12px, 24px pad — the default card everywhere |
+| `.pricecard` / `.featured` | canvas + 1px ink border / flipped ink fill + orange plan tag |
+| `.platcard` | canvas-soft selectable card; `.sel` = 2px primary outline on canvas (app-shell active-indicator rule) |
+| inputs/select/textarea | canvas, 1px ink border, 6px radius, 12×16 pad, 18px; focus border primary + 2px outline |
+| `.check` | 17px checkbox, `accent-color: primary` |
+| `.tag` (badge-pill) | pill, canvas-soft, mute border; semantic variants `.ok/.warn/.bad/.accent/.manual(dashed)` |
+| `.dot` | 9px status dot, semantic fills |
+| `.tabs` | ink text, 3px primary underline on active, ≥44px targets |
+| `.drop` | 1.5px dashed body-mid on canvas-soft; drag-over → primary border + primary-soft fill; real `<input type=file>` inside, always |
+| `.conclusion` | canvas, 1px ink border, 12px radius, **7px grade left-rule**; label in display 26/500 |
+| `.signal` | 190px name/meta rail + body; `.how` (manual step) in warn tone |
+| `.notice` | 12px card, mute border + 5px semantic left bar; `.info` uses primary bar on canvas-soft |
+| `.steps` | numbered circles: current=primary, done=ink ✓, pending=mute |
+| `.progress` | 6px pill track (canvas-soft + line border), primary fill; indeterminate slide, reduced-motion off |
+| `table` | header canvas-soft 14px semibold ink-mid; 12×16 cells; `line` row rules; warm hover `#fbf7f1` |
+| `.loop .stepchip` | cream pill + orange arrow — the product-loop motif |
+| `.fmt` | mono 13px format chip, 6px radius, canvas-soft |
+| `.empty` | canvas-soft 48px-pad empty-state card (ex-empty-state-card) |
+| `pre` | ink surface, canvas-soft mono text, 12px radius |
+
+## 8. Page patterns (15 mockup pages — bands & composition)
+
+- **Landing** (`index`): canvas hero-band (display-xl, loop motif, 3 CTAs: primary/tertiary/dark) → canvas-soft "how it works" band (3 cream cards on cream get hairline via surface step) → canvas honesty section (2-layer cards + info notice) → canvas-soft platforms band (8 platcards) → canvas teasers + centered CTA → dark footer.
+- **App pages** (`scan/remove/batch/presets/history/settings`): pagehead (eyebrow + 40px display H1) → working grid (form/dropzone left, evidence panels right) → full-width tables. Canvas bg, cream cards.
+- **Report** (`report`): conclusion block first (the product's hero moment), facts+coverage pair, signals, platform table, actions.
+- **Reference** (`registry/rules/api`): tables-first on canvas, cream side panels, dark `pre`.
+- **Pricing** (`pricing`): 4-up tier grid, featured = dark flip, FAQ as native `details`.
+- **Auth** (`auth`): centered 430px card (ex-auth-form-card), tabs, tertiary social button.
+- **Design system** (`design-system`): this file rendered — swatches use the exact tokens above.
+
+## 9. Accessibility & motion (skills-enforced floor)
+
+Contrast: ink on canvas ≈15.8:1, body on canvas ≈6.4:1, on-primary on primary ≈3.3:1
+(large/semibold button text only — never small text), dark-orange `#8f2d00` for small
+accent labels. Focus-visible: 2px primary outline + 2px offset on every interactive
+element. Grade = word + color. Labels on all inputs (no placeholder-only). Errors render
+next to the action (baseline-ui). Motion: only the progress indeterminate; no entrance
+animations, no hover transitions invented per-card; `prefers-reduced-motion` kills it.
+Keyboard: native elements only in the mockup (buttons, details, file inputs) — no
+hand-rolled focus behavior to break.
+
+## 10. Skills application log (how each skill shaped v2 — AGENTS §12 order)
+
+| Skill | Applied as |
+|---|---|
+| `grilling` | **Superseded for this pass by explicit founder brief** ("apply zapier design, show me everything") — frontend-design's own rule: where the brief pins direction, follow it exactly. Still the gate before v2 → production templates. |
+| `ui-ux-pro-max` | Local searches (`style`: Minimalism & Swiss — clean/grid/high-contrast corroborates the flat choice; `typography`: Inter-led pairing). Priority rules enforced: 44px+ targets, semantic tokens (no raw hex in components — all via `:root`), no emoji icons, reduced-motion. |
+| `frontend-design` | Two-pass method: token plan first (§§3–7), reviewed against brief, then code. Its "AI tell" list confronted honestly: v1's violet SaaS-card kit is gone; the ALL-CAPS eyebrow survives **only** because the Zapier spec itself mandates it (brief wins) and is rationed to page/section heads. Boldness spent in one place: orange CTA + loop motif; everything else quiet. |
+| `baseline-ui` | Deslop constraints adapted (not its Tailwind mandate): consistent spacing scale, errors at the action, no placeholder-only labels, paste never blocked, skeletons→progress patterns. |
+| `frontend-ui-engineering` | One stylesheet, token-driven, class-compatible with the existing app CSS so conversion (§11) stays mechanical; responsive + state coverage per component. |
+| `fixing-accessibility` | §9 checklist run: names/labels, focus visibility, contrast table, non-color cues. |
+| `fixing-motion-performance` | Single compositor-friendly `transform` animation (progress); nothing animates layout/paint properties. |
+| `improve-ui` / `ui-skills-root` | Smallest-context discipline: v1 re-skinned via one file instead of 15 rewrites; v1 structure/copy audited against the new system rather than discarded wholesale. |
+
+## 11. Conversion contract (mockup → production, unchanged from WIREFRAME §8)
+
+`mockup/style.css` → `app/static/style.css` (token names already CSS variables; the live
+app's class vocabulary was preserved on purpose) → each `mockup/*.html` →
+`app/templates/*.html` with Jinja data → drop MOCKUP chips & `data-mock-action` for real
+endpoints (WIREFRAME §7). New pages ship only with their backend milestones (R0–R3/auth).
+
+## 12. Product design carried over (still binding)
+
+Philosophy: **Detect → Remove → Verify → Platform-ready** (`PHILOSOPHY.md`). Sitemap,
+flows, per-page sections/states and backend hooks: `WIREFRAME.md §§2–3` (unchanged by the
+re-skin). Copy rules unchanged: reports describe signals & grades, never verdicts on
+authorship; forbidden claims ("human-made", "watermark removed", "undetectable");
+required honesty copy (coverage, Layer-2 disclaimer, attestation, "not legal advice",
+TEST-signer labeling). Personas: newsroom/OSINT, creator, compliance/publisher,
+platform/moderation, developer.
+
+**Open decisions:** D3 pricing numbers (tiers in mockup are placeholders) · D4 batch-scan
+UX detail · D5 HEIC/AVIF/RAW coverage messaging · D6 font hosting (Google Fonts import
+vs self-host Inter/JetBrains Mono at conversion).
+
+## 13. Decision log (append-only)
+
+| ID | Date | Decision | Status |
 |---|---|---|---|
-| D1 | **Wedge — RE-CLOSED 2026-10-24 by founder clarification: DETECT → REMOVE → VERIFY** (PHILOSOPHY.md, P-011). Supersedes the same-day Detect-only decision; R0 restore pending founder go-ahead. | Positioning/copy must be re-aimed when R0 ships | Closed (direction) |
-| D2 | ~~Sanitizer attestation/legal UX~~ **CLOSED 2026-10-24** — surface removed; moot for a read-only detector. | — resolved — | Closed |
-| D3 | Monetization UX: per-scan vs subscription; where the paywall appears (blueprint only: $0.02 img / $0.03 text / $0.08 audio-min / $0.15 video-min). | Auth/billing scope | Before billing build |
-| D4 | ~~Sanitizer batch/platform-preset UX~~ **CLOSED 2026-10-24** (P-010). *Replacement open item:* batch **scanning** UX (multi-file upload → report list/ZIP of JSON) — unspec'd. | Newsroom/moderation workflow | When batch is prioritized |
-| D5 | HEIC/AVIF/RAW detection coverage + messaging (mobile photos currently sniff-only). | Creator persona coverage | v2 scoping |
-| D6 | Brand: formal logo, landing/pricing pages, SEO treatment of Registry pages. | No marketing surface exists | With D1 |
+| P-001 | ≤2026-10-14 | One graded Provenance Report; "not a verdict on authorship" | Accepted |
+| P-002 | ≤2026-10-14 | Evidence-grade color convention on conclusion block (+ grade word always) | Accepted (moderate color updated by P-014) |
+| P-003 | ≤2026-10-14 | Coverage/manual modules visible in-product | Accepted |
+| P-004 | ≤2026-10-14 | Flat/minimal visual system v0 (superseded visually by P-012, then P-014) | Superseded |
+| P-005 | ≤2026-10-14 | Public generator Registry with confidence/last-verified | Accepted |
+| P-006 | ≤2026-10-14 | 17 demo fixtures as first-class product surface | Accepted |
+| P-007→P-011 | 2026-10-23/24 | Sanitizer added → removed (P-010) → philosophy clarified Detect→Remove→Verify (`PHILOSOPHY.md`) | P-011 Accepted |
+| P-009 | 2026-10-24 | Mandatory decision logging in these docs | Accepted |
+| P-012 | 2026-10-24 | Mockup-first, full end-to-end; violet flat-forensic mockup v1 | Superseded by P-014 (visuals) |
+| P-013 | 2026-10-24 | Mockup v1 **rejected** by founder ("AI-sloppy"); 10 skills installed; v2 gated on skills + founder guidance | Accepted |
+| **P-014** | **2026-10-24** | **Adopt Zapier design language (reverse-engineered from `zapier/DESIGN.md`) as Provenably's complete design system** — warm cream/coffee/orange, display-Inter, 12px radius, flat elevation — applied to all 15 mockup pages via one stylesheet; bounded semantic-grade exception (§3.3); skills log §10 | **Accepted — pending founder approval of the rendered result** |
 
-## 12. Decision Log (append-only — see AGENTS.md §9)
-
-| ID | Date | Decision | Context / Why | Alternatives rejected | Consequences | Status |
-|---|---|---|---|---|---|---|
-| P-001 | ≤2026-10-14 | One graded Provenance Report merges all signals; "not a verdict on authorship" | Trust through evidence transparency | Binary AI/not-AI score | Footer/report copy rules §8 | Accepted |
-| P-002 | ≤2026-10-14 | Grade color-coding on conclusion block (strong green → tampered red) + grade word always in text | Scanability without color-only meaning | Score bars/percentages | Convention locked in §7 | Accepted |
-| P-003 | ≤2026-10-14 | Coverage & manual modules shown in-product (`/docs-guide`, dashed tags) | Never let "clean" over-claim (ARCH A-003) | Hiding roadmap stubs | Capabilities page is a sales-honesty asset | Accepted |
-| P-004 | ≤2026-10-14 | Flat/minimal visual system: no gradients/shadows, system fonts, tables-first | Forensic tool credibility; zero build | Marketing-style SaaS UI | Tokens §6 are the design system until D6 | Accepted |
-| P-005 | ≤2026-10-14 | Registry as public, per-generator Q&A pages with confidence + last-verified | Reference/SEO value; "never documents removal" | Keeping data API-only | Quarterly re-verification obligation | Accepted |
-| P-006 | ≤2026-10-14 | Demo fixtures as first-class product surface (17, one-click) | Teach trust/tamper/fragility without uploads | Upload-only empty state | Fixtures double as tests (ARCH §12) | Accepted |
-| P-007 | 2026-10-23 (PRD) | Add Sanitize with Detect→Strip→Verify + explicit non-goals (no watermark-removal claims, no forgery/DRM) | Creator/privacy demand; differentiator = verified diff | Strip-only tool; watermark "removal" | Created wedge tension D1 + guardrail debt D2 | **Superseded by P-010** |
-| P-008 | ≤2026-10-14 | Homepage `/` renders Sanitize (README still Detect-first) | *Undocumented at the time — recorded here retroactively* | Scan-first homepage | Top-of-funnel implies Sanitizer wedge; contradicts README | **Superseded by P-010** |
-| P-013 | 2026-10-24 | **Mockup v1 REJECTED by founder ("looks very AI-sloppy").** 10 design skills installed & reviewed (`.agents/skills/`, AGENTS §12); mockup v2 must be produced in skills order — `grilling` interview first, then ui-ux-pro-max evidence + frontend-design direction, baseline deslop, a11y/motion audits — with founder guidance at each gate. Mockup v1 stays in `mockup/` only as critique/reference evidence, not as a base to polish blindly. | Founder review of mockup v1 | Patching v1 cosmetically | P-012 direction/palette/scope decisions frozen until grilling re-examines them | Accepted |
-| P-012 | 2026-10-24 | **Mockup-first: complete end-to-end frontend locked before backend development** — Evolved Flat Forensic (light), **violet accent `#6D28D9` replaces blue** (incl. moderate grade), Inter + JetBrains Mono, 1180px wrap, radius 10/7px; 15-page clickable mockup in `mockup/` + `WIREFRAME.md` spec (sitemap, per-page sections/states, backend contract, conversion plan) | Founder decisions (direction/palette/scope/deliverable chosen 2026-10-24): backend must later only connect to finished pages | Build backend first; ad-hoc UI during development | Founder approval gate in WIREFRAME §10; production `style.css`/templates unchanged until conversion step | Accepted (approval pending) |
-| P-009 | 2026-10-24 | Adopt this design doc + mandatory decision logging before further development | Founder directive (AGENTS.md §9) | Ad-hoc decisions in code | All future UX/product calls logged here | Accepted |
-| P-011 | 2026-10-24 | **Philosophy clarified: detect AND remove C2PA/AI footprints in all formats (image/video/audio/doc/text), platform-ready for YouTube/LinkedIn/Instagram/TikTok/Pinterest/Reddit/X et al.** Recorded in `PHILOSOPHY.md` (Detect → Remove → Verify; honest Layer-1/Layer-2 boundary; R0–R4 roadmap) | Founder clarification, explicitly reversing P-010's "no sanitizers" | Detect-only product | Single north star; R0 restore + audio/video removal now the roadmap; engineering pending founder confirmation | Accepted |
-| P-010 | 2026-10-24 | **Product wedge = DETECT. No sanitizers anywhere.** Remove Sanitizer UI/API/PRD; homepage + first nav item = Scan (file/text/URL); personas re-aimed at verification/compliance | Founder directive (verbatim: *"For the product wedge, make it detect, no sanitizers anywhere"*) | Sanitizer/creator wedge; keep both | D1/D2/D4 closed; single positioning + copy system; engineering in A-012 | **Superseded by P-011 (same day)** |
-
-## 13. Document history
+## 14. Document history
 
 | Date | Change | Author |
 |---|---|---|
-| 2026-10-24 | Initial creation from full codebase/PRD audit (pages, flows, design tokens, copy rules, open decisions D1–D6). | Engineering (agent-assisted), pending founder review |
-| 2026-10-24 | P-010 executed: wedge = Detect; Scan homepage/flows/personas/copy updated; D1/D2/D4 closed. | Founder + Engineering |
-| 2026-10-24 | P-011: philosophy clarified (PHILOSOPHY.md created); D1 re-closed as Detect→Remove→Verify; P-010 superseded. | Founder + Engineering |
-| 2026-10-24 | P-012: WIREFRAME.md + `mockup/` v1 built (15 pages, violet flat-forensic); current-state §§5–6 remain the *live app* design until mockup conversion is approved. | Founder + Engineering |
-| 2026-10-24 | P-013: mockup v1 rejected by founder; skills installed; v2 gated on grilling + founder guidance. | Founder + Engineering |
+| 2026-10-24 | v1: product/UX design from codebase audit (flat v0 tokens, pages, flows, copy rules). | Engineering |
+| 2026-10-24 | P-010/P-011/P-012/P-013 sequence: Detect wedge → philosophy → mockup v1 (violet) → v1 rejected, skills installed. | Founder + Engineering |
+| 2026-10-24 | **v2 complete rewrite (P-014):** full Zapier-derived token/component/pattern system above; product sections (§12) and decision history preserved. | Founder (direction + source file) + Engineering |

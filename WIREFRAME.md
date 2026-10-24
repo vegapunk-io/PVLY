@@ -5,7 +5,7 @@
 > further frontend invention. Companion docs: [`PHILOSOPHY.md`](PHILOSOPHY.md) ·
 > [`DESIGN.md`](DESIGN.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md) · [`AGENTS.md`](AGENTS.md).
 >
-> Status: **Mockup v1 REJECTED by founder 2026-10-24 ("AI-sloppy") — do not build on it.**
+> Status: **Mockup v2 built 2026-10-24 (DESIGN P-014) — Zapier design language applied to all 15 pages, pending founder approval.** v1 was rejected by founder ("AI-sloppy").
 > v2 will be produced under the installed skills (AGENTS §12) after a `grilling` session and
 > founder guidance; this spec's sitemap/backend-contract sections remain useful inputs,
 > its visual execution does not. Decisions: DESIGN P-012 → P-013.
