@@ -272,9 +272,9 @@
 				<p class="eyebrow">Platform presets</p>
 				<h2 id="platforms-title">Export for where the file is going.</h2>
 				<p class="lede">
-					A preset combines the output target, Layer-1 footprint policy, verification step and that
-					platform’s label context. The generic verified master remains available for your own
-					channels.
+					A preset combines the output target, Layer-1 footprint policy, verification step and the
+					exact label that destination can show—plus the provenance signals it is documented to
+					read. The generic verified master remains available for your own channels.
 				</p>
 			</div>
 			<a class="btn btn--secondary" href={resolve('/presets')}>Compare presets</a>
@@ -285,6 +285,10 @@
 				<PlatformCard {preset} href={resolve(`/presets?preset=${preset.slug}`)} />
 			{/each}
 		</div>
+		<p class="small muted trademark-note">
+			Marks belong to their owners and identify destinations only. Label research checked 24 October
+			2026.
+		</p>
 	</div>
 </section>
 
@@ -438,7 +442,6 @@
 	.report-preview__conclusion {
 		background: var(--canvas);
 		border: 1px solid var(--ink);
-		border-left: 7px solid var(--ok);
 		border-radius: var(--radius);
 		margin-top: 1.2rem;
 		padding: 1.1rem;
@@ -560,6 +563,10 @@
 		gap: 2rem;
 		justify-content: space-between;
 		max-width: none;
+	}
+
+	.trademark-note {
+		margin-top: 0.8rem;
 	}
 
 	.cta {

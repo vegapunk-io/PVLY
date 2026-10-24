@@ -80,7 +80,7 @@ Heavy/GPU deps (torch, audioseal, videoseal, trustmark, transformers) are intent
 | `app/analyzers/video_an.py` | 131 | BMFF box walk, per-frame DWT-DCT sampling; Video Seal/logo/audio-track stubs |
 | `app/analyzers/text_an.py` | 205 | Unicode hidden-char scan/clean, stylometry, green-list z-test + Lab generator |
 | `app/analyzers/vendor_an.py` | 69 | OpenAI Verify + Google SynthID connectors (credential-gated) |
-| `app/rules/engine.py` | 154 | Pure functions: `facts_from_report`, `platform_preview`, `disclosure_check`, registry lookup |
+| `app/rules/engine.py` | 171 | Pure functions: `facts_from_report`, `platform_preview`, `disclosure_check`, registry lookup; platform previews carry exact viewer label, placement subtext, documented signals, duty, confidence and dated sources |
 | `tools/dev_cert.py` | 71 | TEST root CA + claim-signing cert → `data/certs/` |
 | `tools/make_demo_assets.py` | 315 | Generates 17 demo fixtures (signed/tampered/watermarked/text/audio/video) |
 | `tools/fetch_trust_list.py` | 67 | Fetch official C2PA trust anchors → `data/trust/anchors.pem` (manual) |
@@ -111,6 +111,13 @@ Regression-guarded by `test_detect_only_surface` (old routes must 404).
 POST /v1/disclosure/check    facts → per-jurisdiction checklist (open_items)
 POST /v1/platforms/preview   (scan_id|facts) → per-platform label prediction
 GET  /v1/registry[/{slug}]   25-generator dataset   ·   GET /v1/rules/{platforms,jurisdictions}
+
+`app/rules/platforms.json` is the API/report source of record for each destination's exact
+viewer label, placement subtext, documented detection/provenance signals, creator duty,
+machine triggers, confidence, `last_verified` and source URLs. The prerendered Svelte cards
+use the deliberately mirrored `frontend/src/lib/data/platform-labels.ts` so public pages do
+not need an API round-trip merely to render a preset; update both in the same change and keep
+their contract tests green (A-015).
 ```
 
 ### 5.4 Retention
@@ -161,7 +168,9 @@ IDs are `uuid4().hex[:12]`. Reports are stored as JSON blobs (`report_json`), no
 **Report JSON (scan):** `{scan_id, product{name,version}, created_at, completed_at,
 duration_ms, file{filename,mime,size,sha256}, modality, conclusion{provenance_class,label,
 evidence_grade,decisive_signal,notes[]}, signals[], coverage, timings[], trust_sources[],
-hash_only, platform_preview[], facts}`
+hash_only, platform_preview[{platform,slug,label_text,label_subtext,detection_summary,
+metadata_signals[],creator_duty,label_on_edit,likely_label,reasons[],removal_policy,
+monetization_impact,confidence,last_verified,sources[]}], facts}`
 
 ## 9. Analyzer matrix — live vs. manual
 
@@ -244,6 +253,7 @@ watermark-then-JPEG-q75 fragility demo, signed WAV/MP4).
 | A-011 | 2026-10-24 | Adopt AGENTS/ARCHITECTURE/DESIGN + mandatory Decision/Change-Review logging before further development | Founder directive: every decision reviewable later; ends mega-commit pattern | Docs-as-code only in README | This system governs all future changes (AGENTS.md §9) | Accepted |
 | A-012 | 2026-10-24 | **Detect-only: remove the Sanitizer everywhere** (code, routes, `/sanitize` UI, `/v1/detect`, `sanitize_jobs`, pikepdf/lxml deps, sanitizer tests, `docs/PRD.md`); homepage becomes Scan (file/text/URL tabs, recent scans) | Founder directive resolving DESIGN D1: one product wedge, no dual Detect-vs-remove positioning, no removal legal exposure | Keep both surfaces; deprioritize-only (hide nav) | −1,078 LOC; 27 routes; README "no removal" true; K3/K4/K7 closed; code recoverable at `beb4143`; regression test locks surface | **Superseded by A-013 (same day)** |
 | A-014 | 2026-10-24 | **SvelteKit/Svelte 5 + TypeScript + Vite static frontend; FastAPI remains same-origin JSON backend and serves `frontend/build` when present** | Founder approved P-014/P-015 and prioritized premium low-end UX; measured route chunks and zero-JS public pages beat SPA/Jinja ceilings | Astro (second), Next.js (third), keep Jinja/vanilla | Node 22+/npm build added; public pages prerendered, interactive code route-split; legacy Jinja remains fallback; future SSR would need a Node adapter decision | Accepted |
+| A-015 | 2026-10-24 | **Platform label research contract: backend `platforms.json` is API/report source of record; static Svelte catalogue mirrors label copy for prerendered cards/selectors** | Founder P-016 requires exact platform marks and label/detection subtext everywhere without making public preset pages depend on a rules fetch | Backend-only fetch (slower/blank prerender), frontend-only copy (report/API drift), generated shared JSON build step (more tooling now) | `platform_preview` and `/v1/rules/platforms` expose label subtext, signals, detection, duty and sources; Reddit joins backend previews; both catalogues must be updated/tested together; six supplied marks ship as 144px lossless WebP with 512px PNG sources retained | Accepted |
 
 ## 15. Document history
 
@@ -253,3 +263,4 @@ watermark-then-JPEG-q75 fragility demo, signed WAV/MP4).
 | 2026-10-24 | A-012 executed: sanitizer architecture removed (diagram, flows, routes, schema, matrix, tests); counts updated (27 routes, 18 tests, 13 pass / 5×K1). | Founder + Engineering |
 | 2026-10-24 | A-013 direction recorded (restore + audio/video removal + platform presets per PHILOSOPHY.md); A-012 superseded; as-built sections unchanged (honest gap). | Founder + Engineering |
 | 2026-10-24 | A-014 implemented: SvelteKit static frontend, FastAPI compressed/cached static serving, legacy fallback, `/v1/demo-files`. | Founder + Engineering |
+| 2026-10-24 | A-015/P-016 implemented: platform label/detection research contract, Reddit platform preview, dated sources, and optimized founder-supplied destination marks. | Founder + Engineering |

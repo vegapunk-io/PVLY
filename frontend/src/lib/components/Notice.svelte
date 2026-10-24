@@ -18,8 +18,8 @@
 
 <div class={className} {role}>
 	<div class="notice__layout">
-		<span class="notice__icon"><Icon name={icon} size={20} /></span>
-		<div>
+		<span class="notice__icon"><Icon name={icon} size={18} /></span>
+		<div class="notice__content">
 			{#if title}<p class="notice__title"><strong>{title}</strong></p>{/if}
 			{@render children()}
 		</div>
@@ -28,14 +28,27 @@
 
 <style>
 	.notice__layout {
+		align-items: flex-start;
 		display: flex;
-		gap: 0.8rem;
+		gap: 0.85rem;
 	}
 
 	.notice__icon {
-		color: var(--ink);
+		align-items: center;
+		background: var(--notice-icon-surface, var(--canvas));
+		border: 1px solid var(--line);
+		border-radius: 9px;
+		color: var(--notice-accent, var(--ink));
+		display: inline-flex;
+		flex: 0 0 auto;
+		height: 2rem;
+		justify-content: center;
 		line-height: 0;
-		margin-top: 0.12rem;
+		width: 2rem;
+	}
+
+	.notice__content {
+		min-width: 0;
 	}
 
 	.notice__title {

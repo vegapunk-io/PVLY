@@ -1,128 +1,236 @@
 {
   "_meta": {
-    "note": "Platform labelling behaviour as researched Oct 2026. Each entry carries confidence + last_verified; re-verify quarterly. Used by rules/engine.py platform_preview().",
-    "last_reviewed": "2026-10-14"
+    "note": "Platform labelling behaviour re-researched 2026-10-24. Each entry separates the viewer-facing label, documented detection/provenance signals, creator duty, confidence and sources; re-verify quarterly. Used by rules/engine.py platform_preview().",
+    "last_reviewed": "2026-10-24"
   },
   "platforms": [
     {
       "slug": "instagram",
       "name": "Instagram",
       "label_text": "AI info",
-      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "self_disclosure", "vendor_watermark_meta"],
-      "label_on_edit": "Edits with AI tools surface the same 'AI info' label; label text does not distinguish generated vs edited.",
-      "removal_policy": "Label can be appealed but not removed by the uploader when derived from C2PA/IPTC.",
+      "label_subtext": "Generated content shows it on the post; content detected as only AI-edited places it in the post menu.",
+      "detection_summary": "Meta reads industry-shared AI indicators, including “AI generated” information in C2PA and IPTC, and labels content after creator self-disclosure. Content made with Meta AI can also carry Meta’s own markers.",
+      "metadata_signals": ["C2PA AI assertion", "IPTC DigitalSourceType", "Creator disclosure", "Meta AI markers"],
+      "creator_duty": "Use Instagram’s AI disclosure controls where required, especially for photorealistic video or realistic audio.",
+      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "self_disclosure"],
+      "label_on_edit": "Generated content keeps “AI info” on the post; content detected as only modified or edited with AI moves “AI info” to the post menu.",
+      "removal_policy": "Platform-applied label; no general uploader opt-out is documented.",
       "monetization_impact": "none",
-      "notes": "Auto-applies Content Credentials labels when a C2PA manifest with an AI digital source type is present (rollout confirmed at Google I/O 2026 coverage). Self-disclosure toggle in composer.",
+      "no_trigger_reason": "No C2PA/IPTC AI indicator or self-disclosure was supplied with this scan; Meta-native markers are outside this file check.",
+      "notes": "Meta renamed “Made with AI” to “AI info” in July 2024 and changed placement for AI-only edits that September.",
       "confidence": "high",
-      "last_verified": "2026-10-14"
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://about.fb.com/news/2024/04/metas-approach-to-labeling-ai-generated-content-and-manipulated-media/",
+        "https://about.fb.com/news/2024/02/labeling-ai-generated-images-on-facebook-instagram-and-threads/"
+      ]
     },
     {
       "slug": "facebook",
       "name": "Facebook (feed + ads)",
-      "label_text": "AI info / Made with AI",
-      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "self_disclosure", "vendor_watermark_meta", "ad_auto_detect"],
-      "label_on_edit": "Same label; ads auto-detected from 1 Jun 2026.",
-      "removal_policy": "Appeal via support; cannot opt out when C2PA/IPTC-derived.",
+      "label_text": "AI info",
+      "label_subtext": "Generated posts show it on the post; AI-only edits may place it in the menu. Ads can show it in “About this ad.”",
+      "detection_summary": "Meta reads industry-shared AI indicators, including “AI generated” information in C2PA and IPTC, and labels self-disclosed content. For ads, Meta labels content created or significantly edited with its tools and can automatically detect third-party AI through industry-standard signals.",
+      "metadata_signals": ["C2PA AI assertion", "IPTC DigitalSourceType", "Creator disclosure", "Meta advertising-tool and third-party AI signals"],
+      "creator_duty": "Self-disclose where required, especially for photorealistic people or events and for advertising.",
+      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "self_disclosure"],
+      "label_on_edit": "The same “AI info” wording is used; placement depends on whether Meta detects generation or only AI editing and on whether the surface is organic or an ad.",
+      "removal_policy": "Platform-applied label; no general uploader opt-out is documented.",
       "monetization_impact": "none",
-      "notes": "Ads: automated AI-content detection for ad creatives from 1 Jun 2026; political/social-issue ads must disclose digitally altered media.",
+      "no_trigger_reason": "No C2PA/IPTC AI indicator or self-disclosure was supplied with this scan; Meta-native and ad-tool markers are outside this file check.",
+      "notes": "Meta’s current organic and advertising wording is “AI info,” not the retired generic “Made with AI” label.",
       "confidence": "high",
-      "last_verified": "2026-10-14"
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://about.fb.com/news/2024/04/metas-approach-to-labeling-ai-generated-content-and-manipulated-media/",
+        "https://about.fb.com/news/2025/02/gen-ai-transparency-metas-ads-products/"
+      ]
     },
     {
       "slug": "threads",
       "name": "Threads",
       "label_text": "AI info",
+      "label_subtext": "Meta places generated-content information on the post and AI-edit information in the menu.",
+      "detection_summary": "Threads uses Meta’s shared provenance-labeling approach: industry-shared C2PA/IPTC AI indicators and creator self-disclosure can produce the “AI info” label.",
+      "metadata_signals": ["C2PA AI assertion", "IPTC DigitalSourceType", "Creator disclosure"],
+      "creator_duty": "Use Threads’ AI labeling controls before sharing applicable AI content.",
       "auto_label_triggers": ["c2pa_ai", "iptc_ai", "self_disclosure"],
-      "label_on_edit": "Same as Instagram.",
-      "removal_policy": "Same as Instagram.",
+      "label_on_edit": "Same generated-versus-edited placement model as Instagram and Facebook.",
+      "removal_policy": "Platform-applied label; no general uploader opt-out is documented.",
       "monetization_impact": "none",
-      "notes": "Shares Meta's provenance pipeline.",
-      "confidence": "medium",
-      "last_verified": "2026-10-14"
+      "no_trigger_reason": "No C2PA/IPTC AI indicator or self-disclosure was supplied with this scan.",
+      "notes": "Shares Meta’s family-wide “AI info” system.",
+      "confidence": "high",
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://about.fb.com/news/2024/04/metas-approach-to-labeling-ai-generated-content-and-manipulated-media/"
+      ]
     },
     {
       "slug": "youtube",
       "name": "YouTube",
-      "label_text": "Altered or synthetic content",
-      "auto_label_triggers": ["c2pa_ai", "synthid", "internal_classifier_photoreal", "self_disclosure"],
-      "label_on_edit": "Only 'significant photorealistic' alterations trigger auto-label; beauty filters and colour grading do not.",
-      "removal_policy": "Appeal in YouTube Studio; label is permanent for Veo / Dream Screen / C2PA-declared content.",
+      "label_text": "Made with AI",
+      "label_subtext": "Can appear on the player and under “How this content was made” in the expanded description.",
+      "detection_summary": "YouTube can apply the disclosure from the creator’s AI-use declaration, YouTube GenAI tools, valid C2PA data indicating the entire video was made with AI, or its internal detection systems.",
+      "metadata_signals": ["Creator AI-use declaration", "C2PA Content Credentials", "YouTube GenAI-tool provenance", "Internal detection systems"],
+      "creator_duty": "Set AI use to “Yes” for realistic content that AI meaningfully generated or altered. Minor aesthetic or non-realistic edits may not require disclosure.",
+      "auto_label_triggers": ["c2pa_ai", "self_disclosure", "youtube_genai_tools", "internal_detection"],
+      "label_on_edit": "Meaningful realistic AI generation or alteration is covered; minor aesthetic edits and non-realistic AI content may not require the creator declaration.",
+      "removal_policy": "Labels from C2PA, YouTube GenAI tools or manual review cannot be adjusted by the creator.",
       "monetization_impact": "none",
-      "notes": "Since 27 May 2026: auto-labels significant photorealistic AI via internal signals + SynthID + C2PA; label shown below the player (and in expanded description); creators must self-disclose realistic synthetic content at upload.",
+      "unknown_reason": "YouTube may still apply the label from its internal detection systems or from the creator’s upload declaration, neither of which is visible from this file alone.",
+      "notes": "The current viewer disclosure is “Made with AI” under “How this content was made,” replacing the broader “Altered or synthetic content” wording in this catalogue.",
       "confidence": "high",
-      "last_verified": "2026-10-14"
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://support.google.com/youtube/answer/15447836",
+        "https://support.google.com/youtube/answer/14328491"
+      ]
     },
     {
       "slug": "tiktok",
       "name": "TikTok",
       "label_text": "AI-generated",
-      "auto_label_triggers": ["c2pa_ai", "self_disclosure", "tiktok_ai_effects"],
-      "label_on_edit": "Content made with TikTok AI effects is labelled automatically.",
-      "removal_policy": "Cannot be removed when C2PA-derived; self-labels can be edited before posting.",
+      "label_subtext": "TikTok-applied wording. The creator toggle can read “Creator labeled as AI-generated.”",
+      "detection_summary": "TikTok reads C2PA Content Credentials, automatically labels content from its AI tools and effects, uses its own detection models, and adds or uses invisible watermarking for TikTok-made and C2PA-bearing content.",
+      "metadata_signals": ["C2PA Content Credentials", "Creator AI-generated toggle", "TikTok AI tools and effects", "TikTok detection models", "Invisible watermarking"],
+      "creator_duty": "Turn on TikTok’s AI-generated content setting for realistic AI-generated or significantly AI-edited media.",
+      "auto_label_triggers": ["c2pa_ai", "self_disclosure", "tiktok_ai_effects", "internal_classifier", "invisible_watermark"],
+      "label_on_edit": "Completely AI-generated and significantly AI-edited content can be labeled; realistic content carries the creator-label requirement.",
+      "removal_policy": "TikTok says an automatically applied “AI-generated” label cannot be removed from the post.",
       "monetization_impact": "none",
-      "notes": "First major platform to read C2PA Content Credentials for auto-labelling (2024); also attaches Content Credentials to downloads of TikTok AI content.",
+      "unknown_reason": "TikTok may still label it through its detection models, TikTok-tool provenance or invisible-watermark systems, which are not fully observable from this file alone.",
+      "notes": "TikTok distinguishes its automatic “AI-generated” label from the creator-applied disclosure wording.",
       "confidence": "high",
-      "last_verified": "2026-10-14"
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://support.tiktok.com/en/using-tiktok/creating-videos/ai-generated-content",
+        "https://newsroom.tiktok.com/more-ways-to-spot-shape-and-understand-ai-content"
+      ]
     },
     {
       "slug": "linkedin",
       "name": "LinkedIn",
-      "label_text": "CR icon (Content Credentials)",
+      "label_text": "cr pin (Content Credentials)",
+      "label_subtext": "A Content Credentials provenance pin—not a standalone verdict that the media is AI-generated.",
+      "detection_summary": "LinkedIn shows the lower-case “cr” pin when an image or video carries cryptographically signed C2PA Content Credentials. Opening it can show the signer’s recorded AI use, app or device, creator, issuer and date. No general LinkedIn pixel classifier is documented.",
+      "metadata_signals": ["Cryptographically signed C2PA Content Credentials"],
+      "creator_duty": "Decide before upload whether the signed provenance history should be publicly inspectable on LinkedIn.",
       "auto_label_triggers": ["c2pa_any"],
-      "label_on_edit": "Icon shows for any valid manifest; the popover lists AI generation if declared.",
-      "removal_policy": "Not removable; derived from the embedded manifest.",
+      "label_on_edit": "The pin can appear for any signed credential, including camera-origin content. The panel distinguishes AI generation or editing only when the signer recorded it.",
+      "removal_policy": "Derived from the credential carried by the uploaded file; no post-level hide control is documented.",
       "monetization_impact": "none",
-      "notes": "Shows the CR pin for images with valid C2PA manifests; no independent AI classifier announced.",
+      "no_trigger_reason": "No cryptographically signed C2PA credential was verified in this file.",
+      "notes": "The official Content Credentials mark uses “cr,” not “CC.” Its presence proves a credential was carried; it does not by itself prove AI generation.",
       "confidence": "high",
-      "last_verified": "2026-10-14"
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://news.linkedin.com/2024/May/linkedin-rolls-out-c2pa-ai-generated-content-standard",
+        "https://contentcredentials.org/introducing-official-content-credentials-icon/"
+      ]
     },
     {
       "slug": "x",
       "name": "X (Twitter)",
-      "label_text": "Community Note / manipulated-media label",
-      "auto_label_triggers": ["manual_review"],
-      "label_on_edit": "Policy-based (synthetic & manipulated media policy); no C2PA reading in production.",
-      "removal_policy": "N/A — labels are enforcement actions.",
-      "monetization_impact": "possible reach reduction when labelled as misleading",
-      "notes": "X strips most metadata (including C2PA) on upload; Grok-generated images carry no C2PA.",
+      "label_text": "Made with AI",
+      "label_subtext": "A creator Content Disclosure toggle; automatic application has also been observed on some uploads.",
+      "detection_summary": "X has not published a complete trigger list for “Made with AI.” Independent 2026 upload tests found C2PA-linked detection and non-removable automatic labels, but the exact criteria are not public. “Manipulated media” remains a separate enforcement label for significantly deceptive media.",
+      "metadata_signals": ["Creator Content Disclosure toggle", "C2PA-linked detection (observed)", "Other X signals (not fully published)"],
+      "creator_duty": "Use the “Made with AI” disclosure for synthetically generated content. Regional rules can require a prominent declaration; X’s India guidance requires one for synthetically generated information.",
+      "auto_label_triggers": ["c2pa_ai", "self_disclosure", "manual_review"],
+      "label_on_edit": "The toggle is described as marking a post as containing synthetically generated content; X has not published a complete generated-versus-edited threshold.",
+      "removal_policy": "Creator-applied disclosures can be edited. In independent tests, automatically applied labels were greyed out and could not be changed.",
+      "monetization_impact": "Possible enforcement or revenue-sharing consequences for undisclosed synthetic media in specific high-risk categories; deceptive media can lose reach.",
+      "unknown_reason": "X has not published its complete automatic-label criteria, and policy/manual-review outcomes cannot be determined from this file alone.",
+      "notes": "Confidence is medium because the toggle is widely observed and reported, but X has not published complete automatic-detection criteria in its help center.",
       "confidence": "medium",
-      "last_verified": "2026-10-14"
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://www.theverge.com/ai-artificial-intelligence/882974/x-is-working-on-made-with-ai-labels",
+        "https://roboin.io/article/en/2026/03/24/why-x-tags-posts-as-made-with-ai-and-how-to-remove-it-testing-the-conditions/",
+        "https://help.x.com/en/rules-and-policies/manipulated-media"
+      ]
     },
     {
       "slug": "pinterest",
       "name": "Pinterest",
       "label_text": "AI modified",
-      "auto_label_triggers": ["c2pa_ai", "iptc_ai", "internal_classifier"],
-      "label_on_edit": "Edited and generated both labelled 'AI modified'.",
-      "removal_policy": "Appeal via support.",
-      "monetization_impact": "users can tune down AI content in feed (reach impact)",
-      "notes": "Labels since Apr 2025 using metadata + classifiers; 'see fewer' control per category.",
-      "confidence": "medium",
-      "last_verified": "2026-10-14"
+      "label_subtext": "Appears at the bottom-left of a non-promoted image Pin in close-up view.",
+      "detection_summary": "Pinterest analyzes metadata under the IPTC standard, uses classifiers that can detect generative AI without obvious markers, and can label content the owner identifies as AI-generated or AI-modified. Its official help does not separately name C2PA.",
+      "metadata_signals": ["IPTC metadata", "Pinterest classifiers", "Content-owner disclosure"],
+      "creator_duty": "Identify AI-generated or AI-modified Pins where Pinterest asks for that disclosure.",
+      "auto_label_triggers": ["iptc_ai", "self_disclosure", "internal_classifier"],
+      "label_on_edit": "Pinterest uses “AI modified” for detected AI generation or modification on image Pins.",
+      "removal_policy": "Pinterest provides a support appeal route for an AI label.",
+      "monetization_impact": "Users can tune down AI content in recommendations, which can affect reach.",
+      "unknown_reason": "Pinterest may still label it with classifiers that do not depend on obvious file markers.",
+      "notes": "C2PA was removed as a guaranteed trigger because Pinterest’s official help names IPTC metadata and classifiers but does not separately promise C2PA reading.",
+      "confidence": "high",
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://help.pinterest.com/en/article/gen-ai-labels"
+      ]
+    },
+    {
+      "slug": "reddit",
+      "name": "Reddit",
+      "label_text": "No site-wide AI label",
+      "label_subtext": "Use an AI tag, flair or caption where the destination community requires one.",
+      "detection_summary": "Reddit asks posters to be transparent and include a tag or other indication for permissible AI-generated or AI-modified content. Enforcement can use moderator and user reports plus internal policy systems; subreddit rules remain decisive. No public C2PA or IPTC label is documented.",
+      "metadata_signals": ["Post tag or flair", "Community rules", "Reports and internal policy systems"],
+      "creator_duty": "Check the destination subreddit’s AI-content, flair and source-attribution rules before posting.",
+      "auto_label_triggers": ["community_rules"],
+      "label_on_edit": "Reddit’s transparency guidance covers AI-generated and AI-modified content, but the visible tag is supplied by the poster or community rather than a universal file-derived Reddit label.",
+      "removal_policy": "Poster and community controls apply, subject to subreddit rules.",
+      "monetization_impact": "Community removal or account consequences can apply when AI content violates Reddit or subreddit rules.",
+      "no_trigger_reason": "No site-wide file-metadata AI label is documented; the destination subreddit may still require a tag, flair or source.",
+      "notes": "Reddit’s separate automated-account “App” label identifies an account type and is not an AI-media label.",
+      "confidence": "high",
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://support.reddithelp.com/hc/en-us/articles/41180423371156-Manipulated-Content-and-Misleading-Behavior"
+      ]
     },
     {
       "slug": "google_search",
       "name": "Google Search / Images (About this image)",
-      "label_text": "About this image: 'Made with Google AI' / 'Edited with AI' / Content Credentials",
+      "label_text": "About this image provenance",
+      "label_subtext": "When supported data exists, image details can say whether media was camera-captured, AI-created or AI-edited.",
+      "detection_summary": "Google image details can surface provenance from C2PA Content Credentials and SynthID, while IPTC fields in the image can also be shown. Google expanded SynthID and Content Credentials verification across Search surfaces in 2026.",
+      "metadata_signals": ["C2PA Content Credentials", "SynthID watermark", "IPTC image metadata"],
+      "creator_duty": "Preserve accurate provenance metadata when publishing images for the open web.",
       "auto_label_triggers": ["c2pa_any", "synthid", "iptc_ai"],
-      "label_on_edit": "Distinguishes generated vs edited only when the manifest/IPTC says so.",
-      "removal_policy": "Not applicable.",
+      "label_on_edit": "Google distinguishes generation, editing and camera capture only as far as the available C2PA, SynthID or IPTC information supports it.",
+      "removal_policy": "Not applicable; this is provenance context rather than a publisher-controlled badge.",
       "monetization_impact": "none",
-      "notes": "Since I/O 2026 SynthID + C2PA surfaces inside Search, Chrome and Gemini.",
+      "no_trigger_reason": "No supported C2PA, SynthID or IPTC provenance signal was detected.",
+      "notes": "This catalogue no longer presents “Made with Google AI” or “Edited with AI” as universal exact Search strings; Google documents the surface as image provenance/details.",
       "confidence": "high",
-      "last_verified": "2026-10-14"
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://support.google.com/websearch/answer/9789430",
+        "https://blog.google/innovation-and-ai/products/google-gen-ai-content-transparency-c2pa/"
+      ]
     },
     {
       "slug": "amazon_kdp",
       "name": "Amazon KDP",
-      "label_text": "No public label; mandatory disclosure in publishing form",
+      "label_text": "No public reader label specified",
+      "label_subtext": "Disclosure is made to Amazon in the publishing flow, not as a standard reader badge.",
+      "detection_summary": "Amazon requires publishers to inform KDP when text, images or translations are AI-generated. AI-assisted editing or refinement does not require the same disclosure. KDP does not document a C2PA/IPTC reader for this duty.",
+      "metadata_signals": ["Publisher disclosure in the KDP publishing flow"],
+      "creator_duty": "Tell Amazon when a book contains AI-generated text, images or translations.",
       "auto_label_triggers": ["self_disclosure"],
-      "label_on_edit": "AI-assisted (editing) need not be disclosed; AI-generated text/images/translations must be.",
-      "removal_policy": "N/A",
-      "monetization_impact": "account action if undisclosed",
-      "notes": "KDP distinguishes 'AI-generated' vs 'AI-assisted' at publication.",
+      "label_on_edit": "AI-generated content must be disclosed to Amazon; AI-assisted editing, refinement or error correction need not be disclosed under the same KDP rule.",
+      "removal_policy": "Not applicable to a reader-facing label.",
+      "monetization_impact": "Account action can apply if required disclosure is omitted.",
+      "no_trigger_reason": "KDP has no documented public file-metadata label; the publisher’s disclosure to Amazon is separate.",
+      "notes": "KDP distinguishes AI-generated from AI-assisted content.",
       "confidence": "high",
-      "last_verified": "2026-10-14"
+      "last_verified": "2026-10-24",
+      "sources": [
+        "https://kdp.amazon.com/en_US/help/topic/G200672390"
+      ]
     }
   ]
 }

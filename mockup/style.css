@@ -116,18 +116,16 @@ td.num{text-align:right;font-variant-numeric:tabular-nums} tr:hover td{backgroun
 /* conclusion & signals */
 .conclusion{border:1px solid var(--ink);border-radius:var(--radius);padding:24px;background:var(--canvas)}
 .conclusion .label{font-family:var(--display);font-size:26px;line-height:30px;font-weight:500;color:var(--ink)}
-.conclusion.strong{border-left:7px solid var(--ok)} .conclusion.moderate{border-left:7px solid var(--grade-moderate)}
-.conclusion.weak{border-left:7px solid var(--warn)} .conclusion.none{border-left:7px solid var(--mute)}
-.conclusion.tampered{border-left:7px solid var(--bad)}
+
 .kv{display:grid;grid-template-columns:185px 1fr;gap:6px 16px;font-size:16px}.kv dt{color:var(--body)}.kv dd{margin:0;color:var(--ink-mid);word-break:break-all}
 details{border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;margin-top:10px;background:var(--canvas)}
 summary{cursor:pointer;font-size:16px;font-weight:600;color:var(--ink)} details pre{margin-top:10px;max-height:380px}
 .signal{border-top:1px solid var(--line);padding:16px 0;display:grid;grid-template-columns:190px 1fr;gap:6px 18px}
 @media(max-width:767px){.signal{grid-template-columns:1fr}}
 .signal .name{font-weight:600;color:var(--ink)}.signal .meta{color:var(--body-mid);font-size:14px}.signal .how{font-size:15px;color:var(--warn);margin-top:5px}
-.notice{border:1px solid var(--mute);border-left:5px solid var(--warn);border-radius:var(--radius);padding:14px 18px;background:var(--warn-soft);font-size:16px;color:var(--ink-mid)}
-.notice.info{border-left-color:var(--primary);background:var(--canvas-soft)}
-.notice.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.notice{border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;background:var(--warn-soft);font-size:16px;color:var(--ink-mid)}
+.notice.info{background:var(--canvas-soft)}
+.notice.bad{background:var(--bad-soft)}
 .steps{counter-reset:s;padding:0;list-style:none;margin:0}
 .steps li{counter-increment:s;padding:9px 0 9px 40px;position:relative;font-size:17px;color:var(--ink-mid)}
 .steps li::before{content:counter(s);position:absolute;left:0;top:7px;width:26px;height:26px;border-radius:50%;background:var(--primary);color:var(--on-primary);font-size:14px;font-weight:700;text-align:center;line-height:26px}

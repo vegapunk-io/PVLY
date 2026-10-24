@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import Icon from './Icon.svelte';
+	import BrandMark from './BrandMark.svelte';
 
 	const year = new Date().getFullYear();
 </script>
@@ -10,7 +10,7 @@
 		<div class="footer__grid">
 			<div class="footer__brand">
 				<a class="footer__logo" href={resolve('/')}>
-					<span aria-hidden="true"><Icon name="check" size={18} /></span>
+					<BrandMark size={40} decorative />
 					Provenably
 				</a>
 				<p>
@@ -95,17 +95,6 @@
 		gap: 0.65rem;
 		margin-bottom: 1rem;
 		text-decoration: none;
-	}
-
-	.footer__logo span {
-		align-items: center;
-		background: var(--primary);
-		border-radius: 8px;
-		color: var(--on-primary);
-		display: inline-flex;
-		height: 2rem;
-		justify-content: center;
-		width: 2rem;
 	}
 
 	.footer__status {

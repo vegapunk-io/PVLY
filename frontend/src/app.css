@@ -704,27 +704,29 @@ legend {
 }
 
 .notice {
+	--notice-accent: var(--warn);
+	--notice-icon-surface: var(--canvas);
 	background: var(--warn-soft);
-	border: 1px solid var(--mute);
-	border-left: 5px solid #c47b17;
+	border: 1px solid var(--line);
 	border-radius: var(--radius);
 	color: var(--ink-mid);
 	padding: 1rem 1.15rem;
 }
 
 .notice--info {
+	--notice-accent: var(--accent-ink);
+	--notice-icon-surface: var(--primary-soft);
 	background: var(--canvas-soft);
-	border-left-color: var(--primary);
 }
 
 .notice--error {
+	--notice-accent: var(--bad);
 	background: var(--bad-soft);
-	border-left-color: var(--bad);
 }
 
 .notice--success {
+	--notice-accent: var(--ok);
 	background: var(--ok-soft);
-	border-left-color: var(--ok);
 }
 
 .notice > :last-child {
@@ -784,6 +786,32 @@ td.num,
 th.num {
 	font-variant-numeric: tabular-nums;
 	text-align: right;
+}
+
+.platform-cell {
+	align-items: center;
+	display: flex;
+	gap: 0.7rem;
+	min-width: 11rem;
+}
+
+.platform-cell__copy {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	min-width: 0;
+}
+
+.platform-cell__label {
+	color: var(--ink);
+	font-weight: 750;
+}
+
+.source-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem 0.7rem;
+	margin-top: 0.45rem;
 }
 
 .kv {
@@ -998,25 +1026,8 @@ details > :last-child {
 .conclusion {
 	background: var(--canvas);
 	border: 1px solid var(--ink);
-	border-left: 7px solid var(--mute);
 	border-radius: var(--radius);
 	padding: clamp(1.25rem, 3vw, 1.7rem);
-}
-
-.conclusion--strong {
-	border-left-color: var(--ok);
-}
-
-.conclusion--moderate {
-	border-left-color: var(--ink);
-}
-
-.conclusion--weak {
-	border-left-color: #c47b17;
-}
-
-.conclusion--tampered {
-	border-left-color: var(--bad);
 }
 
 .conclusion__label {

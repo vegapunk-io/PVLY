@@ -43,10 +43,10 @@ spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 
 
 # DESIGN.md — Provenably design system (complete)
 
-> Status: **v2 founder-approved and implemented in the SvelteKit production frontend (`frontend/`)** · 2026-10-24 · Decisions **P-014/P-015**
+> Status: **v2 founder-approved and implemented in the SvelteKit production frontend (`frontend/`)** · 2026-10-24 · Decisions **P-014/P-015/P-016/P-017/P-018/P-019**
 > Source reverse-engineered: [`zapier/DESIGN.md`](zapier/DESIGN.md) (identical to the founder-supplied `DESIGN-zapier.md`; fetched via `npx getdesign@latest add zapier`).
 > Companions: [`PHILOSOPHY.md`](PHILOSOPHY.md) · [`WIREFRAME.md`](WIREFRAME.md) · [`AGENTS.md`](AGENTS.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md).
-> Implementation of record: `frontend/src/app.css` + Svelte components/routes. `mockup/` remains the approved visual archive. **No linear gradients anywhere. No decorative shadows.**
+> Implementation of record: `frontend/src/app.css` + Svelte components/routes. `mockup/` remains the approved visual archive. **No linear gradients in interface CSS. No decorative shadows. No side-stripe accent bars on cards, panels, notices, or conclusions (P-019).** Founder-supplied platform trademarks are never recolored or masked (P-016); Provenably's own primary mark is forced to the website `#ff4f00` palette exactly as specified in P-018.
 
 ---
 
@@ -66,7 +66,7 @@ spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 
 |---|---|
 | Warm cream canvas `#fffefb`, soft `#f8f4f0` — "temperature IS the brand voice" | Page = canvas; cards/sections = canvas-soft; never pure white `#fff`/`#ffffff` surfaces |
 | Coffee ink `#201515`, warm neutral ladder to `#c5c0b1` | Text ladder ink → ink-mid → body → body-mid → mute; no cool grays anywhere |
-| Single orange `#ff4f00` = every primary CTA | Orange = primary buttons, focus, active states, brand mark — and nothing else decorative |
+| Single orange `#ff4f00` = every primary CTA | `#ff4f00` = the Provenably brand mark, primary buttons, focus and active states; the founder-supplied brand source is palette-forced to this exact token |
 | Degular Display 500 hero + Inter everything else; sentence-case headlines | Display stack names Degular then Inter (renders Inter 500 — the source file's own named substitute); all headlines sentence-case |
 | Eyebrow: uppercase 14px, +1px tracking | Kept (brief/spec wins — see §10 deviation note), used sparingly, ink-colored |
 | 12px radius on buttons **and** cards — deliberate middle | `--radius:12px` for buttons/cards/panels; 6px inputs & format chips; pill only for badges |
@@ -82,8 +82,15 @@ spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 
 - **Voice:** confident-warm, plain-spoken. Warm neutrals say "approachable tool", forensic
   tables/tags say "evidence". The one loud thing per page is the orange primary action
   (frontend-design: *spend boldness in one place*).
-- **Logo:** Provenably check in an orange rounded square (8px radius at 30px), wordmark in
-  display face 600. Favicon: same mark, `#ff4f00` field.
+- **Logo:** the founder-supplied 64×64 transparent check is Provenably's only primary mark.
+  Its untouched source is retained at
+  `frontend/src/lib/assets/brand/source/icons8-checkmark-64.png`; the canonical website
+  asset at `frontend/src/lib/assets/brand/provenably-mark.png` copies that geometry and
+  alpha pixel-for-pixel while forcing every RGB pixel to the Zapier-derived website
+  primary `#ff4f00`. Render only the canonical file through `BrandMark`, pair it with the
+  existing display-face wordmark, and never use the source's native `#fd7e14`, trace, crop,
+  stretch, mask, outline, add a background, or revive the retired orange rounded-square
+  treatment. Favicon: the same canonical palette-forced PNG.
 - **Product loop as the signature motif:** `Detect → Remove → Verify → Platform-ready`
   pill sequence (cream pills, orange arrows) replaces any decorative hero art.
 
@@ -92,7 +99,7 @@ spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 
 ### 3.1 Core (from source, unchanged values)
 | Token | Hex | Role |
 |---|---|---|
-| `primary` | `#ff4f00` | Primary CTA bg, brand mark, focus ring, active indicators, progress fill |
+| `primary` | `#ff4f00` | Primary brand mark, CTA bg, focus ring, active indicators, progress fill |
 | `on-primary` | `#fffefb` | Text on primary/ink surfaces |
 | `ink / ink-soft / ink-mid` | `#201515 / #2f2a26 / #36342e` | Headings, dark buttons/cards/footer, emphasized text |
 | `body / body-mid / mute` | `#605d52 / #939084 / #c5c0b1` | Body text, metadata, dividers/disabled |
@@ -111,11 +118,12 @@ evidence grade is data, and color is never its only channel (grade word always r
 **strong `#136f3a` · moderate = ink `#201515` · weak `#a65d00` · none = body-mid · tampered `#b3261e`.**
 Moderate deliberately takes *ink*, not orange: orange stays unambiguously "act here",
 and close hues (orange vs weak-amber) can't be confused at a glance. Semantic hues appear
-only in grade tags, conclusion left-rules, status dots, and verify diffs — never as
-decoration, backgrounds of marketing sections, or a "second accent".
+only in grade tags, contained status icons/dots, restrained notice surfaces, and verify
+diffs — never as a vertical side stripe, marketing decoration, or a "second accent".
 
 ### 3.4 Color don'ts
 No pure white/black surfaces · no cool-gray tokens · no gradients · no second brand hue ·
+no thick colored side stripes on cards/panels/notices/conclusions in any hue ·
 no orange body links at small size (links are ink + underline, hover orange) ·
 no orange grade.
 
@@ -140,7 +148,9 @@ tabs ≥44px (ui-ux-pro-max priority-2 rule).
 
 Level 0 flat (bands) → Level 1 hairline (`1px solid ink` on pricing/conclusion/inputs;
 `line` in dense tables) → Level 2 cream card on canvas (default). **Zero shadows.**
-Radius: 12px buttons/cards/panels/notices/pre · 6px inputs/format chips · pill badges/tags/avatars · 0 bands.
+Borders are quiet complete hairlines or functional state outlines; never a thickened
+single-side accent bar. Radius: 12px buttons/cards/panels/notices/pre · 6px
+inputs/format chips · pill badges/tags/avatars · 0 bands.
 
 ## 7. Components (mockup class → spec)
 
@@ -152,16 +162,16 @@ Radius: 12px buttons/cards/panels/notices/pre · 6px inputs/format chips · pill
 | `.btn.small` | button-sm 14.4/700, ≥38px |
 | `.box` (card-content) | canvas-soft, 12px, 24px pad — the default card everywhere |
 | `.pricecard` / `.featured` | canvas + 1px ink border / flipped ink fill + orange plan tag |
-| `.platcard` | canvas-soft selectable card; `.sel` = 2px primary outline on canvas (app-shell active-indicator rule) |
+| `.platcard` | canvas-soft selectable card; `.sel` = 2px primary outline on canvas. Founder-supplied platform mark is shown unmasked with `object-fit: contain`; exact viewer-label chip, researched placement subtext and documented signal summary sit above the action. Destinations without supplied artwork use a neutral monogram, never a recreated trademark |
 | inputs/select/textarea | canvas, 1px ink border, 6px radius, 12×16 pad, 18px; focus border primary + 2px outline |
 | `.check` | 17px checkbox, `accent-color: primary` |
 | `.tag` (badge-pill) | pill, canvas-soft, mute border; semantic variants `.ok/.warn/.bad/.accent/.manual(dashed)` |
 | `.dot` | 9px status dot, semantic fills |
 | `.tabs` | ink text, 3px primary underline on active, ≥44px targets |
 | `.drop` | 1.5px dashed body-mid on canvas-soft; drag-over → primary border + primary-soft fill; real `<input type=file>` inside, always |
-| `.conclusion` | canvas, 1px ink border, 12px radius, **7px grade left-rule**; label in display 26/500 |
+| `.conclusion` | canvas, uniform 1px ink border, 12px radius; label in display 26/500, header closed by a neutral hairline; grade/tamper state is carried only by mandatory worded tags, never a side rule |
 | `.signal` | 190px name/meta rail + body; `.how` (manual step) in warn tone |
-| `.notice` | 12px card, mute border + 5px semantic left bar; `.info` uses primary bar on canvas-soft |
+| `.notice` | 12px card with a uniform 1px `line` frame and restrained semantic surface; a contained 32px icon tile carries tone beside the title/copy—no side stripe in any variant |
 | `.steps` | numbered circles: current=primary, done=ink ✓, pending=mute |
 | `.progress` | 6px pill track (canvas-soft + line border), primary fill; indeterminate slide, reduced-motion off |
 | `table` | header canvas-soft 14px semibold ink-mid; 12×16 cells; `line` row rules; warm hover `#fbf7f1` |
@@ -214,6 +224,48 @@ Batch/Presets R3, Auth/billing) render explicit unavailable/local-only states an
 successful server operation. Jinja remains only as a no-build fallback until deployment has
 fully cut over.
 
+**P-016 platform-mark and label pass (2026-10-24):** the founder's 512×512 YouTube,
+Instagram, LinkedIn, Pinterest, Reddit and Facebook PNGs are preserved under
+`frontend/src/lib/assets/platforms/source/`; the UI imports 144×144 lossless WebP derivatives
+with no crop, recolor, mask or aspect change. `PlatformMark` keeps the mark decorative beside
+the platform name and uses neutral monograms where no asset was supplied. Platform cards,
+preset selectors, the report preview and the rules catalogue now separate (1) exact viewer
+wording, (2) placement/duty subtext, and (3) documented C2PA/IPTC/SynthID/classifier/toggle
+signals. Corrections encoded from the 2026-10-24 research: Meta uses **“AI info”** (not the
+retired generic “Made with AI”); LinkedIn's Content Credentials mark is lower-case **“cr”**,
+not “CC”, and denotes signed provenance rather than an AI verdict; Pinterest uses **“AI
+modified”** with IPTC/classifiers documented, not C2PA as a guaranteed trigger; Reddit has
+**no site-wide file label**; X's **“Made with AI”** automatic criteria remain only partly
+published and are therefore confidence-graded medium.
+
+**P-017 primary brand mark (2026-10-24):** the founder-supplied 64×64 transparent check
+PNG replaces the generated orange rounded-square mark on every live product surface. The canonical file is
+byte-for-byte preserved at `frontend/src/lib/assets/brand/provenably-mark.png`, rendered
+through `BrandMark` in the Svelte header/footer/design-system reference, used directly as
+the production favicon, and mirrored byte-for-byte to `app/static/provenably-mark.png` for
+the legacy Jinja fallback. Its checksum and handling rules live beside the asset. The
+native-color/byte-for-byte canonical clause was superseded the same day by P-018.
+
+**P-018 palette-force correction (2026-10-24):** the founder rejected the supplied
+file's native `#fd7e14`. The untouched source moved to
+`frontend/src/lib/assets/brand/source/icons8-checkmark-64.png`; the canonical website
+PNG was regenerated by copying its alpha channel pixel-for-pixel and setting every RGB
+pixel to the Zapier-derived Provenably primary `#ff4f00`. The canonical palette version
+is mirrored to the legacy fallback. The native-orange source must never ship in the UI.
+
+**P-019 side-stripe removal (2026-10-24):** the founder rejected the thick colored
+edge used by notices and conclusions as an AI-generated design tell. A full CSS audit
+found the pattern in the production `.notice` variants, `.conclusion` grade variants,
+and landing report preview, plus the legacy and mockup stylesheets. Every instance was
+removed. Notices now use one quiet hairline frame, a restrained semantic surface, and a
+contained icon tile; conclusions use one uniform ink frame, a neutral header hairline,
+and their existing worded classification/evidence tags. No card, panel, notice, or
+conclusion may use a thick `border-left`/`border-right` accent bar in any hue. Functional
+full-perimeter borders, keyboard-focus outlines, active-tab underlines, table rules, tags,
+and status dots remain because they communicate state or structure rather than decorate an
+edge. The pass followed `baseline-ui` restraint, `frontend-design` anti-template review,
+and `fixing-accessibility`'s rule that status never rely on color alone.
+
 ## 12. Product design carried over (still binding)
 
 Philosophy: **Detect → Remove → Verify → Platform-ready** (`PHILOSOPHY.md`). Sitemap,
@@ -233,7 +285,7 @@ variable subsets of Inter and JetBrains Mono via Fontsource; mono is route-split
 | ID | Date | Decision | Status |
 |---|---|---|---|
 | P-001 | ≤2026-10-14 | One graded Provenance Report; "not a verdict on authorship" | Accepted |
-| P-002 | ≤2026-10-14 | Evidence-grade color convention on conclusion block (+ grade word always) | Accepted (moderate color updated by P-014) |
+| P-002 | ≤2026-10-14 | Evidence-grade color convention on conclusion block (+ grade word always) | Accepted (moderate color updated by P-014; conclusion side-rule removed by P-019) |
 | P-003 | ≤2026-10-14 | Coverage/manual modules visible in-product | Accepted |
 | P-004 | ≤2026-10-14 | Flat/minimal visual system v0 (superseded visually by P-012, then P-014) | Superseded |
 | P-005 | ≤2026-10-14 | Public generator Registry with confidence/last-verified | Accepted |
@@ -244,6 +296,10 @@ variable subsets of Inter and JetBrains Mono via Fontsource; mono is route-split
 | P-013 | 2026-10-24 | Mockup v1 **rejected** by founder ("AI-sloppy"); 10 skills installed; v2 gated on skills + founder guidance | Accepted |
 | **P-014** | **2026-10-24** | **Adopt Zapier design language (reverse-engineered from `zapier/DESIGN.md`) as Provenably's complete design system** — warm cream/coffee/orange, display-Inter, 12px radius, flat elevation — applied to all 15 mockup pages via one stylesheet; bounded semantic-grade exception (§3.3); skills log §10 | **Accepted — founder-approved 2026-10-24** |
 | **P-015** | **2026-10-24** | **Implement P-014 as SvelteKit/Svelte 5 + TypeScript static frontend with FastAPI retained as JSON backend** — prerendered public pages, selective hydration, self-hosted Latin font subsets, measured bundle budget | **Accepted — founder-approved implementation direction** |
+| **P-016** | **2026-10-24** | **Founder-supplied platform marks + evidence-backed AI-label subtext** — preserve six 512px source marks, ship lossless 144px WebP derivatives unmasked, use neutral monograms for unsupplied destinations, and show exact label wording plus documented provenance/detection signals across cards, selectors, rules and reports | **Accepted — founder-supplied assets and research direction** |
+| **P-017** | **2026-10-24** | **Founder-supplied primary Provenably brand mark** — use the attached 64×64 transparent check as the only primary logo/brand icon and favicon; retire the generated orange rounded-square mark; preserve its geometry/padding and mirror the asset to the legacy fallback | **Accepted — native-color clause superseded by P-018** |
+| **P-018** | **2026-10-24** | **Palette-force the primary Provenably mark to the Zapier-derived website primary `#ff4f00`** — retain the supplied native-`#fd7e14` file only as source provenance; ship a canonical PNG whose geometry/alpha are pixel-identical and whose RGB is uniformly `#ff4f00` | **Accepted — founder correction** |
+| **P-019** | **2026-10-24** | **Ban side-stripe accent bars** — remove every thick colored `border-left`/`border-right` treatment from cards, panels, notices and conclusions; replace it with complete hairline frames, contained semantic icons, neutral structural dividers and mandatory worded tags | **Accepted — founder rejection of AI-template pattern** |
 
 ## 14. Document history
 
@@ -253,3 +309,7 @@ variable subsets of Inter and JetBrains Mono via Fontsource; mono is route-split
 | 2026-10-24 | P-010/P-011/P-012/P-013 sequence: Detect wedge → philosophy → mockup v1 (violet) → v1 rejected, skills installed. | Founder + Engineering |
 | 2026-10-24 | **v2 complete rewrite (P-014):** full Zapier-derived token/component/pattern system above; product sections (§12) and decision history preserved. | Founder (direction + source file) + Engineering |
 | 2026-10-24 | **P-015 implementation:** design approved and converted to the production SvelteKit frontend with performance budgets. | Founder + Engineering |
+| 2026-10-24 | **P-016 implementation:** founder-supplied platform marks and the 2026-10-24 platform-label/detection research were integrated into the Svelte cards/selectors and FastAPI platform-rule contract. | Founder (assets + direction) + Engineering |
+| 2026-10-24 | **P-017 implementation:** the founder-supplied check PNG became the canonical header/footer/favicon/design-system mark, with a byte-identical legacy-fallback mirror. | Founder (asset + direction) + Engineering |
+| 2026-10-24 | **P-018 correction:** the canonical mark was palette-forced from native `#fd7e14` to `#ff4f00` while preserving its alpha channel pixel-for-pixel; the untouched supplied file was retained as source only. | Founder (correction) + Engineering |
+| 2026-10-24 | **P-019 implementation:** all notice/conclusion/report-preview side stripes were removed from production, legacy and mockup CSS and replaced with hairline frames, contained icons, a conclusion header divider and worded tags. | Founder (rejection + direction) + Engineering |

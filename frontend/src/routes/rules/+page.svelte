@@ -6,8 +6,10 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import Notice from '#lib/components/Notice.svelte';
 	import PageHead from '#lib/components/PageHead.svelte';
+	import PlatformMark from '#lib/components/PlatformMark.svelte';
 	import StateBlock from '#lib/components/StateBlock.svelte';
 	import Tag from '#lib/components/Tag.svelte';
+	import { platformLabel } from '#lib/data/platform-labels.js';
 	import { confidenceTone, titleCaseToken } from '#lib/format.js';
 	import type {
 		DisclosureInput,
@@ -132,6 +134,10 @@
 
 	function statusLabel(status: string): string {
 		return status === 'done' ? 'satisfied' : titleCaseToken(status);
+	}
+
+	function platformSourceName(platform: PlatformRule, url: string): string {
+		return platformLabel(platform.slug).sources.find((source) => source.url === url)?.label ?? url;
 	}
 </script>
 
@@ -412,42 +418,83 @@
 	<section class="reference-section" id="platforms" aria-labelledby="platform-rules-title">
 		<div class="section-head">
 			<p class="eyebrow">Platforms</p>
-			<h2 id="platform-rules-title">Platform labelling at a glance</h2>
+			<h2 id="platform-rules-title">What viewers see—and what each platform can detect</h2>
+			<p>
+				Exact viewer wording comes first. Detection notes separate signed provenance and metadata
+				from platform classifiers, creator toggles and private publisher disclosure. Records were
+				rechecked on 24 October 2026.
+			</p>
 		</div>
 
 		{#if loadingData && !platforms.length}
 			<div class="skeleton" aria-label="Loading platform rules"></div>
 		{:else if platforms.length}
 			<div class="table-wrap">
-				<table>
+				<table class="platform-rules-table">
 					<caption class="visually-hidden">Platform AI labelling rules</caption>
-					<thead
-						><tr
-							><th scope="col">Platform</th><th scope="col">Label</th><th scope="col"
-								>Auto-label triggers</th
-							><th scope="col">On edits</th><th scope="col">Removal</th><th scope="col"
-								>Monetization</th
-							><th scope="col">Confidence</th></tr
-						></thead
-					>
+					<thead>
+						<tr>
+							<th scope="col">Platform</th>
+							<th scope="col">Viewer sees</th>
+							<th scope="col">What the platform can read</th>
+							<th scope="col">Edits and creator duty</th>
+							<th scope="col">Label change and impact</th>
+							<th scope="col">Evidence</th>
+						</tr>
+					</thead>
 					<tbody>
 						{#each platforms as platform (platform.slug)}
 							<tr>
-								<th scope="row">{platform.name}</th>
-								<td>{platform.label_text}</td>
-								<td class="mono small">{platform.auto_label_triggers.join(', ')}</td>
-								<td>{platform.label_on_edit}</td>
-								<td>{platform.removal_policy}</td>
-								<td>{platform.monetization_impact}</td>
-								<td
-									><Tag tone={confidenceTone(platform.confidence)}>{platform.confidence}</Tag><br
-									/><span class="small muted">{platform.last_verified}</span></td
-								>
+								<th scope="row">
+									<span class="platform-cell">
+										<PlatformMark slug={platform.slug} name={platform.name} size={34} />
+										<span class="platform-cell__copy"><span>{platform.name}</span></span>
+									</span>
+								</th>
+								<td>
+									<span class="platform-cell__label">{platform.label_text}</span><br />
+									<span class="small muted">{platform.label_subtext}</span>
+								</td>
+								<td>
+									<strong>{platform.metadata_signals.join(' · ')}</strong><br />
+									<span class="small">{platform.detection_summary}</span><br />
+									<span class="tiny muted mono">
+										Rule triggers: {platform.auto_label_triggers.join(', ')}
+									</span>
+								</td>
+								<td>
+									{platform.label_on_edit}<br />
+									<span class="small muted"><strong>Duty:</strong> {platform.creator_duty}</span>
+								</td>
+								<td>
+									{platform.removal_policy}<br />
+									<span class="small muted">Impact: {platform.monetization_impact}</span>
+								</td>
+								<td>
+									<Tag tone={confidenceTone(platform.confidence)}>{platform.confidence}</Tag><br />
+									<span class="small muted">Checked {platform.last_verified}</span>
+									{#if platform.sources.length}
+										<span class="source-links">
+											{#each platform.sources as source (source)}
+												<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- External research source. -->
+												<a href={source} target="_blank" rel="noreferrer">
+													{platformSourceName(platform, source)}
+													<Icon name="external" size={13} />
+												</a>
+											{/each}
+										</span>
+									{/if}
+								</td>
 							</tr>
 						{/each}
 					</tbody>
 				</table>
 			</div>
+			<p class="small muted trademark-note">
+				Platform names and supplied marks belong to their owners and are used only to identify the
+				destination. A missing file trigger never proves that a platform cannot use its own
+				detection systems.
+			</p>
 		{:else}
 			<Notice tone="info"><p>Platform rules are unavailable from the API right now.</p></Notice>
 		{/if}
@@ -532,6 +579,14 @@
 
 	.reference-section details summary {
 		justify-content: space-between;
+	}
+
+	.platform-rules-table {
+		min-width: 1120px;
+	}
+
+	.trademark-note {
+		margin-top: 0.8rem;
 	}
 
 	@media (max-width: 1023px) {

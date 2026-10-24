@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '#lib/inter-font.css';
 	import '../app.css';
-	import favicon from '#lib/assets/favicon.svg';
+	import favicon from '#lib/assets/brand/provenably-mark.png';
 	import Footer from '#lib/components/Footer.svelte';
 	import Header from '#lib/components/Header.svelte';
 	import type { LayoutProps } from './$types';
@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} type="image/svg+xml" />
+	<link rel="icon" href={favicon} type="image/png" sizes="64x64" />
 	<meta property="og:site_name" content="Provenably" />
 </svelte:head>
 

@@ -62,6 +62,16 @@ def facts_from_report(report: dict) -> dict:
 
 def platform_preview(facts: dict, self_disclosure: bool = False) -> list[dict]:
     """For each platform: will a label most likely appear, and why."""
+    unknown_triggers = {
+        "internal_classifier",
+        "internal_classifier_photoreal",
+        "internal_detection",
+        "invisible_watermark",
+        "ad_auto_detect",
+        "manual_review",
+        "tiktok_ai_effects",
+        "youtube_genai_tools",
+    }
     out = []
     for p in PLATFORMS:
         trig = p["auto_label_triggers"]
@@ -72,16 +82,23 @@ def platform_preview(facts: dict, self_disclosure: bool = False) -> list[dict]:
             reasons.append("valid C2PA manifest present")
         if "iptc_ai" in trig and facts.get("iptc_ai"):
             reasons.append("IPTC DigitalSourceType is an AI value")
-        if ("synthid" in trig or "vendor_watermark_meta" in trig) and facts.get("vendor_watermark"):
+        if "synthid" in trig and facts.get("vendor_watermark"):
             reasons.append("vendor watermark detected")
         if "self_disclosure" in trig and self_disclosure:
             reasons.append("you will self-disclose")
-        likely = "yes" if reasons else ("unknown" if any(t in trig for t in ("internal_classifier", "internal_classifier_photoreal", "ad_auto_detect", "manual_review")) else "no")
+        likely = "yes" if reasons else ("unknown" if any(t in trig for t in unknown_triggers) else "no")
+        if not reasons:
+            if likely == "unknown":
+                reasons = [p.get("unknown_reason", "platform may still label via signals outside this file")]
+            else:
+                reasons = [p.get("no_trigger_reason", "no trigger present in this file")]
         out.append({
-            "platform": p["name"], "slug": p["slug"], "label_text": p["label_text"], "likely_label": likely,
-            "reasons": reasons or (["platform may still label via its own classifier"] if likely == "unknown" else ["no trigger present in this file"]),
+            "platform": p["name"], "slug": p["slug"], "label_text": p["label_text"],
+            "label_subtext": p.get("label_subtext", ""), "detection_summary": p.get("detection_summary", ""),
+            "metadata_signals": p.get("metadata_signals", []), "creator_duty": p.get("creator_duty", ""),
+            "label_on_edit": p.get("label_on_edit", ""), "likely_label": likely, "reasons": reasons,
             "removal_policy": p["removal_policy"], "monetization_impact": p["monetization_impact"],
-            "confidence": p["confidence"], "last_verified": p["last_verified"],
+            "confidence": p["confidence"], "last_verified": p["last_verified"], "sources": p.get("sources", []),
         })
     return out
 
