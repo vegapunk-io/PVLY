@@ -219,10 +219,33 @@ text detector, ffmpeg demux, logo matcher, auth/billing, production signing, rul
 queue/Postgres/S3) are the canonical backlog of "wired but not live". Completing one means:
 config → connector → report rendering → `/v1/capabilities` flip → test → Decision Log row.
 
-## 12. Document history
+## 12. Installed agent skills (`.agents/skills/`, `skills-lock.json`)
+
+Installed 2026-10-24 at founder's direction via `npx skills add <repo> --agent universal -y`
+(project-level, copied — usable by any agent by reading the `SKILL.md` files). Each skill
+was **reviewed before adoption** (instructions-only, except `ui-ux-pro-max/scripts/search.py`
+— a read-only local CSV search, the only code an agent may run from a skill).
+
+| Skill | Source | Role in this project (apply in this order) |
+|---|---|---|
+| `grill-me` + `grilling` | mattpocock/skills | **1 · Requirement grilling** — design-tree interview rounds with recommended answers until shared understanding. Run BEFORE any mockup/design work. |
+| `ui-ux-pro-max` | nextlevelbuilder/ui-ux-pro-max-skill | **2 · Design intelligence** — searchable styles/palettes/font-pairings/UX rules (`scripts/search.py`, priority rules a11y→charts). Evidence for design choices, not decoration. |
+| `frontend-design` | anthropics/skills | **3 · Distinctive direction** — anti-generic design lead process (plan → review vs brief → build → critique; name the AI-default looks and avoid them). Governs mockup v2 aesthetics. |
+| `baseline-ui` | ibelick/ui-skills | **4 · Deslop constraint pass** — spacing/hierarchy/typography cleanup with quoted violations + fixes. Stack-specific rules (Tailwind/React primitives) **adapted** to this vanilla-CSS/Jinja stack, not adopted literally. |
+| `frontend-ui-engineering` | addyosmani/agent-skills | **5 · Build quality** — production UI engineering (a11y, responsive, state, performance) when mockup → templates. React examples adapted to existing patterns. |
+| `fixing-accessibility`, `fixing-motion-performance` | ibelick/ui-skills | **6 · Pre-approval audits** — WCAG/keyboard/focus + animation-performance passes with quoted violations. |
+| `improve-ui`, `ui-skills-root` | ibelick/ui-skills | Audit-an-existing-surface workflow (read-only, plans to `design-plans/`) + smallest-context routing discipline (§ minimal skill loading). |
+
+**Rules of use:** project docs win — `PHILOSOPHY.md`/`DESIGN.md` decisions and founder
+answers override any skill default. Load the *smallest* useful skill set per task
+(ui-skills-root protocol). Never run a skill's scripts beyond the reviewed `search.py`
+without re-review. Record skill-driven design choices in the DESIGN decision log.
+
+## 13. Document history
 
 | Date | Change | Author |
 |---|---|---|
 | 2026-10-24 | Initial creation from full codebase audit (structure, contracts, known issues K1–K7, decision/review system). | Engineering (agent-assisted), pending founder review |
 | 2026-10-24 | Founder decision: wedge = Detect. Sanitizer removed everywhere; rules §2.4/§2.6/§8.3 rewritten, K3/K4/K7 resolved, homepage = Scan. | Founder + Engineering |
 | 2026-10-24 | Founder philosophy clarification supersedes the above: Detect → Remove → Verify, all formats, platform-ready. PHILOSOPHY.md added; §1/§2.4/§8.3 re-aimed; code gap (Detect-only until R0) recorded honestly. | Founder + Engineering |
+| 2026-10-24 | §12 added: 10 skills installed & reviewed (grill-me/grilling, frontend-design, frontend-ui-engineering, ui-ux-pro-max, ui-skills set); mockup v1 rejected by founder ("AI-sloppy") — redo must follow skills order, starting with grilling. | Founder + Engineering |

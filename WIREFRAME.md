@@ -5,7 +5,10 @@
 > further frontend invention. Companion docs: [`PHILOSOPHY.md`](PHILOSOPHY.md) ·
 > [`DESIGN.md`](DESIGN.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md) · [`AGENTS.md`](AGENTS.md).
 >
-> Status: **Mockup v1 built, pending founder approval** · 2026-10-24 · Decisions: DESIGN P-012
+> Status: **Mockup v1 REJECTED by founder 2026-10-24 ("AI-sloppy") — do not build on it.**
+> v2 will be produced under the installed skills (AGENTS §12) after a `grilling` session and
+> founder guidance; this spec's sitemap/backend-contract sections remain useful inputs,
+> its visual execution does not. Decisions: DESIGN P-012 → P-013.
 
 ---
 
