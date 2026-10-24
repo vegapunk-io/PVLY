@@ -1,38 +1,38 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Design system — Provenably (Mockup)</title><link rel="stylesheet" href="style.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%236d28d9'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ff4f00'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
 <nav class="nav"><div class="wrap">
 <a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.8" stroke="#fff" stroke-width="2.2"/></svg></span>Provenably<span class="tagline">Detect → Remove → Verify</span></a>
 <a class="item " href="scan.html">Scan</a><a class="item " href="remove.html">Remove</a><a class="item " href="batch.html">Batch</a><a class="item " href="presets.html">Presets</a><a class="item " href="registry.html">Registry</a><a class="item " href="rules.html">Rules</a><a class="item " href="pricing.html">Pricing</a><a class="item active" href="api.html">API</a><span class="spacer"></span><span class="mockchip">MOCKUP — no backend</span>
 <a class="item " href="history.html">History</a>
 <a class="item " href="settings.html">Settings</a>
 <a class="btn small" href="auth.html">Sign in</a></div></nav><main><div class="wrap"><div class="pagehead"><div class="eyebrow">Provenably · Mockup</div><h1>Design system</h1></div>
-<p class="muted">Single source for the mockup → template conversion. Tokens live in <span class="mono">mockup/style.css</span>.</p>
+<p class="muted">Reverse-engineered from <span class="mono">zapier/DESIGN.md</span> and adapted for Provenably. Tokens live in <span class="mono">mockup/style.css</span>; full rationale in <span class="mono">DESIGN.md</span>.</p>
 <h2>Colors</h2><div class="grid4">
-<div><div class="swatch" style="background:#141414"></div><p class="small"><strong>Ink</strong> #141414</p></div>
-<div><div class="swatch" style="background:#6d28d9"></div><p class="small"><strong>Accent (Violet)</strong> #6D28D9</p></div>
-<div><div class="swatch" style="background:#f1ebfd"></div><p class="small"><strong>Accent soft</strong> #F1EBFD</p></div>
-<div><div class="swatch" style="background:#f7f7f5"></div><p class="small"><strong>Soft surface</strong> #F7F7F5</p></div>
+<div><div class="swatch" style="background:#201515"></div><p class="small"><strong>Ink (coffee)</strong> #201515</p></div>
+<div><div class="swatch" style="background:#ff4f00"></div><p class="small"><strong>Primary (orange)</strong> #FF4F00</p></div>
+<div><div class="swatch" style="background:#fffefb"></div><p class="small"><strong>Canvas</strong> #FFFEFB</p></div>
+<div><div class="swatch" style="background:#f8f4f0"></div><p class="small"><strong>Canvas soft</strong> #F8F4F0</p></div>
 <div><div class="swatch" style="background:#136f3a"></div><p class="small"><strong>Strong/OK</strong> #136F3A</p></div>
 <div><div class="swatch" style="background:#a65d00"></div><p class="small"><strong>Weak/Warn</strong> #A65D00</p></div>
 <div><div class="swatch" style="background:#b3261e"></div><p class="small"><strong>Tampered/Bad</strong> #B3261E</p></div>
-<div><div class="swatch" style="background:#5f6368"></div><p class="small"><strong>Muted/None</strong> #5F6368</p></div></div>
+<div><div class="swatch" style="background:#605d52"></div><p class="small"><strong>Body / None grade</strong> #605D52</p></div></div>
 <h2>Type</h2><div class="box"><p style="font-size:2rem;font-weight:700;letter-spacing:-.02em;margin:0">Inter — headings &amp; UI 700</p>
 <p>Inter body 16px / 1.55. <span class="mono">JetBrains Mono — hashes, IDs, code, format chips.</span></p>
-<p class="small muted">H1 2.1rem · H2 1.35rem · H3 1.02rem · small .86rem · eyebrow .72rem uppercase violet.</p></div>
+<p class="small muted">Display 56/48/32 (Degular→Inter 500) · body 18/27 · small 14/21 · eyebrow 14 uppercase, 1px tracking, ink. Sentence-case headlines.</p></div>
 <h2>Components</h2><div class="box"><div class="row"><button>Primary</button><button class="dark">Dark</button><button class="secondary">Secondary</button><button class="small">Small</button>
 <span class="tag ok">strong</span><span class="tag accent">moderate</span><span class="tag warn">weak</span><span class="tag">none</span><span class="tag bad">tampered</span><span class="tag manual">not configured</span></div>
-<div class="conclusion strong" style="margin-top:16px"><span class="label">Conclusion block — strong grade (green left rule)</span><p class="small muted">moderate = violet · weak = amber · none = gray · tampered = red. Grade word is always present in text (never color-only).</p></div>
+<div class="conclusion strong" style="margin-top:16px"><span class="label">Conclusion block — strong grade (green left rule)</span><p class="small muted">moderate = coffee ink · weak = amber · none = warm gray · tampered = red. Orange is reserved for CTAs, never a grade. Grade word is always present in text (never color-only).</p></div>
 <div class="notice" style="margin-top:12px">Notice (warning) — honest-limits copy lives here.</div>
 <div class="notice info" style="margin-top:8px">Notice (info) — jurisdiction &amp; Layer-2 disclosures.</div>
-<div class="drop" style="margin-top:12px"><div class="big">Dropzone component</div><p>Dashed violet, soft-violet fill, file input fallback inside</p></div></div>
+<div class="drop" style="margin-top:12px"><div class="big">Dropzone component</div><p>Dashed warm-gray on cream fill, orange on drag-over, file input fallback inside</p></div></div>
 <h2>Layout &amp; graphics</h2><div class="box"><ul class="plain small">
 <li><strong>Grid:</strong> 1180px wrap, 20px gutters; grid2/grid3/grid4 collapse ≤900/680px. Sticky 58px nav.</li>
 <li><strong>Graphics:</strong> inline SVG stroke icons &amp; the check mark only — no stock photos, no decorative shadows, <strong>no gradients</strong> (flat). Data visuals = tables, tags, progress bars, before/after diffs.</li>
 <li><strong>Radius:</strong> 10px cards / 7px controls (evolved from v0 sharp corners).</li>
 <li><strong>Motion:</strong> indeterminate progress only; respects <span class="mono">prefers-reduced-motion</span>.</li>
-<li><strong>A11y:</strong> focus = 2px violet outline; grade shown as text + color; semantic landmarks; dropzone always has input fallback.</li></ul></div>
+<li><strong>A11y:</strong> focus = 2px orange outline; grade shown as text + color; semantic landmarks; dropzone always has input fallback.</li></ul></div>
 </div></main><footer><div class="wrap"><div class="cols">
 <div><strong>Provenably</strong> <span class="mockchip">mockup v1</span><p style="margin-top:8px">Detect → Remove → Verify → Platform-ready.<br>Reports describe signals &amp; evidence grades; not a verdict on authorship. Not legal advice.</p></div>
 <div><strong>Product</strong><br><a href="scan.html">Scan</a><br><a href="remove.html">Remove</a><br><a href="batch.html">Batch</a><br><a href="presets.html">Platform presets</a></div>

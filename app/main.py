@@ -11,6 +11,7 @@ from __future__ import annotations
 import ipaddress
 import json
 import logging
+import mimetypes
 import pathlib
 import socket
 import threading
@@ -20,6 +21,7 @@ import urllib.request
 from typing import Optional
 
 from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -35,7 +37,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 log = logging.getLogger("provenably")
 
 BASE = pathlib.Path(__file__).resolve().parent
+FRONTEND_DIR = BASE.parent / "frontend" / "build"
 app = FastAPI(title="Provenably API", version=config.APP_VERSION, docs_url="/api/docs", redoc_url=None, openapi_url="/api/openapi.json")
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.mount("/static", StaticFiles(directory=BASE / "static"), name="static")
 templates = Jinja2Templates(directory=BASE / "templates")
 templates.env.globals.update(app_name=config.APP_NAME, app_version=config.APP_VERSION)
@@ -51,6 +55,79 @@ def require_api_key(x_api_key: Optional[str] = Header(default=None)):
 
 def _render(request: Request, name: str, **ctx):
     return templates.TemplateResponse(request, name, ctx)
+
+
+def _frontend_available() -> bool:
+    return (FRONTEND_DIR / "index.html").is_file()
+
+
+def _frontend_response(request: Request, relative_path: str, status_code: int = 200):
+    """Serve one SvelteKit static file safely, honoring adapter-static Brotli/Gzip variants."""
+    if not FRONTEND_DIR.is_dir():
+        return None
+
+    frontend_root = FRONTEND_DIR.resolve()
+    target = (frontend_root / relative_path).resolve()
+    try:
+        target.relative_to(frontend_root)
+    except ValueError:
+        return None
+    if target.is_dir():
+        target = target / "index.html"
+    if not target.is_file():
+        return None
+
+    media_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+    relative = target.relative_to(frontend_root).as_posix()
+    if relative.startswith("_app/immutable/"):
+        cache_control = "public, max-age=31536000, immutable"
+    elif target.suffix == ".html":
+        cache_control = "no-cache"
+    else:
+        cache_control = "public, max-age=3600"
+
+    accepted_encodings = set()
+    for part in request.headers.get("accept-encoding", "").lower().split(","):
+        token, _, params = part.partition(";")
+        if params.strip() not in {"q=0", "q=0.0", "q=0.00", "q=0.000"}:
+            accepted_encodings.add(token.strip())
+    compressed_path = None
+    content_encoding = None
+    if "br" in accepted_encodings:
+        candidate = target.with_suffix(target.suffix + ".br")
+        if candidate.is_file():
+            compressed_path = candidate
+            content_encoding = "br"
+    if compressed_path is None and "gzip" in accepted_encodings:
+        candidate = target.with_suffix(target.suffix + ".gz")
+        if candidate.is_file():
+            compressed_path = candidate
+            content_encoding = "gzip"
+
+    headers = {
+        "Cache-Control": cache_control,
+        "Vary": "Accept-Encoding",
+        "X-Content-Type-Options": "nosniff",
+    }
+    if content_encoding:
+        headers["Content-Encoding"] = content_encoding
+        return FileResponse(compressed_path, media_type=media_type, status_code=status_code, headers=headers)
+    return FileResponse(target, media_type=media_type, status_code=status_code, headers=headers)
+
+
+def _frontend_or_render(request: Request, frontend_path: str, template_name: str, **ctx):
+    if _frontend_available():
+        response = _frontend_response(request, frontend_path)
+        if response is not None:
+            return response
+    return _render(request, template_name, **ctx)
+
+
+def _redirect_with_query(request: Request, path: str, template_name: str, **ctx):
+    if not _frontend_available():
+        return _render(request, template_name, **ctx)
+    suffix = f"?{request.url.query}" if request.url.query else ""
+    return RedirectResponse(f"{path}{suffix}", status_code=307)
 
 
 def _fmt_ts(ts):
@@ -111,16 +188,18 @@ def _startup():
 # ------------------------------------------------------------------------------------------------ UI routes
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return _render(request, "scan.html", recent=db.list_scans(8))
+    return _frontend_or_render(request, "index.html", "scan.html", recent=db.list_scans(8))
 
 
 @app.get("/scan", response_class=HTMLResponse)
 def scan_page(request: Request):
-    return _render(request, "scan.html", recent=db.list_scans(8))
+    return _frontend_or_render(request, "scan.html", "scan.html", recent=db.list_scans(8))
 
 
 @app.get("/report/{scan_id}", response_class=HTMLResponse)
 def report_page(request: Request, scan_id: str):
+    if _frontend_available():
+        return _frontend_response(request, "200.html")
     row = db.get_scan(scan_id)
     if not row:
         raise HTTPException(404)
@@ -130,12 +209,16 @@ def report_page(request: Request, scan_id: str):
 
 @app.get("/registry", response_class=HTMLResponse)
 def registry_page(request: Request, modality: str = ""):
+    if _frontend_available():
+        return _frontend_response(request, "registry.html")
     entries = [e for e in engine.REGISTRY if not modality or e["modality"] == modality]
     return _render(request, "registry.html", entries=entries, modality=modality, meta=engine.REGISTRY_META)
 
 
 @app.get("/registry/{slug}", response_class=HTMLResponse)
 def registry_item(request: Request, slug: str):
+    if _frontend_available():
+        return _frontend_response(request, "200.html")
     e = engine.registry_entry(slug)
     if not e:
         raise HTTPException(404)
@@ -144,26 +227,30 @@ def registry_item(request: Request, slug: str):
 
 @app.get("/laws", response_class=HTMLResponse)
 def laws_page(request: Request):
-    return _render(request, "laws.html", jurisdictions=engine.JURISDICTIONS, platforms=engine.PLATFORMS)
+    return _redirect_with_query(
+        request, "/rules", "laws.html", jurisdictions=engine.JURISDICTIONS, platforms=engine.PLATFORMS
+    )
 
 
 @app.get("/tools", response_class=HTMLResponse)
 def tools_page(request: Request):
-    return _render(request, "tools.html")
+    return _frontend_or_render(request, "tools.html", "tools.html")
 
 
 @app.get("/lab", response_class=HTMLResponse)
 def lab_page(request: Request):
-    return _render(request, "lab.html")
+    return _frontend_or_render(request, "lab.html", "lab.html")
 
 
 @app.get("/docs-guide", response_class=HTMLResponse)
 def docs_page(request: Request):
-    return _render(request, "docs.html", caps=capabilities())
+    return _redirect_with_query(request, "/api", "docs.html", caps=capabilities())
 
 
 @app.get("/demo", response_class=HTMLResponse)
 def demo_page(request: Request):
+    if _frontend_available():
+        return RedirectResponse("/scan?tab=demo", status_code=307)
     return _render(request, "demo.html", demo_files=_demo_files())
 
 
@@ -200,6 +287,11 @@ async def create_scan(background: BackgroundTasks, request: Request,
     if "text/html" in accept and "application/json" not in accept:
         return RedirectResponse(f"/report/{scan_id}", status_code=303)
     return {"id": scan_id, "status": "queued", "report_url": f"/v1/scans/{scan_id}", "html_url": f"/report/{scan_id}"}
+
+
+@app.get("/v1/demo-files")
+def demo_files_api():
+    return {"files": _demo_files()}
 
 
 @app.get("/v1/scans", dependencies=[Depends(require_api_key)])
@@ -441,3 +533,41 @@ def _demo_files() -> list[dict]:
         if p.exists():
             out.append({"name": name, "modality": mod, "desc": d, "size": p.stat().st_size})
     return out
+
+
+# ------------------------------------------------------------------------------------------------ Svelte frontend
+@app.api_route("/v1/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"], include_in_schema=False)
+@app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"], include_in_schema=False)
+def api_not_found(path: str):
+    return JSONResponse({"detail": "Not Found"}, status_code=404)
+
+
+@app.api_route("/{full_path:path}", methods=["GET", "HEAD"], include_in_schema=False)
+def frontend_fallback(request: Request, full_path: str):
+    """Serve SvelteKit assets/routes after every API route has had first claim.
+
+    Unknown API paths deliberately remain JSON 404s; unknown browser paths receive the
+    Svelte error shell with HTTP 404. Dynamic report/registry routes receive the static
+    200 fallback and resolve their own API state in the browser.
+    """
+    reserved_prefixes = ("v1/", "api/", "demo-assets/", "static/", "health")
+    if full_path.startswith(reserved_prefixes) or not _frontend_available():
+        raise HTTPException(404, "not found")
+
+    for candidate in (full_path, f"{full_path}.html", f"{full_path}/index.html"):
+        response = _frontend_response(request, candidate)
+        if response is not None:
+            return response
+
+    if full_path.startswith(("report/", "registry/")):
+        response = _frontend_response(request, "200.html")
+        if response is not None:
+            return response
+
+    if pathlib.PurePosixPath(full_path).suffix:
+        raise HTTPException(404, "not found")
+
+    response = _frontend_response(request, "200.html", status_code=404)
+    if response is not None:
+        return response
+    raise HTTPException(404, "not found")
