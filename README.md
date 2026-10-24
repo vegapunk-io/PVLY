@@ -1,11 +1,17 @@
- **Provenably** <img src="frontend/src/lib/assets/brand/provenably-mark.png" width="56" height="56" alt="Provenably check mark"> 
+<h1 align="center">
+  <img src="frontend/src/lib/assets/brand/provenably-mark.png" width="110" height="110" alt="Provenably check mark" align="middle">
+  Provenably
+</h1>
 
+<p align="center">
+  <strong>See what AI left in your media. Remove the footprints you control. Prove it. Publish platform-ready.</strong>
+</p>
 
-**See what AI left in your media. Remove the footprints you control. Prove it. Publish platform-ready.**
+<p align="center">
+  Detect → Remove → Verify → Platform-ready
+</p>
 
-Provenably is a provenance-control product for images, video, audio, documents, and text. Its product loop is:
-
-**Detect → Remove → Verify → Platform-ready**
+---
 
 The current **0.1.0 prototype** has a live, evidence-graded Detect backend and a complete SvelteKit product interface. The Remove workflow and platform presets are implemented in the frontend, but the lossless Remove endpoint itself is the next backend milestone (**R0**). Provenably does not fake a clean file, a successful removal, or a vendor-watermark result that has not actually run.
 
