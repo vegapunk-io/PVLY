@@ -221,9 +221,10 @@
 	.price {
 		color: var(--ink);
 		font-family: var(--font-display);
-		font-size: 2.6rem;
-		font-weight: 560;
-		letter-spacing: -0.04em;
+		font-size: 2.65rem;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-weight: var(--fw-display-strong);
+		letter-spacing: -0.045em;
 		line-height: 1;
 		margin-bottom: 0.35rem;
 	}

@@ -160,14 +160,15 @@
 
 	.brand__name {
 		font-family: var(--font-display);
-		font-size: 1.28rem;
-		font-weight: 650;
-		letter-spacing: -0.035em;
+		font-size: 1.3rem;
+		font-weight: var(--fw-emphasis);
+		letter-spacing: -0.04em;
 	}
 
 	.brand__tagline {
 		color: var(--body-mid);
-		font-size: 0.72rem;
+		font-size: 0.76rem;
+		font-weight: var(--fw-medium);
 		margin-top: 0.18rem;
 		white-space: nowrap;
 	}
@@ -199,7 +200,7 @@
 	.desktop-nav a[aria-current='page'],
 	.header__actions > a[aria-current='page'] {
 		color: var(--primary-hover);
-		font-weight: 750;
+		font-weight: var(--fw-bold);
 	}
 
 	.header__actions {
@@ -286,7 +287,7 @@
 	.mobile-nav h2 {
 		font-family: var(--font-sans);
 		font-size: 0.8rem;
-		font-weight: 750;
+		font-weight: var(--fw-bold);
 		letter-spacing: 0.08em;
 		margin-bottom: 0.55rem;
 		text-transform: uppercase;
@@ -311,7 +312,7 @@
 	.mobile-nav li a[aria-current='page'] {
 		background: var(--primary-soft);
 		color: var(--accent-ink);
-		font-weight: 750;
+		font-weight: var(--fw-bold);
 	}
 
 	@media (max-width: 1240px) {

@@ -1,7 +1,7 @@
 ---
-version: 2.0
+version: 2.1
 name: Provenably-design-system
-description: Provenably's complete design system, reverse-engineered from Zapier's design language (source `zapier/DESIGN.md`, fetched with `npx getdesign@latest add zapier`) and adapted to a forensic Detect → Remove → Verify product. Warm-cream canvas (`#fffefb`), deep coffee ink (`#201515`), one saturated orange CTA (`#ff4f00`), Degular-style display type rendered in Inter 500, 12px middle radius, flat elevation. Product evidence grades are the only semantic colors.
+description: Provenably's complete design system, reverse-engineered from Zapier's design language (source `zapier/DESIGN.md`, fetched with `npx getdesign@latest add zapier`) and adapted to a forensic Detect → Remove → Verify product. Warm-cream canvas (`#fffefb`), deep coffee ink (`#201515`), one saturated orange CTA (`#ff4f00`), quiet-premium Hanken Grotesk typography, 12px middle radius, flat elevation. Product evidence grades are the only semantic colors.
 
 colors:
   primary: "#ff4f00"        # CTA / conversion ONLY
@@ -24,18 +24,18 @@ colors:
   grade-tampered: "#b3261e" # semantic only
 
 typography:
-  display-xl:  { fontFamily: "Degular Display, Inter, system-ui, sans-serif", fontSize: 56px, fontWeight: 500, lineHeight: 56px }
-  display-lg:  { fontFamily: "Degular Display, Inter, system-ui, sans-serif", fontSize: 48px, fontWeight: 500, lineHeight: 48px }
-  display-md:  { fontFamily: "Degular Display, Inter, system-ui, sans-serif", fontSize: 32px, fontWeight: 500, lineHeight: 36px }
-  heading-sm:  { fontFamily: "Inter, system-ui, sans-serif", fontSize: 20px, fontWeight: 700, lineHeight: 25px, letterSpacing: -0.5px }
-  body-lg:     { fontFamily: "Inter, system-ui, sans-serif", fontSize: 20px, fontWeight: 400, lineHeight: 30px, letterSpacing: -0.2px }
-  body-md:     { fontFamily: "Inter, system-ui, sans-serif", fontSize: 18px, fontWeight: 400, lineHeight: 27px }
-  body-sm:     { fontFamily: "Inter, system-ui, sans-serif", fontSize: 16px, fontWeight: 400, lineHeight: 24px }
-  caption:     { fontFamily: "Inter, system-ui, sans-serif", fontSize: 14px, fontWeight: 400, lineHeight: 21px }
-  eyebrow:     { fontFamily: "Degular Display, Inter, system-ui, sans-serif", fontSize: 14px, fontWeight: 500, lineHeight: 14px, letterSpacing: 1px, textTransform: uppercase }
-  button-md:   { fontFamily: "Inter, system-ui, sans-serif", fontSize: 18px, fontWeight: 600, lineHeight: 27px }
-  button-sm:   { fontFamily: "Inter, system-ui, sans-serif", fontSize: 14.4px, fontWeight: 700, lineHeight: 1.2 }
-  mono:        { fontFamily: "JetBrains Mono, ui-monospace, Menlo, monospace", fontSize: 0.86em }
+  display-xl:  { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 73.6px, fontWeight: 530, lineHeight: 73.6px, letterSpacing: -0.048em }
+  display-lg:  { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 56.8px, fontWeight: 530, lineHeight: 58.5px, letterSpacing: -0.042em }
+  display-md:  { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 37.6px, fontWeight: 540, lineHeight: 42.1px, letterSpacing: -0.034em }
+  heading-sm:  { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 18.9px, fontWeight: 650, lineHeight: 24.9px, letterSpacing: -0.018em }
+  body-lg:     { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 20.5px, fontWeight: 450, lineHeight: 31.8px, letterSpacing: -0.008em }
+  body-md:     { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 17px, fontWeight: 400, lineHeight: 26.9px }
+  body-sm:     { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 16px, fontWeight: 400, lineHeight: 24.8px }
+  caption:     { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 12.8px, fontWeight: 500, lineHeight: 18.6px }
+  eyebrow:     { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 12.8px, fontWeight: 700, lineHeight: 15.4px, letterSpacing: 0.11em, textTransform: uppercase }
+  button-md:   { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 16px, fontWeight: 600, lineHeight: 19.2px }
+  button-sm:   { fontFamily: "Hanken Grotesk Variable, Hanken Grotesk, Inter, system-ui, sans-serif", fontSize: 14.4px, fontWeight: 650, lineHeight: 1.2 }
+  mono:        { fontFamily: "JetBrains Mono Variable, JetBrains Mono, ui-monospace, Menlo, monospace", fontSize: 0.86em }
 
 rounded: { none: 0px, sm: 6px, md: 12px, pill: 9999px }
 spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 3xl: 48px, 4xl: 64px }
@@ -43,10 +43,10 @@ spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 
 
 # DESIGN.md — Provenably design system (complete)
 
-> Status: **v2 founder-approved and implemented in the SvelteKit production frontend (`frontend/`)** · 2026-10-24 · Decisions **P-014/P-015/P-016/P-017/P-018/P-019**
+> Status: **v2.1 founder-approved and implemented in the SvelteKit production frontend (`frontend/`)** · 2026-10-24 · Decisions **P-014/P-015/P-016/P-017/P-018/P-019/P-020**
 > Source reverse-engineered: [`zapier/DESIGN.md`](zapier/DESIGN.md) (identical to the founder-supplied `DESIGN-zapier.md`; fetched via `npx getdesign@latest add zapier`).
 > Companions: [`PHILOSOPHY.md`](PHILOSOPHY.md) · [`WIREFRAME.md`](WIREFRAME.md) · [`AGENTS.md`](AGENTS.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md).
-> Implementation of record: `frontend/src/app.css` + Svelte components/routes. `mockup/` remains the approved visual archive. **No linear gradients in interface CSS. No decorative shadows. No side-stripe accent bars on cards, panels, notices, or conclusions (P-019).** Founder-supplied platform trademarks are never recolored or masked (P-016); Provenably's own primary mark is forced to the website `#ff4f00` palette exactly as specified in P-018.
+> Implementation of record: `frontend/src/app.css` + Svelte components/routes. `mockup/` remains the approved visual archive. **No linear gradients in interface CSS. No decorative shadows. No side-stripe accent bars on cards, panels, notices, or conclusions (P-019). One Hanken Grotesk sans carries display/body/UI; JetBrains Mono is data-only (P-020).** Founder-supplied platform trademarks are never recolored or masked (P-016); Provenably's own primary mark is forced to the website `#ff4f00` palette exactly as specified in P-018.
 
 ---
 
@@ -67,8 +67,8 @@ spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 
 | Warm cream canvas `#fffefb`, soft `#f8f4f0` — "temperature IS the brand voice" | Page = canvas; cards/sections = canvas-soft; never pure white `#fff`/`#ffffff` surfaces |
 | Coffee ink `#201515`, warm neutral ladder to `#c5c0b1` | Text ladder ink → ink-mid → body → body-mid → mute; no cool grays anywhere |
 | Single orange `#ff4f00` = every primary CTA | `#ff4f00` = the Provenably brand mark, primary buttons, focus and active states; the founder-supplied brand source is palette-forced to this exact token |
-| Degular Display 500 hero + Inter everything else; sentence-case headlines | Display stack names Degular then Inter (renders Inter 500 — the source file's own named substitute); all headlines sentence-case |
-| Eyebrow: uppercase 14px, +1px tracking | Kept (brief/spec wins — see §10 deviation note), used sparingly, ink-colored |
+| Degular Display 500 hero + Inter everything else; sentence-case headlines | The quiet display mechanism and sentence-case rule are retained, but P-020 supersedes the actual faces: self-hosted Hanken Grotesk Variable now carries display, body and UI; no proprietary Degular or bundled Inter webfont ships |
+| Eyebrow: uppercase 14px, +1px tracking | Mechanism retained and recalibrated for Hanken Grotesk (12.8px/700/+0.11em), used sparingly, ink-colored |
 | 12px radius on buttons **and** cards — deliberate middle | `--radius:12px` for buttons/cards/panels; 6px inputs & format chips; pill only for badges |
 | Elevation: flat → 1px ink hairline → cream-fill contrast | Same 3 levels; zero box-shadows in the mockup stylesheet |
 | Buttons ~48px (12px pad + 27px line) | `min-height:48px`, padding 10–12/24, `button-md` type |
@@ -88,7 +88,7 @@ spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 
   asset at `frontend/src/lib/assets/brand/provenably-mark.png` copies that geometry and
   alpha pixel-for-pixel while forcing every RGB pixel to the Zapier-derived website
   primary `#ff4f00`. Render only the canonical file through `BrandMark`, pair it with the
-  existing display-face wordmark, and never use the source's native `#fd7e14`, trace, crop,
+  Hanken Grotesk 650 wordmark at tight display tracking, and never use the source's native `#fd7e14`, trace, crop,
   stretch, mask, outline, add a background, or revive the retired orange rounded-square
   treatment. Favicon: the same canonical palette-forced PNG.
 - **Product loop as the signature motif:** `Detect → Remove → Verify → Platform-ready`
@@ -127,21 +127,50 @@ no thick colored side stripes on cards/panels/notices/conclusions in any hue ·
 no orange body links at small size (links are ink + underline, hover orange) ·
 no orange grade.
 
-## 4. Typography
+## 4. Typography (P-020)
 
-Two voices, strict roles. **Display** (`Degular Display, Inter, …` — proprietary face
-unavailableweights rendered as Inter 500 per the source's substitute note): hero 56/56,
-page H1 48/48 (app pages 40/42), section H2 32/36. **Inter**: body-md 18/27 default page
-text, body-sm 16/24 in app density, caption 14/21, heading-sm 20/700/-0.5px for card titles,
-button-md 18/600, button-sm 14.4/700. **JetBrains Mono**: hashes, IDs, filenames, code,
-format chips only. Sentence-case headlines, always. Line-length: lede ≤720px, prose ≤80ch.
+One sans, strict roles. **Hanken Grotesk Variable** is the only shipped sans for display,
+body, controls, tables and reports. Inter remains only as a locally installed fallback name
+before `system-ui`; no Inter webfont is bundled, and proprietary Degular is never shipped.
+The open-source Latin normal face is self-hosted through
+`@fontsource-variable/hanken-grotesk`; the matching true italic is declared separately and
+loads only when italic text renders. `font-synthesis: none` remains binding—never faux-bold
+or faux-italic a missing style.
+
+| Role | Production treatment |
+|---|---|
+| Hero display | Hanken Grotesk 530, up to 73.6px, line-height 1.0, tracking `-0.048em` |
+| Page H1 | 530, up to 56.8px, line-height 1.03, tracking `-0.042em` |
+| Section H2 | 540, up to 37.6px, line-height 1.12, tracking `-0.034em` |
+| Card/section H3 | 650, 18.9px, line-height 1.32, tracking `-0.018em` |
+| Lead | 450 book weight, 17.6–20.5px, line-height 1.55, tracking `-0.008em` |
+| Body | 400, 17px marketing density and 16px app density, line-height 1.55–1.58 |
+| Small / caption | 14.4px small text; captions and compact labels are 500 at a 12.8px floor |
+| Controls | Buttons 600 at 16px; small buttons, tabs and segmented controls 600–650, sentence case |
+| Eyebrows | 700, 12.8px, uppercase, `+0.11em`; page/major-section heads only |
+| Tables | 15.2px/1.45 body; 13.8px/650 sentence-case headers; lining tabular figures in numeric cells |
+| Wordmark | 650, tracking about `-0.04em`, always paired with the canonical P-018 mark |
+| Data | JetBrains Mono Variable, route-split, only for hashes, IDs, filenames, code and format chips |
+
+**Weight discipline:** use only the semantic tokens `--fw-regular 400`, `--fw-book 450`,
+`--fw-medium 500`, `--fw-display 530`, `--fw-display-strong 540`, `--fw-semibold 600`,
+`--fw-emphasis 650`, and `--fw-bold 700`. Ordinary UI never uses 750–900. Sentence-case
+headlines and buttons, always. Font-file QA is part of the contract: the shipped Hanken
+Grotesk **normal** face has one lining figure set whose digits share a 560-unit advance, so
+figures align consistently in prose and data; `.num`, metrics and prices still declare
+lining tabular figures for data intent and fallback consistency. The shipped normal face
+does **not** expose separate proportional, slashed-zero, or `case` alternates, so CSS must
+not claim them. Hash/identifier distinction is carried by JetBrains Mono, whose shipped zero
+is center-dotted by default. Headings use balanced wrap, paragraphs use pretty wrap, ledes
+stay ≤760px, and long prose stays ≤80ch.
 
 ## 5. Layout, spacing, responsive
 
 4px base; tokens 2/4/8/12/16/24/32/48/64. Container 1280px + 24px gutters. Bands pad 64px
 (`.section`, hero); cards pad 24px. Sticky nav (canvas, warm hairline, 64px min-height).
 Grids: `.grid2/3/4` → 2-col ≤1023px → 1-col ≤767px; nav scrolls horizontally when tight;
-signal rows stack ≤767px; hero 56→40px. Touch: buttons ≥48px, small buttons ≥38px,
+signal rows stack ≤767px; production display type is fluid (hero up to 73.6px; page H1 up to
+56.8px). Touch: buttons ≥48px, small buttons ≥42px in production,
 tabs ≥44px (ui-ux-pro-max priority-2 rule).
 
 ## 6. Elevation & shape
@@ -156,10 +185,10 @@ inputs/format chips · pill badges/tags/avatars · 0 bands.
 
 | Component | Spec (all in `mockup/style.css`) |
 |---|---|
-| `button`/`.btn` | primary orange, on-primary text, 12px radius, 10–12×24 pad, ≥48px, button-md; hover `primary-hover` |
+| `button`/`.btn` | primary orange, on-primary text, 12px radius, 10–12×24 pad, ≥48px, Hanken Grotesk 16/600; hover `primary-hover` |
 | `.btn.dark` | Zapier button-secondary: ink fill |
 | `.btn.secondary` | Zapier button-tertiary: canvas fill, 1px ink border, ink text |
-| `.btn.small` | button-sm 14.4/700, ≥38px |
+| `.btn.small` | Hanken Grotesk 14.4/650, ≥42px in production |
 | `.box` (card-content) | canvas-soft, 12px, 24px pad — the default card everywhere |
 | `.pricecard` / `.featured` | canvas + 1px ink border / flipped ink fill + orange plan tag |
 | `.platcard` | canvas-soft selectable card; `.sel` = 2px primary outline on canvas. Founder-supplied platform mark is shown unmasked with `object-fit: contain`; exact viewer-label chip, researched placement subtext and documented signal summary sit above the action. Destinations without supplied artwork use a neutral monogram, never a recreated trademark |
@@ -169,21 +198,21 @@ inputs/format chips · pill badges/tags/avatars · 0 bands.
 | `.dot` | 9px status dot, semantic fills |
 | `.tabs` | ink text, 3px primary underline on active, ≥44px targets |
 | `.drop` | 1.5px dashed body-mid on canvas-soft; drag-over → primary border + primary-soft fill; real `<input type=file>` inside, always |
-| `.conclusion` | canvas, uniform 1px ink border, 12px radius; label in display 26/500, header closed by a neutral hairline; grade/tamper state is carried only by mandatory worded tags, never a side rule |
+| `.conclusion` | canvas, uniform 1px ink border, 12px radius; label in Hanken Grotesk display 530 with `-0.032em` tracking, header closed by a neutral hairline; grade/tamper state is carried only by mandatory worded tags, never a side rule |
 | `.signal` | 190px name/meta rail + body; `.how` (manual step) in warn tone |
 | `.notice` | 12px card with a uniform 1px `line` frame and restrained semantic surface; a contained 32px icon tile carries tone beside the title/copy—no side stripe in any variant |
 | `.steps` | numbered circles: current=primary, done=ink ✓, pending=mute |
 | `.progress` | 6px pill track (canvas-soft + line border), primary fill; indeterminate slide, reduced-motion off |
-| `table` | header canvas-soft 14px semibold ink-mid; 12×16 cells; `line` row rules; warm hover `#fbf7f1` |
+| `table` | Hanken Grotesk 15.2px/1.45; header canvas-soft 13.8px/650 sentence-case ink-mid; numeric cells use lining tabular figures; 12×16 cells; `line` row rules; warm hover `#fbf7f1` |
 | `.loop .stepchip` | cream pill + orange arrow — the product-loop motif |
-| `.fmt` | mono 13px format chip, 6px radius, canvas-soft |
+| `.fmt` | JetBrains Mono 12.8px/600 format chip, 6px radius, canvas-soft |
 | `.empty` | canvas-soft 48px-pad empty-state card (ex-empty-state-card) |
 | `pre` | ink surface, canvas-soft mono text, 12px radius |
 
 ## 8. Page patterns (15 mockup pages — bands & composition)
 
 - **Landing** (`index`): canvas hero-band (display-xl, loop motif, 3 CTAs: primary/tertiary/dark) → canvas-soft "how it works" band (3 cream cards on cream get hairline via surface step) → canvas honesty section (2-layer cards + info notice) → canvas-soft platforms band (8 platcards) → canvas teasers + centered CTA → dark footer.
-- **App pages** (`scan/remove/batch/presets/history/settings`): pagehead (eyebrow + 40px display H1) → working grid (form/dropzone left, evidence panels right) → full-width tables. Canvas bg, cream cards.
+- **App pages** (`scan/remove/batch/presets/history/settings`): pagehead (sparse eyebrow + fluid Hanken Grotesk H1) → working grid (form/dropzone left, evidence panels right) → full-width tables. Canvas bg, cream cards.
 - **Report** (`report`): conclusion block first (the product's hero moment), facts+coverage pair, signals, platform table, actions.
 - **Reference** (`registry/rules/api`): tables-first on canvas, cream side panels, dark `pre`.
 - **Pricing** (`pricing`): 4-up tier grid, featured = dark flip, FAQ as native `details`.
@@ -196,10 +225,12 @@ Contrast: ink on canvas ≈15.8:1, body on canvas ≈6.4:1, on-primary on primar
 (large/semibold button text only — never small text), dark-orange `#8f2d00` for small
 accent labels. Focus-visible: 2px primary outline + 2px offset on every interactive
 element. Grade = word + color. Labels on all inputs (no placeholder-only). Errors render
-next to the action (baseline-ui). Motion: only the progress indeterminate; no entrance
-animations, no hover transitions invented per-card; `prefers-reduced-motion` kills it.
-Keyboard: native elements only in the mockup (buttons, details, file inputs) — no
-hand-rolled focus behavior to break.
+next to the action (baseline-ui). Typography floor: essential captions/labels are at least
+12.8px, text remains usable at browser zoom, numeric evidence uses tabular lining figures,
+and uppercase is rationed so scanning and screen magnification stay comfortable. Motion:
+only the progress indeterminate; no entrance animations, no hover transitions invented
+per-card; `prefers-reduced-motion` kills it. Keyboard: native elements only in the mockup
+(buttons, details, file inputs) — no hand-rolled focus behavior to break.
 
 ## 10. Skills application log (how each skill shaped v2 — AGENTS §12 order)
 
@@ -266,6 +297,24 @@ and status dots remain because they communicate state or structure rather than d
 edge. The pass followed `baseline-ui` restraint, `frontend-design` anti-template review,
 and `fixing-accessibility`'s rule that status never rely on color alone.
 
+**P-020 Hanken Grotesk typography (2026-10-24):** after comparing Poppins, Raleway,
+Hanken Grotesk, Pixelify Sans, Funnel Display and Zapier's Degular/Inter pairing, the
+founder approved Hanken Grotesk as Provenably's one sans across display, body and UI.
+Production now loads the Latin Hanken Grotesk Variable normal face (34,704 bytes) from
+`frontend/src/lib/hanken-grotesk-font.css`; the 35,592-byte true italic is declared
+separately and is fetched only when italic text renders. The bundled Inter webfont was
+removed. Global and component CSS were recalibrated from scattered 460–800 weights to
+semantic 400/450/500/530/540/600/650/700 tokens, quiet-premium display tracking, a 12.8px
+caption floor and lining/tabular numeral intent. Direct WOFF2 inspection corrected the
+feature specification: Hanken's shipped normal digits are already equal-width, while no
+separate proportional/slashed-zero/`case` feature is exposed; JetBrains Mono's default
+center-dotted zero carries hash distinction. Header/footer wordmarks, platform labels, buttons,
+metrics, tables, reports and the live `/design-system` specimen use the new roles.
+JetBrains Mono remains route-split and data-only. The no-build Jinja fallback mirrors the
+same stack through `app/static/fonts/` with byte-identical Fontsource WOFF2 files and the
+accompanying OFL-1.1 license text. Future non-Latin localization requires an explicit
+subset/fallback decision; this English-first build intentionally ships Latin only.
+
 ## 12. Product design carried over (still binding)
 
 Philosophy: **Detect → Remove → Verify → Platform-ready** (`PHILOSOPHY.md`). Sitemap,
@@ -277,8 +326,9 @@ TEST-signer labeling). Personas: newsroom/OSINT, creator, compliance/publisher,
 platform/moderation, developer.
 
 **Open decisions:** D3 pricing numbers (tiers are placeholders) · D4 batch-scan UX detail ·
-D5 HEIC/AVIF/RAW coverage messaging. **D6 resolved (P-015):** self-host only the Latin
-variable subsets of Inter and JetBrains Mono via Fontsource; mono is route-split.
+D5 HEIC/AVIF/RAW coverage messaging. **D6 resolved (P-015, typefaces updated by P-020):**
+self-host only the Latin variable subsets of Hanken Grotesk and JetBrains Mono via
+Fontsource; Hanken italic is conditional on italic content, and mono is route-split.
 
 ## 13. Decision log (append-only)
 
@@ -294,12 +344,13 @@ variable subsets of Inter and JetBrains Mono via Fontsource; mono is route-split
 | P-009 | 2026-10-24 | Mandatory decision logging in these docs | Accepted |
 | P-012 | 2026-10-24 | Mockup-first, full end-to-end; violet flat-forensic mockup v1 | Superseded by P-014 (visuals) |
 | P-013 | 2026-10-24 | Mockup v1 **rejected** by founder ("AI-sloppy"); 10 skills installed; v2 gated on skills + founder guidance | Accepted |
-| **P-014** | **2026-10-24** | **Adopt Zapier design language (reverse-engineered from `zapier/DESIGN.md`) as Provenably's complete design system** — warm cream/coffee/orange, display-Inter, 12px radius, flat elevation — applied to all 15 mockup pages via one stylesheet; bounded semantic-grade exception (§3.3); skills log §10 | **Accepted — founder-approved 2026-10-24** |
-| **P-015** | **2026-10-24** | **Implement P-014 as SvelteKit/Svelte 5 + TypeScript static frontend with FastAPI retained as JSON backend** — prerendered public pages, selective hydration, self-hosted Latin font subsets, measured bundle budget | **Accepted — founder-approved implementation direction** |
+| **P-014** | **2026-10-24** | **Adopt Zapier design language (reverse-engineered from `zapier/DESIGN.md`) as Provenably's complete design system** — warm cream/coffee/orange, display-Inter, 12px radius, flat elevation — applied to all 15 mockup pages via one stylesheet; bounded semantic-grade exception (§3.3); skills log §10 | **Accepted — founder-approved 2026-10-24; typefaces superseded by P-020** |
+| **P-015** | **2026-10-24** | **Implement P-014 as SvelteKit/Svelte 5 + TypeScript static frontend with FastAPI retained as JSON backend** — prerendered public pages, selective hydration, self-hosted Latin font subsets, measured bundle budget | **Accepted — founder-approved implementation direction; font families updated by P-020** |
 | **P-016** | **2026-10-24** | **Founder-supplied platform marks + evidence-backed AI-label subtext** — preserve six 512px source marks, ship lossless 144px WebP derivatives unmasked, use neutral monograms for unsupplied destinations, and show exact label wording plus documented provenance/detection signals across cards, selectors, rules and reports | **Accepted — founder-supplied assets and research direction** |
 | **P-017** | **2026-10-24** | **Founder-supplied primary Provenably brand mark** — use the attached 64×64 transparent check as the only primary logo/brand icon and favicon; retire the generated orange rounded-square mark; preserve its geometry/padding and mirror the asset to the legacy fallback | **Accepted — native-color clause superseded by P-018** |
 | **P-018** | **2026-10-24** | **Palette-force the primary Provenably mark to the Zapier-derived website primary `#ff4f00`** — retain the supplied native-`#fd7e14` file only as source provenance; ship a canonical PNG whose geometry/alpha are pixel-identical and whose RGB is uniformly `#ff4f00` | **Accepted — founder correction** |
 | **P-019** | **2026-10-24** | **Ban side-stripe accent bars** — remove every thick colored `border-left`/`border-right` treatment from cards, panels, notices and conclusions; replace it with complete hairline frames, contained semantic icons, neutral structural dividers and mandatory worded tags | **Accepted — founder rejection of AI-template pattern** |
+| **P-020** | **2026-10-24** | **Adopt Hanken Grotesk as the complete website sans** — one open-source, self-hosted Latin variable family for display/body/UI with quiet-premium 530–540 display, semantic weights capped at 700, sparse uppercase eyebrows, the shipped face's lining equal-width figures plus tabular data declarations, true conditional italic, and JetBrains Mono retained route-split for technical data | **Accepted — founder-approved after typography comparison** |
 
 ## 14. Document history
 
@@ -313,3 +364,4 @@ variable subsets of Inter and JetBrains Mono via Fontsource; mono is route-split
 | 2026-10-24 | **P-017 implementation:** the founder-supplied check PNG became the canonical header/footer/favicon/design-system mark, with a byte-identical legacy-fallback mirror. | Founder (asset + direction) + Engineering |
 | 2026-10-24 | **P-018 correction:** the canonical mark was palette-forced from native `#fd7e14` to `#ff4f00` while preserving its alpha channel pixel-for-pixel; the untouched supplied file was retained as source only. | Founder (correction) + Engineering |
 | 2026-10-24 | **P-019 implementation:** all notice/conclusion/report-preview side stripes were removed from production, legacy and mockup CSS and replaced with hairline frames, contained icons, a conclusion header divider and worded tags. | Founder (rejection + direction) + Engineering |
+| 2026-10-24 | **P-020 implementation:** Inter was replaced site-wide with self-hosted Latin Hanken Grotesk Variable, semantic weight/tracking/numeral tokens were applied across production components and the Jinja fallback, and the design-system typography specimen was rebuilt around real roles, figures, glyph distinction and true italic. | Founder (selection + approval) + Engineering |

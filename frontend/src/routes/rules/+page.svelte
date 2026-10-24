@@ -545,9 +545,10 @@
 	.summary-count {
 		color: var(--ink);
 		font-family: var(--font-display);
-		font-size: 1.8rem;
-		font-weight: 560;
-		letter-spacing: -0.03em;
+		font-size: 1.85rem;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-weight: var(--fw-display-strong);
+		letter-spacing: -0.034em;
 		line-height: 1.1;
 		margin-bottom: 0.35rem;
 	}

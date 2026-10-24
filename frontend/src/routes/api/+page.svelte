@@ -319,7 +319,10 @@ curl -s \\
 	.metrics strong {
 		display: block;
 		font-family: var(--font-display);
-		font-size: 1.55rem;
+		font-size: 1.6rem;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-weight: var(--fw-display-strong);
+		letter-spacing: -0.03em;
 		line-height: 1.15;
 		margin-top: 0.25rem;
 		overflow-wrap: anywhere;

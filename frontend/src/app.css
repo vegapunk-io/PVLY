@@ -1,6 +1,7 @@
 /* Provenably production design system.
-   Source: founder-approved DESIGN.md P-014/P-015, adapted from zapier/DESIGN.md.
-   Flat by contract: no gradients, no decorative shadows, no stock imagery. */
+   Source: founder-approved DESIGN.md P-014/P-015 and P-020 typography,
+   adapted from zapier/DESIGN.md. Flat by contract: no gradients, no
+   decorative shadows, no stock imagery. */
 
 :root {
 	--primary: #ff4f00;
@@ -26,14 +27,25 @@
 	--bad: #b3261e;
 	--bad-soft: #fbf0ee;
 	--code-bg: #201515;
-	--font-display:
-		'Inter Variable', Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 	--font-sans:
-		'Inter Variable', Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-		sans-serif;
+		'Hanken Grotesk Variable', 'Hanken Grotesk', Inter, system-ui, -apple-system,
+		BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	--font-display: var(--font-sans);
 	--font-mono:
 		'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
 		monospace;
+	--fw-regular: 400;
+	--fw-book: 450;
+	--fw-medium: 500;
+	--fw-display: 530;
+	--fw-display-strong: 540;
+	--fw-semibold: 600;
+	--fw-emphasis: 650;
+	--fw-bold: 700;
+	--tracking-hero: -0.048em;
+	--tracking-display: -0.042em;
+	--tracking-heading: -0.018em;
+	--tracking-eyebrow: 0.11em;
 	--radius: 12px;
 	--radius-small: 6px;
 	--header-height: 68px;
@@ -60,6 +72,8 @@ body {
 	color: var(--body);
 	font-family: var(--font-sans);
 	font-size: 1.0625rem;
+	font-variant-numeric: lining-nums proportional-nums;
+	font-weight: var(--fw-regular);
 	line-height: 1.58;
 	-webkit-font-smoothing: antialiased;
 }
@@ -108,29 +122,31 @@ h1,
 h2 {
 	color: var(--ink);
 	font-family: var(--font-display);
-	font-weight: 540;
-	letter-spacing: -0.035em;
+	font-weight: var(--fw-display);
+	letter-spacing: var(--tracking-display);
 	text-wrap: balance;
 }
 
 h1 {
-	font-size: clamp(2.35rem, 5vw, 3.5rem);
-	line-height: 1.02;
+	font-size: clamp(2.4rem, 5vw, 3.55rem);
+	line-height: 1.03;
 	margin-bottom: 1rem;
 }
 
 h2 {
-	font-size: clamp(1.75rem, 3vw, 2.25rem);
+	font-size: clamp(1.85rem, 3vw, 2.35rem);
+	font-weight: var(--fw-display-strong);
+	letter-spacing: -0.034em;
 	line-height: 1.12;
 	margin-bottom: 0.8rem;
 }
 
 h3 {
 	color: var(--ink);
-	font-size: 1.15rem;
-	font-weight: 700;
-	letter-spacing: -0.02em;
-	line-height: 1.3;
+	font-size: 1.18rem;
+	font-weight: var(--fw-emphasis);
+	letter-spacing: var(--tracking-heading);
+	line-height: 1.32;
 	margin-bottom: 0.5rem;
 }
 
@@ -141,13 +157,14 @@ p {
 
 strong {
 	color: var(--ink);
-	font-weight: 700;
+	font-weight: var(--fw-bold);
 }
 
 code,
 pre,
 .mono {
 	font-family: var(--font-mono);
+	font-variant-numeric: tabular-nums;
 }
 
 code {
@@ -199,7 +216,9 @@ pre {
 
 .lede {
 	color: var(--body);
-	font-size: clamp(1.08rem, 2vw, 1.28rem);
+	font-size: clamp(1.1rem, 2vw, 1.28rem);
+	font-weight: var(--fw-book);
+	letter-spacing: -0.008em;
 	line-height: 1.55;
 	max-width: 760px;
 }
@@ -219,9 +238,9 @@ pre {
 
 .eyebrow {
 	color: var(--ink);
-	font-size: 0.82rem;
-	font-weight: 700;
-	letter-spacing: 0.11em;
+	font-size: 0.8rem;
+	font-weight: var(--fw-bold);
+	letter-spacing: var(--tracking-eyebrow);
 	line-height: 1.2;
 	margin-bottom: 0.85rem;
 	text-transform: uppercase;
@@ -233,12 +252,24 @@ pre {
 
 .small {
 	font-size: 0.9rem;
-	line-height: 1.55;
+	line-height: 1.5;
 }
 
 .tiny {
 	font-size: 0.8rem;
+	font-weight: var(--fw-medium);
 	line-height: 1.45;
+}
+
+.num,
+.metric,
+.price {
+	font-variant-numeric: lining-nums tabular-nums;
+}
+
+.identifier {
+	font-variant-numeric: lining-nums tabular-nums;
+	overflow-wrap: anywhere;
 }
 
 .center {
@@ -349,10 +380,10 @@ button.btn {
 	cursor: pointer;
 	display: inline-flex;
 	font-size: 1rem;
-	font-weight: 680;
+	font-weight: var(--fw-semibold);
 	gap: 0.55rem;
 	justify-content: center;
-	line-height: 1.25;
+	line-height: 1.2;
 	min-height: 48px;
 	padding: 0.72rem 1.35rem;
 	text-align: center;
@@ -415,6 +446,7 @@ button.btn:active {
 .btn--small {
 	border-radius: 10px;
 	font-size: 0.9rem;
+	font-weight: var(--fw-emphasis);
 	min-height: 42px;
 	padding: 0.55rem 1rem;
 }
@@ -435,7 +467,7 @@ button[disabled] {
 	align-items: center;
 	color: var(--ink);
 	display: inline-flex;
-	font-weight: 650;
+	font-weight: var(--fw-semibold);
 	gap: 0.35rem;
 	min-height: 44px;
 }
@@ -453,7 +485,7 @@ label,
 	color: var(--ink);
 	display: block;
 	font-size: 0.98rem;
-	font-weight: 650;
+	font-weight: var(--fw-emphasis);
 	line-height: 1.35;
 	margin-bottom: 0.42rem;
 }
@@ -471,7 +503,7 @@ label,
 
 .field-error {
 	color: var(--bad);
-	font-weight: 600;
+	font-weight: var(--fw-semibold);
 }
 
 input[type='text'],
@@ -554,7 +586,7 @@ input[type='radio'] {
 	color: var(--body);
 	cursor: pointer;
 	display: flex;
-	font-weight: 460;
+	font-weight: var(--fw-regular);
 	gap: 0.65rem;
 	line-height: 1.5;
 	margin: 0.7rem 0;
@@ -574,7 +606,7 @@ fieldset {
 
 legend {
 	color: var(--ink);
-	font-weight: 700;
+	font-weight: var(--fw-emphasis);
 	margin-bottom: 0.65rem;
 	padding: 0;
 }
@@ -600,7 +632,7 @@ legend {
 	color: var(--body);
 	cursor: pointer;
 	flex: 0 0 auto;
-	font-weight: 650;
+	font-weight: var(--fw-semibold);
 	margin-bottom: -1px;
 	min-height: 48px;
 	padding: 0.65rem 0.9rem;
@@ -624,7 +656,7 @@ legend {
 	color: var(--ink-mid);
 	display: inline-flex;
 	font-size: 0.84rem;
-	font-weight: 650;
+	font-weight: var(--fw-emphasis);
 	gap: 0.35rem;
 	line-height: 1.25;
 	min-height: 28px;
@@ -744,13 +776,14 @@ legend {
 table {
 	border-collapse: collapse;
 	font-size: 0.95rem;
+	line-height: 1.45;
 	min-width: 620px;
 	width: 100%;
 }
 
 caption {
 	color: var(--ink);
-	font-weight: 700;
+	font-weight: var(--fw-emphasis);
 	padding: 1rem;
 	text-align: left;
 }
@@ -766,8 +799,8 @@ td {
 thead th {
 	background: var(--canvas-soft);
 	color: var(--ink-mid);
-	font-size: 0.84rem;
-	font-weight: 700;
+	font-size: 0.86rem;
+	font-weight: var(--fw-emphasis);
 	line-height: 1.35;
 	position: sticky;
 	top: 0;
@@ -784,7 +817,7 @@ tbody tr:hover td {
 
 td.num,
 th.num {
-	font-variant-numeric: tabular-nums;
+	font-variant-numeric: lining-nums tabular-nums;
 	text-align: right;
 }
 
@@ -804,7 +837,7 @@ th.num {
 
 .platform-cell__label {
 	color: var(--ink);
-	font-weight: 750;
+	font-weight: var(--fw-emphasis);
 }
 
 .source-links {
@@ -824,10 +857,12 @@ th.num {
 
 .kv dt {
 	color: var(--body-mid);
+	font-weight: var(--fw-medium);
 }
 
 .kv dd {
 	color: var(--ink-mid);
+	font-weight: var(--fw-book);
 	margin: 0;
 	overflow-wrap: anywhere;
 }
@@ -845,7 +880,7 @@ summary {
 	color: var(--ink);
 	cursor: pointer;
 	display: flex;
-	font-weight: 650;
+	font-weight: var(--fw-emphasis);
 	gap: 0.5rem;
 	min-height: 44px;
 }
@@ -943,8 +978,8 @@ details > :last-child {
 	border-radius: 6px;
 	color: var(--ink-mid);
 	font-family: var(--font-mono);
-	font-size: 0.78rem;
-	font-weight: 650;
+	font-size: 0.8rem;
+	font-weight: var(--fw-semibold);
 	padding: 0.2rem 0.55rem;
 }
 
@@ -969,13 +1004,13 @@ details > :last-child {
 	border: 1px solid var(--mute);
 	border-radius: 999px;
 	color: var(--ink);
-	font-weight: 650;
+	font-weight: var(--fw-emphasis);
 	padding: 0.42rem 0.85rem;
 }
 
 .loop__arrow {
 	color: var(--primary);
-	font-weight: 800;
+	font-weight: var(--fw-bold);
 }
 
 .steps {
@@ -1000,7 +1035,7 @@ details > :last-child {
 	content: counter(step);
 	display: flex;
 	font-size: 0.86rem;
-	font-weight: 750;
+	font-weight: var(--fw-bold);
 	height: 2rem;
 	justify-content: center;
 	left: 0;
@@ -1033,9 +1068,9 @@ details > :last-child {
 .conclusion__label {
 	color: var(--ink);
 	font-family: var(--font-display);
-	font-size: clamp(1.45rem, 3vw, 2rem);
-	font-weight: 540;
-	letter-spacing: -0.025em;
+	font-size: clamp(1.5rem, 3vw, 2.05rem);
+	font-weight: var(--fw-display);
+	letter-spacing: -0.032em;
 	line-height: 1.15;
 }
 
@@ -1049,12 +1084,14 @@ details > :last-child {
 
 .signal__name {
 	color: var(--ink);
-	font-weight: 700;
+	font-weight: var(--fw-emphasis);
 }
 
 .signal__meta {
 	color: var(--body-mid);
-	font-size: 0.86rem;
+	font-size: 0.88rem;
+	font-weight: var(--fw-medium);
+	line-height: 1.45;
 	margin-top: 0.2rem;
 }
 

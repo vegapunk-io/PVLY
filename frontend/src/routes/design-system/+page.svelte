@@ -118,27 +118,57 @@
 		<h2 id="type-title">Typography</h2>
 		<div class="grid grid--2">
 			<div class="card card--canvas">
-				<p class="eyebrow">Eyebrow · 14 uppercase</p>
-				<p class="type-display">Display headlines use sentence case.</p>
+				<p class="eyebrow">Eyebrow · Hanken Grotesk 700</p>
+				<p class="type-display">Evidence, presented with restraint.</p>
 				<p class="type-h2">Section headings stay compact and warm.</p>
-				<h3>Card heading · Inter 700</h3>
-				<p>
-					Body copy is Inter Variable at 17–18px with a relaxed 1.58 line height for low-cost
-					displays and long evidence reports.
+				<h3>Card heading · Hanken Grotesk 650</h3>
+				<p class="type-lede">
+					Lead copy uses the 450 book weight so long explanations feel composed rather than heavy.
 				</p>
+				<p>
+					Body copy is Hanken Grotesk Variable at 17px with a 1.58 line height for low-cost
+					displays, platform guidance and long evidence reports.
+				</p>
+				<p><em>True italic is reserved for genuine emphasis—never synthesized.</em></p>
 				<p class="small muted">
-					Small support text is 14.4px. It never carries a grade by color alone.
+					Small support text stays at or above 12.8px. It never carries a grade by color alone.
+				</p>
+				<p class="type-glyphs" aria-label="Character distinction specimen: I l 1, O 0, r n slash m">
+					Il1&nbsp;&nbsp;O0&nbsp;&nbsp;rn/m&nbsp;&nbsp;a c e
 				</p>
 			</div>
 			<div class="card">
-				<h3>Data type</h3>
-				<p>JetBrains Mono Variable is route-split and reserved for data:</p>
+				<h3>Roles, figures &amp; data</h3>
+				<dl class="type-spec">
+					<div>
+						<dt>Display</dt>
+						<dd>Hanken Grotesk 530–540 · tight tracking</dd>
+					</div>
+					<div>
+						<dt>Body / UI</dt>
+						<dd>400 regular · 500 small UI · 600 controls</dd>
+					</div>
+					<div>
+						<dt>Labels</dt>
+						<dd>650 compact emphasis · 700 maximum</dd>
+					</div>
+					<div>
+						<dt>Figures</dt>
+						<dd class="num">1,248 files · 98.6% · 00:12:40</dd>
+					</div>
+				</dl>
+				<p>JetBrains Mono Variable is route-split and reserved for technical evidence:</p>
 				<p class="mono data-sample">
 					SHA-256 8aa1…f903<br />POST /v1/scans<br />ai_generated_declared
 				</p>
 				<p class="small muted">
-					Degular’s role from the Zapier source is rendered with Inter 500–560; no licensed display
-					font is bundled.
+					WOFF2 QA: Hanken’s shipped normal figures are lining and equal-width; JetBrains Mono’s
+					center-dotted zero carries hash distinction.
+				</p>
+				<p class="small muted">
+					P-020 keeps Zapier’s quiet display strategy without bundling proprietary Degular. The
+					open-source Latin Hanken Grotesk normal face is self-hosted; its true italic loads only
+					when italic text is rendered.
 				</p>
 			</div>
 		</div>
@@ -273,6 +303,9 @@
 					<li>Motion only communicates upload, scan or loading state.</li>
 					<li>Animations use transform/opacity and respect reduced motion.</li>
 					<li>Static pages ship no client router where interaction is unnecessary.</li>
+					<li>
+						Typography is one self-hosted Latin variable sans; JetBrains Mono remains route-split.
+					</li>
 					<li>Raw JSON renders only when a details section is opened.</li>
 				</ul>
 			</article>
@@ -304,8 +337,8 @@
 		color: var(--ink);
 		font-family: var(--font-display);
 		font-size: clamp(2rem, 4vw, 2.7rem);
-		font-weight: 650;
-		letter-spacing: -0.04em;
+		font-weight: var(--fw-emphasis);
+		letter-spacing: -0.045em;
 		line-height: 1;
 		margin-bottom: 0.55rem;
 	}
@@ -328,7 +361,8 @@
 
 	.brand-sizes figcaption {
 		color: var(--body-mid);
-		font-size: 0.78rem;
+		font-size: 0.8rem;
+		font-weight: var(--fw-medium);
 		line-height: 1;
 	}
 
@@ -362,19 +396,62 @@
 	.type-display {
 		color: var(--ink);
 		font-family: var(--font-display);
-		font-size: clamp(2rem, 4vw, 3.2rem);
-		font-weight: 540;
-		letter-spacing: -0.04em;
-		line-height: 1.03;
+		font-size: clamp(2.1rem, 4vw, 3.25rem);
+		font-weight: var(--fw-display);
+		letter-spacing: var(--tracking-hero);
+		line-height: 1.02;
 	}
 
 	.type-h2 {
 		color: var(--ink);
 		font-family: var(--font-display);
-		font-size: 1.9rem;
-		font-weight: 540;
-		letter-spacing: -0.03em;
+		font-size: 1.95rem;
+		font-weight: var(--fw-display-strong);
+		letter-spacing: -0.034em;
 		line-height: 1.12;
+	}
+
+	.type-lede {
+		color: var(--ink-mid);
+		font-size: 1.16rem;
+		font-weight: var(--fw-book);
+		letter-spacing: -0.008em;
+		line-height: 1.5;
+	}
+
+	.type-glyphs {
+		border-top: 1px solid var(--line);
+		color: var(--ink);
+		font-size: 1.35rem;
+		font-weight: var(--fw-medium);
+		letter-spacing: 0.02em;
+		margin: 1.2rem 0 0;
+		padding-top: 1rem;
+	}
+
+	.type-spec {
+		display: grid;
+		gap: 0.75rem;
+		margin: 0 0 1.25rem;
+	}
+
+	.type-spec > div {
+		border-bottom: 1px solid var(--line);
+		display: grid;
+		gap: 0.15rem 1rem;
+		grid-template-columns: minmax(92px, 0.35fr) minmax(0, 1fr);
+		padding-bottom: 0.75rem;
+	}
+
+	.type-spec dt {
+		color: var(--body-mid);
+		font-weight: var(--fw-medium);
+	}
+
+	.type-spec dd {
+		color: var(--ink-mid);
+		font-weight: var(--fw-book);
+		margin: 0;
 	}
 
 	.data-sample {

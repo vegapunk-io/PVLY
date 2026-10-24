@@ -334,7 +334,10 @@
 	.metrics strong {
 		display: block;
 		font-family: var(--font-display);
-		font-size: 1.8rem;
+		font-size: 1.85rem;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-weight: var(--fw-display-strong);
+		letter-spacing: -0.034em;
 		line-height: 1;
 	}
 

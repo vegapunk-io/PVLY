@@ -679,7 +679,10 @@
 	.coverage-metrics strong {
 		display: block;
 		font-family: var(--font-display);
-		font-size: 2rem;
+		font-size: 2.05rem;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-weight: var(--fw-display-strong);
+		letter-spacing: -0.036em;
 		line-height: 1;
 	}
 
