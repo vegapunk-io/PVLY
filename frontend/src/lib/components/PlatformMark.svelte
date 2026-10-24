@@ -75,7 +75,7 @@
 		color: var(--ink);
 		display: inline-flex;
 		font-size: calc(var(--platform-mark-size) * 0.54);
-		font-weight: 800;
+		font-weight: var(--fw-bold);
 		height: 100%;
 		justify-content: center;
 		line-height: 1;

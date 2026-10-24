@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '#lib/inter-font.css';
+	import '#lib/hanken-grotesk-font.css';
 	import '../app.css';
 	import favicon from '#lib/assets/brand/provenably-mark.png';
 	import Footer from '#lib/components/Footer.svelte';

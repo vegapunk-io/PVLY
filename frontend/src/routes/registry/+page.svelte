@@ -256,7 +256,7 @@
 		border-radius: 9px;
 		color: var(--body);
 		cursor: pointer;
-		font-weight: 650;
+		font-weight: var(--fw-semibold);
 		min-height: 44px;
 		padding: 0.55rem 0.85rem;
 	}

@@ -90,9 +90,10 @@
 		color: var(--on-primary);
 		display: inline-flex;
 		font-family: var(--font-display);
-		font-size: 1.3rem;
-		font-weight: 650;
+		font-size: 1.32rem;
+		font-weight: var(--fw-emphasis);
 		gap: 0.65rem;
+		letter-spacing: -0.04em;
 		margin-bottom: 1rem;
 		text-decoration: none;
 	}
@@ -107,9 +108,9 @@
 	.site-footer h2 {
 		color: var(--on-primary);
 		font-family: var(--font-sans);
-		font-size: 0.9rem;
-		font-weight: 750;
-		letter-spacing: 0.06em;
+		font-size: 0.82rem;
+		font-weight: var(--fw-bold);
+		letter-spacing: 0.09em;
 		margin-bottom: 0.8rem;
 		text-transform: uppercase;
 	}

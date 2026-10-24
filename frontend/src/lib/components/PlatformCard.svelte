@@ -110,16 +110,16 @@
 	.platform-card__name {
 		color: var(--ink);
 		font-family: var(--font-display);
-		font-size: 1.16rem;
-		font-weight: 600;
-		letter-spacing: -0.025em;
+		font-size: 1.18rem;
+		font-weight: var(--fw-semibold);
+		letter-spacing: -0.028em;
 		line-height: 1.15;
 	}
 
 	.platform-card__meta {
 		color: var(--accent-ink);
 		font-size: 0.8rem;
-		font-weight: 700;
+		font-weight: var(--fw-bold);
 		line-height: 1.35;
 	}
 
@@ -147,8 +147,8 @@
 
 	.platform-card__label-caption {
 		color: var(--ink);
-		font-size: 0.78rem;
-		font-weight: 750;
+		font-size: 0.8rem;
+		font-weight: var(--fw-emphasis);
 		padding-top: 0.18rem;
 	}
 
@@ -157,8 +157,8 @@
 		border: 1px solid var(--mute);
 		border-radius: 999px;
 		color: var(--ink);
-		font-size: 0.78rem;
-		font-weight: 750;
+		font-size: 0.8rem;
+		font-weight: var(--fw-emphasis);
 		line-height: 1.25;
 		padding: 0.22rem 0.5rem;
 	}
@@ -181,8 +181,8 @@
 
 	.platform-card__signals {
 		color: var(--accent-ink);
-		font-size: 0.78rem;
-		font-weight: 650;
+		font-size: 0.8rem;
+		font-weight: var(--fw-semibold);
 		line-height: 1.4;
 	}
 
@@ -191,7 +191,7 @@
 		color: var(--primary-hover);
 		display: inline-flex;
 		font-size: 0.9rem;
-		font-weight: 720;
+		font-weight: var(--fw-emphasis);
 		gap: 0.35rem;
 		padding-top: 0.2rem;
 	}

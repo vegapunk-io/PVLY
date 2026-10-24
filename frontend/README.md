@@ -8,7 +8,7 @@ Production SvelteKit implementation of the founder-approved design in [`../DESIG
 - TypeScript in strict mode
 - Vite 8
 - Static adapter with Brotli/Gzip precompression
-- Self-hosted variable Inter; JetBrains Mono variable is code-split to data-heavy routes
+- Self-hosted Latin Hanken Grotesk Variable (P-020); its true italic is conditional, and JetBrains Mono variable is code-split to data-heavy routes
 - Custom CSS design tokens/components—no CSS framework or icon runtime
 - FastAPI remains the JSON API and, when `frontend/build/` exists, production static host
 

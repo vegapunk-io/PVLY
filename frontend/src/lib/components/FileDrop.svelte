@@ -198,7 +198,7 @@
 		cursor: pointer;
 		display: flex;
 		flex-direction: column;
-		font-weight: 460;
+		font-weight: var(--fw-regular);
 		margin: 0;
 		padding: clamp(1.5rem, 4vw, 2.3rem) 1.2rem;
 		text-align: center;
@@ -243,9 +243,9 @@
 	.file-drop__title {
 		color: var(--ink);
 		font-family: var(--font-display);
-		font-size: clamp(1.2rem, 3vw, 1.45rem);
-		font-weight: 560;
-		letter-spacing: -0.025em;
+		font-size: clamp(1.25rem, 3vw, 1.5rem);
+		font-weight: var(--fw-display-strong);
+		letter-spacing: -0.03em;
 		line-height: 1.2;
 	}
 
@@ -259,7 +259,7 @@
 		background: var(--ink);
 		border-radius: 10px;
 		color: var(--on-primary);
-		font-weight: 680;
+		font-weight: var(--fw-semibold);
 		margin-top: 1.1rem;
 		min-height: 44px;
 		padding: 0.62rem 1.1rem;

@@ -405,7 +405,9 @@
 	}
 
 	.hero h1 {
-		font-size: clamp(2.8rem, 6vw, 4.6rem);
+		font-size: clamp(2.85rem, 6vw, 4.6rem);
+		letter-spacing: var(--tracking-hero);
+		line-height: 1;
 		max-width: 820px;
 	}
 
@@ -450,8 +452,9 @@
 	.report-preview__conclusion p {
 		color: var(--ink);
 		font-family: var(--font-display);
-		font-size: 1.35rem;
-		font-weight: 560;
+		font-size: 1.38rem;
+		font-weight: var(--fw-display-strong);
+		letter-spacing: -0.028em;
 		line-height: 1.2;
 	}
 
@@ -472,7 +475,7 @@
 
 	.report-preview__signals dt {
 		color: var(--ink-mid);
-		font-weight: 620;
+		font-weight: var(--fw-semibold);
 	}
 
 	.report-preview__signals dd {
@@ -517,9 +520,9 @@
 
 	.feature-step {
 		color: var(--accent-ink);
-		font-size: 0.82rem;
-		font-weight: 800;
-		letter-spacing: 0.09em;
+		font-size: 0.8rem;
+		font-weight: var(--fw-bold);
+		letter-spacing: 0.1em;
 		margin-bottom: 0.4rem;
 		text-transform: uppercase;
 	}

@@ -672,7 +672,7 @@
 
 	.check-list dt {
 		color: var(--ink);
-		font-weight: 700;
+		font-weight: var(--fw-emphasis);
 	}
 
 	.check-list dd {
