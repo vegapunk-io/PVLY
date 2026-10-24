@@ -10,8 +10,6 @@ Pillow>=10.3
 numpy>=1.26
 opencv-python-headless>=4.9
 PyWavelets>=1.5            # DWT-DCT open watermark decoder
-pikepdf>=9                  # PDF sanitizer (qpdf bindings)
-lxml>=5                     # DOCX sanitizer (OOXML rewrite)
 cryptography>=42           # tools/dev_cert.py (test CA)
 # Dev
 pytest>=8

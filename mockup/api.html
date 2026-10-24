@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API & deployment status — Provenably (Mockup)</title><link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%236d28d9'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
+<nav class="nav"><div class="wrap">
+<a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.8" stroke="#fff" stroke-width="2.2"/></svg></span>Provenably<span class="tagline">Detect → Remove → Verify</span></a>
+<a class="item " href="scan.html">Scan</a><a class="item " href="remove.html">Remove</a><a class="item " href="batch.html">Batch</a><a class="item " href="presets.html">Presets</a><a class="item " href="registry.html">Registry</a><a class="item " href="rules.html">Rules</a><a class="item " href="pricing.html">Pricing</a><a class="item active" href="api.html">API</a><span class="spacer"></span><span class="mockchip">MOCKUP — no backend</span>
+<a class="item " href="history.html">History</a>
+<a class="item " href="settings.html">Settings</a>
+<a class="btn small" href="auth.html">Sign in</a></div></nav><main><div class="wrap"><div class="pagehead"><div class="eyebrow">Provenably · Mockup</div><h1>API & deployment status</h1></div>
+<div class="grid2" style="margin-top:20px"><div><div class="box"><strong>Live in this deployment</strong>
+<table style="margin-top:8px"><tr><td class="mono">c2pa_validation</td><td><span class="dot ok"></span>live</td></tr>
+<tr><td class="mono">metadata_forensics</td><td><span class="dot ok"></span>live</td></tr>
+<tr><td class="mono">open_watermark_dwtdct</td><td><span class="dot ok"></span>live</td></tr>
+<tr><td class="mono">remove_image_pdf_docx</td><td><span class="dot warn"></span>roadmap R0</td></tr>
+<tr><td class="mono">remove_audio / remove_video</td><td><span class="dot warn"></span>roadmap R1/R2</td></tr>
+<tr><td class="mono">platform_presets</td><td><span class="dot warn"></span>roadmap R3</td></tr></table></div>
+<div class="box"><strong>Manual integration</strong><p class="small muted" style="margin-top:5px">Vendor verifiers (SynthID/OpenAI Verify), torch detectors, official trust list, billing — wired as <span class="mono">not_configured</span> with enabling steps in every report.</p></div></div>
+<div><h3 style="margin-top:0">Quickstart (target contract)</h3><pre># Detect (sync)
+curl -F "file=@photo.jpg" -F "wait=true" \
+  https://api.example.com/v1/scans | jq .conclusion
+
+# Remove + Verify (R0–R2)
+curl -F "file=@photo.jpg" -F "preset=instagram" \
+  https://api.example.com/v1/remove
+
+# Batch + Presets (R3)
+curl -F "files=@a.png" -F "files=@b.mp4" \
+  https://api.example.com/v1/batch</pre>
+<p class="small muted" style="margin-top:8px">Interactive OpenAPI will live at <span class="mono">/api/docs</span>. Full per-endpoint contract: WIREFRAME.md §7.</p></div></div>
+<h2>Endpoints (mockup contract)</h2><table><tr><th>Method</th><th>Path</th><th>Purpose</th><th>Status</th></tr>
+<tr><td>POST</td><td class="mono">/v1/scans</td><td>Detect: file | text | url, sync or async</td><td><span class="tag ok">exists</span></td></tr>
+<tr><td>GET</td><td class="mono">/v1/scans/{id}</td><td>Status + report</td><td><span class="tag ok">exists</span></td></tr>
+<tr><td>POST</td><td class="mono">/v1/remove</td><td>Detect→Remove→Verify (policy, preset, attestation)</td><td><span class="tag warn">R0–R2</span></td></tr>
+<tr><td>POST</td><td class="mono">/v1/batch</td><td>Multi-file loop → ZIP + manifest</td><td><span class="tag warn">R3</span></td></tr>
+<tr><td>GET</td><td class="mono">/v1/presets</td><td>Platform presets catalogue</td><td><span class="tag warn">R3</span></td></tr>
+<tr><td>GET</td><td class="mono">/v1/registry</td><td>Generator registry</td><td><span class="tag ok">exists</span></td></tr>
+<tr><td>POST</td><td class="mono">/v1/disclosure/check</td><td>Obligations checklist</td><td><span class="tag ok">exists</span></td></tr></table>
+</div></main><footer><div class="wrap"><div class="cols">
+<div><strong>Provenably</strong> <span class="mockchip">mockup v1</span><p style="margin-top:8px">Detect → Remove → Verify → Platform-ready.<br>Reports describe signals &amp; evidence grades; not a verdict on authorship. Not legal advice.</p></div>
+<div><strong>Product</strong><br><a href="scan.html">Scan</a><br><a href="remove.html">Remove</a><br><a href="batch.html">Batch</a><br><a href="presets.html">Platform presets</a></div>
+<div><strong>Reference</strong><br><a href="registry.html">Watermark registry</a><br><a href="rules.html">Platform &amp; law rules</a><br><a href="api.html">API &amp; status</a><br><a href="design-system.html">Design system</a></div>
+<div><strong>Company</strong><br><a href="pricing.html">Pricing</a><br><a href="auth.html">Sign in</a><br><a href="history.html">History</a><br><a href="settings.html">Settings</a></div>
+</div><p style="margin-top:18px">Static mockup — every action is simulated. Backend wiring contract: <span class="mono">WIREFRAME.md</span></p></div></footer>
+<script src="mockup.js"></script></body></html>

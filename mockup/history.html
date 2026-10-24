@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History — scans, removals, exports — Provenably (Mockup)</title><link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%236d28d9'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
+<nav class="nav"><div class="wrap">
+<a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.8" stroke="#fff" stroke-width="2.2"/></svg></span>Provenably<span class="tagline">Detect → Remove → Verify</span></a>
+<a class="item " href="scan.html">Scan</a><a class="item " href="remove.html">Remove</a><a class="item " href="batch.html">Batch</a><a class="item " href="presets.html">Presets</a><a class="item " href="registry.html">Registry</a><a class="item " href="rules.html">Rules</a><a class="item " href="pricing.html">Pricing</a><a class="item " href="api.html">API</a><span class="spacer"></span><span class="mockchip">MOCKUP — no backend</span>
+<a class="item active" href="history.html">History</a>
+<a class="item " href="settings.html">Settings</a>
+<a class="btn small" href="auth.html">Sign in</a></div></nav><main><div class="wrap"><div class="pagehead"><div class="eyebrow">Provenably · Mockup</div><h1>History — scans, removals, exports</h1></div>
+<div class="tabs" data-tabs style="margin-top:20px"><button type="button" data-tab="scans" class="active">Scans</button><button type="button" data-tab="removals">Removals</button><button type="button" data-tab="batches">Batches &amp; exports</button></div>
+<div class="tabpanel active" data-panel="scans"><table><tr><th>When</th><th>File</th><th>Conclusion</th><th>Evidence</th><th>Retention</th><th></th></tr>
+<tr><td class="small muted">Oct 24, 14:05</td><td class="mono">ai_generated_tampered.jpg</td><td class="mono small">tampered_after_signing</td><td><span class="tag ok">strong</span></td><td class="small">blob exp. 23 h</td><td><a href="report.html">report</a> · <a href="remove.html">remove</a></td></tr>
+<tr><td class="small muted">Oct 24, 13:52</td><td class="mono">hero_render.png</td><td class="mono small">ai_generated_watermark</td><td><span class="tag accent">moderate</span></td><td class="small">hash-only</td><td><a href="report.html">report</a></td></tr></table></div>
+<div class="tabpanel" data-panel="removals"><table><tr><th>When</th><th>File</th><th>Preset</th><th>Verdict</th><th>In → Out</th><th></th></tr>
+<tr><td class="small muted">Oct 24, 14:11</td><td class="mono">launch_hero.png</td><td>Instagram</td><td><span class="tag ok">clean</span></td><td class="small">1.4 MB → 1.2 MB</td><td><a href="#">download</a> · <a href="#">JSON</a></td></tr>
+<tr><td class="small muted">Oct 24, 13:40</td><td class="mono">voiceover.wav</td><td>Generic</td><td><span class="tag warn">residual watermark*</span></td><td class="small">96 KB → 94 KB</td><td><a href="#">download</a></td></tr></table><p class="small muted">*Layer-1 clean; embedded mark may remain — stated in report.</p></div>
+<div class="tabpanel" data-panel="batches"><div class="empty">No batches yet<br><span class="small">Run your first batch to see ZIP + manifest exports here.</span><br><a class="btn small" href="batch.html" style="margin-top:10px">Start a batch</a></div></div>
+</div></main><footer><div class="wrap"><div class="cols">
+<div><strong>Provenably</strong> <span class="mockchip">mockup v1</span><p style="margin-top:8px">Detect → Remove → Verify → Platform-ready.<br>Reports describe signals &amp; evidence grades; not a verdict on authorship. Not legal advice.</p></div>
+<div><strong>Product</strong><br><a href="scan.html">Scan</a><br><a href="remove.html">Remove</a><br><a href="batch.html">Batch</a><br><a href="presets.html">Platform presets</a></div>
+<div><strong>Reference</strong><br><a href="registry.html">Watermark registry</a><br><a href="rules.html">Platform &amp; law rules</a><br><a href="api.html">API &amp; status</a><br><a href="design-system.html">Design system</a></div>
+<div><strong>Company</strong><br><a href="pricing.html">Pricing</a><br><a href="auth.html">Sign in</a><br><a href="history.html">History</a><br><a href="settings.html">Settings</a></div>
+</div><p style="margin-top:18px">Static mockup — every action is simulated. Backend wiring contract: <span class="mono">WIREFRAME.md</span></p></div></footer>
+<script src="mockup.js"></script></body></html>

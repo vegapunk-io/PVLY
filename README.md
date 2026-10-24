@@ -28,7 +28,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 Open http://localhost:8000 — Scan · Demo files · Registry · Rules · Text tools · Lab · API & status.
-Interactive OpenAPI at `/api/docs`. Tests: `pytest -q` (17 tests, ~3 s).
+Interactive OpenAPI at `/api/docs`. Tests: `pytest -q` (18 tests, ~3 s).
 
 ## Stack (deliberately boring and scalable)
 

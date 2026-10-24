@@ -1,0 +1,55 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remove — strip footprints, prove it — Provenably (Mockup)</title><link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%236d28d9'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
+<nav class="nav"><div class="wrap">
+<a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.8" stroke="#fff" stroke-width="2.2"/></svg></span>Provenably<span class="tagline">Detect → Remove → Verify</span></a>
+<a class="item " href="scan.html">Scan</a><a class="item active" href="remove.html">Remove</a><a class="item " href="batch.html">Batch</a><a class="item " href="presets.html">Presets</a><a class="item " href="registry.html">Registry</a><a class="item " href="rules.html">Rules</a><a class="item " href="pricing.html">Pricing</a><a class="item " href="api.html">API</a><span class="spacer"></span><span class="mockchip">MOCKUP — no backend</span>
+<a class="item " href="history.html">History</a>
+<a class="item " href="settings.html">Settings</a>
+<a class="btn small" href="auth.html">Sign in</a></div></nav><main><div class="wrap"><div class="pagehead"><div class="eyebrow">Provenably · Mockup</div><h1>Remove — strip footprints, prove it</h1></div>
+<p class="notice info"><strong>Flow:</strong> Detect first (nothing is removed blind) → remove Layer-1 footprints lossless-first → re-scan to verify. Embedded watermarks (SynthID etc.) are <strong>not</strong> removed — see the verify step.</p>
+<div class="grid2" style="margin-top:22px"><div>
+<ol class="steps"><li class="done"><strong>Detect</strong> <span class="muted small">— provenance found in your file</span></li>
+<li><strong>Choose what to remove</strong> <span class="muted small">— presets &amp; per-format options below</span></li>
+<li class="pending"><strong>Verify &amp; download</strong> <span class="muted small">— before/after proof</span></li></ol>
+<div class="drop" style="margin-top:16px"><div class="big">Drop a file to clean</div><p>JPG · PNG · WebP · MP4 · MOV · WAV · MP3 · PDF · DOCX…</p><input type="file"><p class="small drop-file" style="margin-top:8px">Sample loaded: <span class="mono">ai_generated_signed.jpg</span> (mock)</p></div>
+<div class="box" style="margin-top:16px"><div class="row" style="justify-content:space-between"><strong>Detected in this file</strong><a class="small" href="report.html">full report →</a></div>
+<table style="margin-top:8px"><tr><th>Footprint</th><th>Found</th><th>Removable</th></tr>
+<tr><td>C2PA manifest (JUMBF)</td><td><span class="tag warn">present</span></td><td><span class="tag ok">Layer 1</span></td></tr>
+<tr><td>EXIF (camera + GPS)</td><td><span class="tag warn">present</span></td><td><span class="tag ok">Layer 1</span></td></tr>
+<tr><td>XMP / IPTC source type</td><td><span class="tag warn">present</span></td><td><span class="tag ok">Layer 1</span></td></tr>
+<tr><td>Embedded watermark (SynthID-class)</td><td><span class="tag manual">not checked*</span></td><td><span class="tag bad">Layer 2 — stays</span></td></tr></table>
+<p class="small muted">* vendor connector not configured in this deployment — shown honestly, never hidden.</p></div>
+<div class="box"><strong>Removal options</strong>
+<label class="check"><input type="checkbox" checked> Keep ICC colour profile (images)</label>
+<label class="check"><input type="checkbox" checked> Bake EXIF orientation into pixels before stripping EXIF</label>
+<label class="check"><input type="checkbox"> Re-encode <span class="muted">(off = lossless; pixels/samples byte-identical)</span></label>
+<label>Export preset</label><select><option>Generic — verified-clean master (original format)</option><option>Instagram</option><option>YouTube</option><option>TikTok</option><option>LinkedIn</option><option>Pinterest</option><option>Reddit</option><option>X (Twitter)</option></select>
+<label class="check" style="margin-top:14px"><input type="checkbox"> <span><strong>Attestation (required):</strong> this is my content, or I have the right to modify it. I understand removing metadata doesn't remove any legal duty I have to disclose synthetic content.</span></label>
+<div class="row" style="margin-top:12px"><button type="button" data-mock-action="#remove-result">Remove footprints</button><span class="small muted">Backend: roadmap R0–R2</span></div></div>
+<div id="remove-result" class="result hidden"></div></div>
+<div><div class="box"><div class="row" style="justify-content:space-between"><strong>Verify — before / after</strong><span class="tag ok">verdict: clean</span></div>
+<table style="margin-top:10px"><tr><th>Group</th><th>Before</th><th>After</th></tr>
+<tr><td class="mono">C2PA</td><td><span class="diff-removed">present</span></td><td><span class="tag ok">absent</span></td></tr>
+<tr><td class="mono">EXIF</td><td><span class="diff-removed">present</span></td><td><span class="tag ok">absent</span></td></tr>
+<tr><td class="mono">XMP</td><td><span class="diff-removed">present</span></td><td><span class="tag ok">absent</span></td></tr>
+<tr><td class="mono">IPTC</td><td class="muted">absent</td><td><span class="tag ok">absent</span></td></tr>
+<tr><td class="mono">ICC</td><td class="diff-kept">kept (policy)</td><td><span class="tag accent">kept</span></td></tr></table>
+<p class="small muted" style="margin-top:8px">302,188 B → 174,424 B · lossless: yes · pixels identical · idempotent ✓</p>
+<p class="small"><span class="mono">sha256 in</span> 9f2c…a104 &nbsp;·&nbsp; <span class="mono">out</span> 41bd…77e0</p>
+<p class="notice small">Metadata removed. Embedded watermarks, if present, are not removed.</p>
+<div class="row"><a class="btn small" href="#">Download cleaned file (mock)</a><a class="btn small secondary" href="report.html">Removal report (JSON)</a></div></div>
+<div class="box"><strong>What gets removed, by format</strong><table>
+<tr><td><strong>Image</strong></td><td class="small">C2PA, EXIF, XMP, IPTC, comments, PNG text, thumbnails</td></tr>
+<tr><td><strong>Video</strong></td><td class="small">C2PA boxes, container/encoder tags (streams untouched)</td></tr>
+<tr><td><strong>Audio</strong></td><td class="small">C2PA chunks, ID3, RIFF INFO, Vorbis/MP4 tags</td></tr>
+<tr><td><strong>Docs</strong></td><td class="small">Authors, company, tracked changes, attachments, embedded-media tags</td></tr></table>
+<div style="margin-top:10px"><div class="fmtstrip"><span class="fmt">JPG</span><span class="fmt">PNG</span><span class="fmt">WebP</span><span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">WebM</span><span class="fmt">WAV</span><span class="fmt">MP3</span><span class="fmt">M4A</span><span class="fmt">FLAC</span><span class="fmt">OGG</span><span class="fmt">PDF</span><span class="fmt">DOCX</span><span class="fmt">TXT</span><span class="fmt">HEIC*</span><span class="fmt">AVIF*</span></div><p class="small muted" style="margin-top:6px">* roadmap (PHILOSOPHY R4)</p></div></div></div></div>
+</div></main><footer><div class="wrap"><div class="cols">
+<div><strong>Provenably</strong> <span class="mockchip">mockup v1</span><p style="margin-top:8px">Detect → Remove → Verify → Platform-ready.<br>Reports describe signals &amp; evidence grades; not a verdict on authorship. Not legal advice.</p></div>
+<div><strong>Product</strong><br><a href="scan.html">Scan</a><br><a href="remove.html">Remove</a><br><a href="batch.html">Batch</a><br><a href="presets.html">Platform presets</a></div>
+<div><strong>Reference</strong><br><a href="registry.html">Watermark registry</a><br><a href="rules.html">Platform &amp; law rules</a><br><a href="api.html">API &amp; status</a><br><a href="design-system.html">Design system</a></div>
+<div><strong>Company</strong><br><a href="pricing.html">Pricing</a><br><a href="auth.html">Sign in</a><br><a href="history.html">History</a><br><a href="settings.html">Settings</a></div>
+</div><p style="margin-top:18px">Static mockup — every action is simulated. Backend wiring contract: <span class="mono">WIREFRAME.md</span></p></div></footer>
+<script src="mockup.js"></script></body></html>

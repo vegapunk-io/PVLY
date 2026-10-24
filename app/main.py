@@ -17,7 +17,6 @@ import threading
 import time
 import urllib.parse
 import urllib.request
-import uuid
 from typing import Optional
 
 from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
@@ -27,7 +26,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
 
-from . import config, db, pipeline, sanitizer
+from . import config, db, pipeline
 from .analyzers import text_an
 from .analyzers.c2pa_an import HAVE_SDK as HAVE_C2PA, trust_sources
 from .rules import engine
@@ -112,7 +111,12 @@ def _startup():
 # ------------------------------------------------------------------------------------------------ UI routes
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return _render(request, "sanitize.html", recent=db.list_sanitize_jobs(8))
+    return _render(request, "scan.html", recent=db.list_scans(8))
+
+
+@app.get("/scan", response_class=HTMLResponse)
+def scan_page(request: Request):
+    return _render(request, "scan.html", recent=db.list_scans(8))
 
 
 @app.get("/report/{scan_id}", response_class=HTMLResponse)
@@ -151,11 +155,6 @@ def tools_page(request: Request):
 @app.get("/lab", response_class=HTMLResponse)
 def lab_page(request: Request):
     return _render(request, "lab.html")
-
-
-@app.get("/sanitize", response_class=HTMLResponse)
-def sanitize_page(request: Request):
-    return _render(request, "sanitize.html", recent=db.list_sanitize_jobs(8))
 
 
 @app.get("/docs-guide", response_class=HTMLResponse)
@@ -270,85 +269,6 @@ def demo_asset(name: str):
     if not p.is_file():
         raise HTTPException(404)
     return FileResponse(p)
-
-
-# ------------------------------------------------------------------------------------------------ API: sanitize (Phase 1–2)
-_SANITIZE_EXT = {"jpeg": ".jpg", "png": ".png", "webp": ".webp", "pdf": ".pdf", "docx": ".docx"}
-
-
-@app.post("/v1/detect", dependencies=[Depends(require_api_key)])
-async def detect_api(file: UploadFile = File(...)):
-    """Inspect a JPEG/PNG/WebP/PDF/DOCX for metadata and C2PA without modifying it."""
-    data = await file.read()
-    if not data:
-        raise HTTPException(400, "empty file")
-    if len(data) > config.MAX_UPLOAD_MB * 1024 * 1024:
-        raise HTTPException(413, f"file exceeds {config.MAX_UPLOAD_MB} MB")
-    try:
-        inspection = await run_in_threadpool(sanitizer.inspect_bytes, data)
-    except sanitizer.UnsupportedFormat as e:
-        raise HTTPException(415, str(e))
-    return {
-        "file": {"filename": file.filename, "mime": file.content_type, "bytes": len(data),
-                 "sha256": __import__("hashlib").sha256(data).hexdigest()},
-        "inspection": inspection,
-    }
-
-
-@app.post("/v1/sanitize", dependencies=[Depends(require_api_key)])
-async def sanitize_api(file: UploadFile = File(...),
-                       keep_icc: bool = Form(default=True),
-                       reencode: bool = Form(default=False),
-                       keep_orientation: bool = Form(default=True)):
-    """Strip metadata/C2PA from a JPEG/PNG/WebP/PDF/DOCX, verify, store the result and return the report."""
-    data = await file.read()
-    if not data:
-        raise HTTPException(400, "empty file")
-    if len(data) > config.MAX_UPLOAD_MB * 1024 * 1024:
-        raise HTTPException(413, f"file exceeds {config.MAX_UPLOAD_MB} MB")
-    policy = sanitizer.SanitizePolicy(keep_icc=keep_icc, reencode=reencode, keep_orientation=keep_orientation)
-    try:
-        out, report = await run_in_threadpool(sanitizer.sanitize_bytes, data, file.filename or "upload", policy)
-    except sanitizer.UnsupportedFormat as e:
-        raise HTTPException(415, str(e))
-
-    job_id = uuid.uuid4().hex[:12]
-    ext = pathlib.Path(file.filename or "").suffix.lower() or _SANITIZE_EXT[report["file"]["format"]]
-    out_path = config.BLOB_DIR / f"san-{job_id}{ext}"
-    out_path.write_bytes(out)
-    report["job_id"] = job_id
-    report["download_url"] = f"/v1/sanitize/{job_id}/file"
-    db.create_sanitize_job(job_id, file.filename or "upload", report["file"]["mime"], report["file"]["format"],
-                           len(data), report["file"]["sha256_in"], policy.__dict__, str(out_path))
-    db.save_sanitize_report(job_id, report, len(out), report["file"]["sha256_out"])
-    return report
-
-
-@app.get("/v1/sanitize", dependencies=[Depends(require_api_key)])
-def list_sanitize(limit: int = 25):
-    return {"jobs": db.list_sanitize_jobs(min(limit, 200))}
-
-
-@app.get("/v1/sanitize/{job_id}", dependencies=[Depends(require_api_key)])
-def get_sanitize_job(job_id: str):
-    row = db.get_sanitize_job(job_id)
-    if not row:
-        raise HTTPException(404)
-    out = {k: row[k] for k in ("id", "created_at", "status", "filename", "mime", "format",
-                               "bytes_in", "bytes_out", "sha256_in", "sha256_out", "error")}
-    if row.get("report_json"):
-        out["report"] = json.loads(row["report_json"])
-    return out
-
-
-@app.get("/v1/sanitize/{job_id}/file")
-def sanitize_download(job_id: str):
-    row = db.get_sanitize_job(job_id)
-    if not row or not row.get("blob_path") or not pathlib.Path(row["blob_path"]).exists():
-        raise HTTPException(404)
-    stem = pathlib.Path(row["filename"] or "file").stem
-    return FileResponse(row["blob_path"], media_type=row["mime"] or "application/octet-stream",
-                        filename=f"{stem}.sanitized{pathlib.Path(row['blob_path']).suffix}")
 
 
 # ------------------------------------------------------------------------------------------------ API: rules & registry
@@ -467,10 +387,6 @@ def capabilities() -> dict:
             "platform_label_preview": True,
             "disclosure_checklist": True,
             "registry": len(engine.REGISTRY),
-            "sanitize_jpeg_png_webp": True,
-            "sanitize_pdf": _try("pikepdf"),
-            "sanitize_docx": _try("lxml"),
-            "sanitize_verify": True,
         },
         "manual_integration": {
             "openai_verify_connector": bool(config.OPENAI_VERIFY_ENDPOINT and config.OPENAI_VERIFY_API_KEY),

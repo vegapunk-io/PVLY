@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Provenance report — Provenably (Mockup)</title><link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%236d28d9'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
+<nav class="nav"><div class="wrap">
+<a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.8" stroke="#fff" stroke-width="2.2"/></svg></span>Provenably<span class="tagline">Detect → Remove → Verify</span></a>
+<a class="item active" href="scan.html">Scan</a><a class="item " href="remove.html">Remove</a><a class="item " href="batch.html">Batch</a><a class="item " href="presets.html">Presets</a><a class="item " href="registry.html">Registry</a><a class="item " href="rules.html">Rules</a><a class="item " href="pricing.html">Pricing</a><a class="item " href="api.html">API</a><span class="spacer"></span><span class="mockchip">MOCKUP — no backend</span>
+<a class="item " href="history.html">History</a>
+<a class="item " href="settings.html">Settings</a>
+<a class="btn small" href="auth.html">Sign in</a></div></nav><main><div class="wrap"><div class="pagehead"><div class="eyebrow">Provenably · Mockup</div><h1>Provenance report</h1></div>
+<p><a href="scan.html">← New scan</a> &nbsp;·&nbsp; <a href="remove.html">Remove footprints from this file →</a> &nbsp;·&nbsp; <a href="#">Download report.json</a></p>
+<div class="conclusion tampered" style="margin-top:14px"><div class="row" style="justify-content:space-between"><span class="label">Signed content was modified after signing</span><span class="tag bad">tampered</span></div>
+<p style="margin-top:8px"><span class="tag ok">evidence: strong</span> <span class="small muted">decisive signal: Content Credentials (C2PA)</span></p>
+<p class="small" style="margin-top:8px">The embedded Content Credential's hard binding no longer matches the pixels/bytes — the content was edited or re-encoded after signing. This is NOT by itself evidence of AI; treat the manifest as stale.</p></div>
+<div class="grid2" style="margin-top:18px"><div class="box"><h3 style="margin-top:0">File</h3><dl class="kv">
+<dt>Filename</dt><dd class="mono">ai_generated_tampered.jpg</dd><dt>MIME / modality</dt><dd>image/jpeg · image</dd>
+<dt>Size</dt><dd>297,302 B</dd><dt>SHA-256</dt><dd class="mono">8aa1…f903</dd><dt>Scanned</dt><dd>2026-10-24 14:05 UTC · 412 ms</dd>
+<dt>Trust sources</dt><dd class="small">Demo root CA (test only)</dd></dl>
+<div class="empty" style="margin-top:14px">▦ Image preview (mock)<br><span class="small">preview.jpg while bytes retained</span></div></div>
+<div class="box"><h3 style="margin-top:0">Coverage — what actually ran</h3>
+<p><span class="dot ok"></span><strong>9 live</strong> &nbsp; <span class="dot warn"></span><strong>5 manual</strong> &nbsp; <span class="dot bad"></span><strong>0 errors</strong></p>
+<table><tr><th>Manual module</th><th>Enabling step</th></tr>
+<tr><td>Google SynthID Detector</td><td class="small">Partner API credentials</td></tr>
+<tr><td>OpenAI Verify</td><td class="small">API key + endpoint</td></tr>
+<tr><td>Official C2PA trust list</td><td class="small">Run trust-list fetch</td></tr>
+<tr><td>AudioSeal / Video Seal</td><td class="small">Install on GPU worker</td></tr></table>
+<p class="small muted">So a “clean” result can never be over-read.</p></div></div>
+<h2>Signals</h2>
+<div class="signal"><div><div class="name">Content Credentials (C2PA)</div><div class="meta">c2pa-rs 0.91 · 96 ms</div></div><div><span class="tag bad">detected</span> <span class="tag ok">strong</span><p class="small" style="margin-top:5px">Manifest present (issuer “Provenably Demo”); <span class="mono">assertion.dataHash.mismatch</span> — bytes changed after signing.</p><details><summary>Raw signal data</summary><pre>{"state":"invalid","validation":["assertion.dataHash.mismatch"],"digital_source_type":"trainedAlgorithmicMedia"}</pre></details></div></div>
+<div class="signal"><div><div class="name">Metadata forensics</div><div class="meta">EXIF/XMP/IPTC walk · 18 ms</div></div><div><span class="tag">info</span> <span class="tag">none</span><p class="small" style="margin-top:5px">Ordinary metadata; no AI source-type fields outside the manifest.</p></div></div>
+<div class="signal"><div><div class="name">DWT-DCT watermark (SD/SDXL)</div><div class="meta">numpy/pywt decoder · 210 ms</div></div><div><span class="tag">absent</span> <span class="tag">none</span><p class="small" style="margin-top:5px">No payload matched (best 51%). A miss proves nothing: resizing destroys this scheme.</p></div></div>
+<div class="signal"><div><div class="name">SynthID (Google/OpenAI)</div><div class="meta">vendor connector</div></div><div><span class="tag manual">not configured</span><p class="how">Enable: partner API access + GOOGLE_SYNTHID_ENDPOINT. Until then this check did not run.</p></div></div>
+<h2>Platform label preview</h2><table><tr><th>Platform</th><th>Likely label</th><th>Why</th></tr>
+<tr><td>Instagram</td><td><span class="tag warn">AI info</span></td><td class="small">C2PA/IPTC AI source type present at upload time</td></tr>
+<tr><td>YouTube</td><td><span class="tag">creator disclosure</span></td><td class="small">Altered-content disclosure expected</td></tr>
+<tr><td>LinkedIn</td><td><span class="tag">none predicted</span></td><td class="small">No auto-label trigger matched</td></tr></table>
+<p class="row" style="margin-top:18px"><a class="btn" href="remove.html">Remove footprints from this file</a><a class="btn secondary" href="rules.html">Check disclosure obligations</a><a class="btn dark" href="#">Download JSON</a></p>
+<details><summary>Full report JSON (schema preview)</summary><pre>{"scan_id":"d9b29eb0c727","conclusion":{"provenance_class":"tampered_after_signing","evidence_grade":"strong"},"signals":[…],"coverage":{"live":9,"manual":5},"platform_preview":[…]}</pre></details>
+</div></main><footer><div class="wrap"><div class="cols">
+<div><strong>Provenably</strong> <span class="mockchip">mockup v1</span><p style="margin-top:8px">Detect → Remove → Verify → Platform-ready.<br>Reports describe signals &amp; evidence grades; not a verdict on authorship. Not legal advice.</p></div>
+<div><strong>Product</strong><br><a href="scan.html">Scan</a><br><a href="remove.html">Remove</a><br><a href="batch.html">Batch</a><br><a href="presets.html">Platform presets</a></div>
+<div><strong>Reference</strong><br><a href="registry.html">Watermark registry</a><br><a href="rules.html">Platform &amp; law rules</a><br><a href="api.html">API &amp; status</a><br><a href="design-system.html">Design system</a></div>
+<div><strong>Company</strong><br><a href="pricing.html">Pricing</a><br><a href="auth.html">Sign in</a><br><a href="history.html">History</a><br><a href="settings.html">Settings</a></div>
+</div><p style="margin-top:18px">Static mockup — every action is simulated. Backend wiring contract: <span class="mono">WIREFRAME.md</span></p></div></footer>
+<script src="mockup.js"></script></body></html>
