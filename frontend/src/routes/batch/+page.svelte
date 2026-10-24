@@ -7,8 +7,10 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import Notice from '#lib/components/Notice.svelte';
 	import PageHead from '#lib/components/PageHead.svelte';
+	import PlatformMark from '#lib/components/PlatformMark.svelte';
 	import StateBlock from '#lib/components/StateBlock.svelte';
 	import Tag from '#lib/components/Tag.svelte';
+	import { platformLabel } from '#lib/data/platform-labels.js';
 	import { genericPreset, presetDefinitions } from '#lib/data/presets.js';
 	import { formatBytes, gradeTone, titleCaseToken } from '#lib/format.js';
 	import type { EvidenceGrade } from '#lib/types.js';
@@ -47,6 +49,10 @@
 	const currentItem = $derived(
 		queue.find((item) => item.status === 'uploading' || item.status === 'running')
 	);
+	const selectedPresetDefinition = $derived(
+		allPresets.find((preset) => preset.slug === selectedPreset) ?? genericPreset
+	);
+	const selectedPresetLabel = $derived(platformLabel(selectedPreset));
 	const overallFraction = $derived.by(() => {
 		if (!queue.length) return 0;
 		const currentFraction =
@@ -360,17 +366,26 @@
 
 				<div class="field">
 					<label for="batch-preset">Requested platform preset</label>
-					<select
-						id="batch-preset"
-						bind:value={selectedPreset}
-						aria-describedby="batch-preset-hint"
-					>
-						{#each allPresets as preset (preset.slug)}<option value={preset.slug}
-								>{preset.name}</option
-							>{/each}
-					</select>
+					<div class="preset-choice">
+						<PlatformMark
+							slug={selectedPresetDefinition.slug}
+							name={selectedPresetDefinition.name}
+							size={38}
+						/>
+						<select
+							id="batch-preset"
+							bind:value={selectedPreset}
+							aria-describedby="batch-preset-hint"
+						>
+							{#each allPresets as preset (preset.slug)}<option value={preset.slug}
+									>{preset.name}</option
+								>{/each}
+						</select>
+					</div>
 					<p class="field-hint" id="batch-preset-hint">
-						Stored in the Detect manifest now; applied to outputs when R3 lands.
+						<strong>{selectedPresetLabel.labelDisplay}:</strong>
+						{selectedPresetLabel.labelSubtext} Stored in the Detect manifest now; applied to outputs when
+						R3 lands.
 					</p>
 				</div>
 
@@ -453,6 +468,17 @@
 		gap: 1rem;
 		position: sticky;
 		top: calc(var(--header-height) + 1rem);
+	}
+
+	.preset-choice {
+		align-items: center;
+		display: flex;
+		gap: 0.7rem;
+	}
+
+	.preset-choice select {
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	.batch-summary {

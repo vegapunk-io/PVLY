@@ -56,7 +56,10 @@ export default defineConfig({
 		sourcemap: false,
 		reportCompressedSize: true,
 		chunkSizeWarningLimit: 120,
-		assetsInlineLimit: 2048
+		// The primary brand mark appears in the favicon, header and footer on every page;
+		// emit it once as a cacheable immutable file instead of inlining it repeatedly.
+		assetsInlineLimit: (filePath, content) =>
+			filePath.includes('provenably-mark.png') ? false : content.byteLength <= 2048
 	},
 	test: {
 		expect: { requireAssertions: true },

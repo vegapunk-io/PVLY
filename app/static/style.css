@@ -29,7 +29,8 @@ p { margin: 0 0 10px; }
 /* nav */
 .nav { border-bottom: 1px solid var(--line); }
 .nav .wrap { display: flex; align-items: center; gap: 20px; height: 52px; white-space: nowrap; overflow-x: auto; }
-.brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; margin-right: 10px; }
+.brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; margin-right: 10px; }
+.brand img { display: block; flex: 0 0 auto; object-fit: contain; }
 .brand span { color: var(--muted); font-weight: 400; margin-left: 8px; font-size: 0.85rem; }
 @media (max-width: 1100px) { .brand span { display: none; } }
 .nav a.item { color: var(--ink); font-size: 0.93rem; }
@@ -93,11 +94,6 @@ tr:hover td { background: #fafaf9; }
 /* conclusion block */
 .conclusion { border: 1px solid var(--ink); padding: 18px 20px; }
 .conclusion .label { font-size: 1.25rem; font-weight: 600; }
-.conclusion.strong { border-left: 6px solid var(--ok); }
-.conclusion.moderate { border-left: 6px solid var(--accent); }
-.conclusion.weak { border-left: 6px solid var(--warn); }
-.conclusion.none { border-left: 6px solid var(--muted); }
-.conclusion.tampered { border-left: 6px solid var(--bad); }
 .kv { display: grid; grid-template-columns: 180px 1fr; gap: 4px 12px; font-size: 0.9rem; }
 .kv dt { color: var(--muted); } .kv dd { margin: 0; word-break: break-all; }
 details { border: 1px solid var(--line); padding: 8px 12px; margin-top: 8px; }
@@ -107,8 +103,8 @@ details pre { margin-top: 8px; max-height: 420px; }
 .signal .name { font-weight: 600; }
 .signal .meta { color: var(--muted); font-size: 0.8rem; }
 .signal .how { font-size: 0.86rem; color: var(--warn); margin-top: 4px; }
-.notice { border-left: 3px solid var(--warn); padding: 8px 12px; background: #fffaf0; font-size: 0.9rem; }
-.notice.info { border-left-color: var(--accent); background: #f3f6fd; }
+.notice { border: 1px solid var(--line); padding: 10px 12px; background: #fffaf0; font-size: 0.9rem; }
+.notice.info { background: #f3f6fd; }
 .steps { counter-reset: s; padding: 0; list-style: none; }
 .steps li { counter-increment: s; padding: 6px 0 6px 28px; position: relative; font-size: 0.92rem; }
 .steps li::before { content: counter(s); position: absolute; left: 0; top: 7px; width: 18px; height: 18px; border: 1px solid var(--ink); font-size: 0.72rem; text-align: center; line-height: 17px; }

@@ -7,14 +7,16 @@
 	import Notice from '#lib/components/Notice.svelte';
 	import PageHead from '#lib/components/PageHead.svelte';
 	import PlatformCard from '#lib/components/PlatformCard.svelte';
+	import PlatformMark from '#lib/components/PlatformMark.svelte';
 	import Tag from '#lib/components/Tag.svelte';
+	import { platformLabel } from '#lib/data/platform-labels.js';
 	import {
 		findPreset,
 		genericPreset,
 		presetDefinitions,
 		type PresetDefinition
 	} from '#lib/data/presets.js';
-	import { confidenceTone, titleCaseToken } from '#lib/format.js';
+	import { confidenceTone } from '#lib/format.js';
 	import { getPreferences, setPreferences } from '#lib/settings.js';
 	import type { PlatformRule } from '#lib/types.js';
 
@@ -27,6 +29,11 @@
 
 	const selectedPreset = $derived(findPreset(selectedSlug));
 	const selectedRule = $derived(platformRules.find((platform) => platform.slug === selectedSlug));
+	const selectedLabel = $derived(platformLabel(selectedSlug));
+
+	function sourceName(url: string): string {
+		return selectedLabel.sources.find((source) => source.url === url)?.label ?? url;
+	}
 
 	function persistPreset(slug: string): void {
 		const preferences = getPreferences();
@@ -71,8 +78,9 @@
 		<h1>Export for the destination, not just the file type.</h1>
 		<p class="lede">
 			A preset combines format and size targets, the Layer-1 removal policy, a verification pass and
-			the platform’s current label context. Select a destination to inspect exactly what will be
-			carried into Remove.
+			the exact label each destination can show. Label wording and documented detection signals were
+			rechecked on 24 October 2026. Select a destination to inspect what will be carried into
+			Remove.
 		</p>
 	</header>
 
@@ -89,10 +97,20 @@
 		</div>
 	</section>
 
+	<p class="small muted trademark-note">
+		Platform names and marks belong to their owners. PVLY uses founder-supplied marks only to
+		identify export destinations; no endorsement or partnership is implied.
+	</p>
+
 	<div class="grid grid--sidebar preset-layout">
 		<section class="card card--canvas" aria-labelledby="export-title" aria-live="polite">
-			<p class="eyebrow">Export configuration</p>
-			<h2 id="export-title">{selectedPreset.name}</h2>
+			<div class="selected-heading">
+				<PlatformMark slug={selectedPreset.slug} name={selectedPreset.name} size={52} />
+				<div>
+					<p class="eyebrow">Export configuration</p>
+					<h2 id="export-title">{selectedPreset.name}</h2>
+				</div>
+			</div>
 			<dl class="kv">
 				<dt>Media</dt>
 				<dd>{selectedPreset.media}</dd>
@@ -100,8 +118,15 @@
 				<dd>{selectedPreset.formats}</dd>
 				<dt>Output</dt>
 				<dd>{selectedPreset.output}</dd>
-				<dt>Label note</dt>
-				<dd>{selectedPreset.labelNote}</dd>
+				<dt>Platform shows</dt>
+				<dd>
+					<strong>{selectedLabel.labelDisplay}</strong><br />
+					{selectedLabel.labelSubtext}
+				</dd>
+				<dt>Platform can read</dt>
+				<dd>{selectedLabel.signalSummary}</dd>
+				<dt>Disclosure duty</dt>
+				<dd>{selectedLabel.disclosureDuty}</dd>
 				<dt>Creator duty</dt>
 				<dd>{selectedPreset.creatorDuty}</dd>
 			</dl>
@@ -180,18 +205,38 @@
 						>
 					</div>
 					<dl class="kv">
-						<dt>Platform label</dt>
-						<dd>{selectedRule.label_text}</dd>
-						<dt>Auto-label triggers</dt>
-						<dd>{selectedRule.auto_label_triggers.map(titleCaseToken).join(', ')}</dd>
+						<dt>Viewer label</dt>
+						<dd>
+							<strong>{selectedRule.label_text}</strong><br />
+							{selectedRule.label_subtext}
+						</dd>
+						<dt>What it can read</dt>
+						<dd>{selectedRule.metadata_signals.join(' · ')}</dd>
+						<dt>Detection</dt>
+						<dd>{selectedRule.detection_summary}</dd>
 						<dt>On edits</dt>
 						<dd>{selectedRule.label_on_edit}</dd>
-						<dt>Removal policy</dt>
+						<dt>Label change</dt>
 						<dd>{selectedRule.removal_policy}</dd>
 						<dt>Monetization</dt>
 						<dd>{selectedRule.monetization_impact}</dd>
-						<dt>Last verified</dt>
-						<dd>{selectedRule.last_verified}</dd>
+						<dt>Rule triggers</dt>
+						<dd><code>{selectedRule.auto_label_triggers.join(', ')}</code></dd>
+						<dt>Checked</dt>
+						<dd>
+							{selectedRule.last_verified}
+							{#if selectedRule.sources.length}
+								<span class="source-links">
+									{#each selectedRule.sources as source (source)}
+										<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- External research source. -->
+										<a href={source} target="_blank" rel="noreferrer">
+											{sourceName(source)}
+											<Icon name="external" size={13} />
+										</a>
+									{/each}
+								</span>
+							{/if}
+						</dd>
 					</dl>
 					{#if selectedRule.notes}<p class="small muted">{selectedRule.notes}</p>{/if}
 				</section>
@@ -219,9 +264,28 @@
 		margin-bottom: 1.5rem;
 	}
 
+	.trademark-note {
+		margin-top: 0.8rem;
+	}
+
 	.preset-layout {
 		align-items: start;
 		margin-top: 2rem;
+	}
+
+	.selected-heading {
+		align-items: center;
+		display: flex;
+		gap: 0.9rem;
+		margin-bottom: 1.2rem;
+	}
+
+	.selected-heading .eyebrow {
+		margin-bottom: 0.2rem;
+	}
+
+	.selected-heading h2 {
+		margin: 0;
 	}
 
 	.export-options {

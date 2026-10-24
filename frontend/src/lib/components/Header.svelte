@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import BrandMark from './BrandMark.svelte';
 	import Icon from './Icon.svelte';
 
 	const primaryLinks = [
@@ -61,7 +62,7 @@
 			aria-label="Provenably home"
 			aria-current={isCurrent('/') ? 'page' : undefined}
 		>
-			<span class="brand__mark" aria-hidden="true"><Icon name="check" size={19} /></span>
+			<BrandMark size={44} decorative />
 			<span class="brand__copy">
 				<span class="brand__name">Provenably</span>
 				<span class="brand__tagline">AI provenance &amp; metadata control</span>
@@ -150,17 +151,6 @@
 	.brand:hover {
 		color: var(--ink);
 		text-decoration: none;
-	}
-
-	.brand__mark {
-		align-items: center;
-		background: var(--primary);
-		border-radius: 9px;
-		color: var(--on-primary);
-		display: inline-flex;
-		height: 2.15rem;
-		justify-content: center;
-		width: 2.15rem;
 	}
 
 	.brand__copy {

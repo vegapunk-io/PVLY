@@ -7,8 +7,10 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import Notice from '#lib/components/Notice.svelte';
 	import PageHead from '#lib/components/PageHead.svelte';
+	import PlatformMark from '#lib/components/PlatformMark.svelte';
 	import StateBlock from '#lib/components/StateBlock.svelte';
 	import Tag from '#lib/components/Tag.svelte';
+	import { platformLabel } from '#lib/data/platform-labels.js';
 	import { genericPreset, presetDefinitions } from '#lib/data/presets.js';
 	import { formatBytes, gradeTone, shortenHash, titleCaseToken } from '#lib/format.js';
 	import { getPreferences, setPreferences } from '#lib/settings.js';
@@ -41,6 +43,7 @@
 		uploadProgress === null ? null : Math.round(uploadProgress * 100)
 	);
 	const preset = $derived(allPresets.find((item) => item.slug === selectedPreset) ?? genericPreset);
+	const presetLabel = $derived(platformLabel(preset.slug));
 
 	function signalFor(kind: string): Signal | undefined {
 		return report?.signals.find((signal) => signal.kind === kind);
@@ -418,11 +421,18 @@
 
 				<div class="field">
 					<label for="remove-preset">Export preset</label>
-					<select id="remove-preset" bind:value={selectedPreset}>
-						{#each allPresets as item (item.slug)}<option value={item.slug}>{item.name}</option
-							>{/each}
-					</select>
-					<p class="field-hint">{preset.output}. {preset.labelNote}.</p>
+					<div class="preset-choice">
+						<PlatformMark slug={preset.slug} name={preset.name} size={38} />
+						<select id="remove-preset" bind:value={selectedPreset}>
+							{#each allPresets as item (item.slug)}<option value={item.slug}>{item.name}</option
+								>{/each}
+						</select>
+					</div>
+					<p class="field-hint">
+						{preset.output}. <strong>{presetLabel.labelDisplay}:</strong>
+						{presetLabel.labelSubtext}
+						{presetLabel.signalSummary}.
+					</p>
 				</div>
 
 				<fieldset>
@@ -596,6 +606,17 @@
 		gap: 1rem;
 		position: sticky;
 		top: calc(var(--header-height) + 1rem);
+	}
+
+	.preset-choice {
+		align-items: center;
+		display: flex;
+		gap: 0.7rem;
+	}
+
+	.preset-choice select {
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	.policy-summary {

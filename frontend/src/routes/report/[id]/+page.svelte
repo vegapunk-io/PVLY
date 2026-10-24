@@ -6,6 +6,7 @@
 	import ConclusionCard from '#lib/components/ConclusionCard.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import PageHead from '#lib/components/PageHead.svelte';
+	import PlatformMark from '#lib/components/PlatformMark.svelte';
 	import SignalCard from '#lib/components/SignalCard.svelte';
 	import StateBlock from '#lib/components/StateBlock.svelte';
 	import Tag from '#lib/components/Tag.svelte';
@@ -17,7 +18,8 @@
 		safeJson,
 		titleCaseToken
 	} from '#lib/format.js';
-	import type { ScanDetail, Signal } from '#lib/types.js';
+	import { platformLabel } from '#lib/data/platform-labels.js';
+	import type { PlatformPreview, ScanDetail, Signal } from '#lib/types.js';
 
 	const scanId = $derived(page.params.id ?? '');
 
@@ -173,6 +175,10 @@
 
 	function likelyTone(value: string): string {
 		return value === 'yes' ? 'tag--ok' : value === 'unknown' ? 'tag--warn' : '';
+	}
+
+	function previewSourceName(preview: PlatformPreview, url: string): string {
+		return platformLabel(preview.slug).sources.find((source) => source.url === url)?.label ?? url;
 	}
 
 	const rulesHref = $derived.by(() => {
@@ -456,38 +462,74 @@
 			<section class="platforms" aria-labelledby="platform-preview-title">
 				<h2 id="platform-preview-title">Platform label preview</h2>
 				<p class="muted">
-					Derived from this file’s signals and Provenably’s dated platform rules. A platform can
-					still act on signals outside the file.
+					Derived from this file’s signals and Provenably’s platform rules, rechecked on 24 October
+					2026. The viewer wording is shown separately from the file evidence because a platform can
+					still act on creator declarations, native tools, classifiers or watermarks outside this
+					scan.
 				</p>
 				<div class="table-wrap">
-					<table>
+					<table class="platform-preview-table">
 						<caption class="visually-hidden">Likely platform labelling for this scan</caption>
-						<thead
-							><tr
-								><th scope="col">Platform</th><th scope="col">Label likely?</th><th scope="col"
-									>Why</th
-								><th scope="col">Rule confidence</th></tr
-							></thead
-						>
+						<thead>
+							<tr>
+								<th scope="col">Platform</th>
+								<th scope="col">Label likely?</th>
+								<th scope="col">Viewer label</th>
+								<th scope="col">Why this file</th>
+								<th scope="col">Documented signals</th>
+								<th scope="col">Rule evidence</th>
+							</tr>
+						</thead>
 						<tbody>
 							{#each report.platform_preview as preview (preview.slug)}
 								<tr>
-									<th scope="row"
-										>{preview.platform}<br /><span class="small muted">{preview.label_text}</span
-										></th
-									>
+									<th scope="row">
+										<span class="platform-cell">
+											<PlatformMark slug={preview.slug} name={preview.platform} size={34} />
+											<span class="platform-cell__copy"><span>{preview.platform}</span></span>
+										</span>
+									</th>
 									<td><Tag tone={likelyTone(preview.likely_label)}>{preview.likely_label}</Tag></td>
+									<td>
+										<span class="platform-cell__label">{preview.label_text}</span><br />
+										<span class="small muted">{preview.label_subtext}</span>
+									</td>
 									<td>{preview.reasons.join('; ')}</td>
-									<td
-										>{preview.confidence}<br /><span class="small muted"
-											>verified {preview.last_verified}</span
-										></td
-									>
+									<td>
+										<strong>{preview.metadata_signals.join(' · ')}</strong><br />
+										<span class="small muted"><strong>Duty:</strong> {preview.creator_duty}</span>
+									</td>
+									<td>
+										{preview.confidence}<br />
+										<span class="small muted">verified {preview.last_verified}</span>
+										{#if preview.sources.length}
+											<span class="source-links">
+												{#each preview.sources as source, index (source)}
+													<!-- eslint-disable svelte/no-navigation-without-resolve -- External research source. -->
+													<a
+														href={source}
+														target="_blank"
+														rel="noreferrer"
+														aria-label={previewSourceName(preview, source)}
+														title={previewSourceName(preview, source)}
+													>
+														Source {index + 1}
+														<Icon name="external" size={13} />
+													</a>
+													<!-- eslint-enable svelte/no-navigation-without-resolve -->
+												{/each}
+											</span>
+										{/if}
+									</td>
 								</tr>
 							{/each}
 						</tbody>
 					</table>
 				</div>
+				<p class="small muted trademark-note">
+					Platform marks identify destinations only and belong to their owners. “No” means no
+					documented file trigger was found in this scan—not that publication is risk-free.
+				</p>
 			</section>
 
 			<section class="next-steps" aria-labelledby="next-title">
@@ -654,6 +696,14 @@
 	.platforms,
 	.next-steps {
 		margin-top: clamp(2.5rem, 6vw, 4rem);
+	}
+
+	.platform-preview-table {
+		min-width: 1080px;
+	}
+
+	.trademark-note {
+		margin-top: 0.8rem;
 	}
 
 	.signals__head {

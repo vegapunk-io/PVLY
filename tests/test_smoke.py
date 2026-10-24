@@ -71,6 +71,48 @@ def test_disclosure_engine():
     assert r3["open_items"] == 0 and not r3["synthetic"]
 
 
+def test_platform_label_research_contract():
+    platforms = {p["slug"]: p for p in engine.PLATFORMS}
+    expected_labels = {
+        "instagram": "AI info",
+        "facebook": "AI info",
+        "threads": "AI info",
+        "youtube": "Made with AI",
+        "tiktok": "AI-generated",
+        "linkedin": "cr pin (Content Credentials)",
+        "pinterest": "AI modified",
+        "reddit": "No site-wide AI label",
+        "x": "Made with AI",
+        "google_search": "About this image provenance",
+        "amazon_kdp": "No public reader label specified",
+    }
+    assert expected_labels.items() <= {slug: p["label_text"] for slug, p in platforms.items()}.items()
+    for platform in platforms.values():
+        assert platform["label_subtext"]
+        assert platform["detection_summary"]
+        assert platform["metadata_signals"]
+        assert platform["creator_duty"]
+        assert platform["last_verified"] == "2026-10-24"
+        assert platform["sources"] and all(source.startswith("https://") for source in platform["sources"])
+
+    assert "c2pa_ai" not in platforms["pinterest"]["auto_label_triggers"]
+    assert platforms["x"]["confidence"] == "medium"
+
+    preview = {
+        p["slug"]: p
+        for p in engine.platform_preview(
+            {"c2pa_ai": True, "c2pa_any": True, "iptc_ai": True, "vendor_watermark": False}
+        )
+    }
+    assert preview["instagram"]["likely_label"] == "yes"
+    assert preview["youtube"]["likely_label"] == "yes"
+    assert preview["linkedin"]["likely_label"] == "yes"
+    assert preview["pinterest"]["likely_label"] == "yes"
+    assert preview["reddit"]["likely_label"] == "no"
+    assert preview["reddit"]["sources"]
+    assert preview["reddit"]["metadata_signals"]
+
+
 def test_api_flow():
     assert client.get("/health").json()["ok"]
     for path in ("/", "/demo", "/registry", "/laws", "/tools", "/lab", "/docs-guide", "/registry/openai-gpt-image"):

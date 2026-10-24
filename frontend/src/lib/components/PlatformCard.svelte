@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { ResolvedPathname } from '$app/types';
+	import { platformLabel } from '../data/platform-labels';
 	import type { PresetDefinition } from '../data/presets';
 	import Icon from './Icon.svelte';
+	import PlatformMark from './PlatformMark.svelte';
 
 	interface Props {
 		preset: PresetDefinition;
@@ -12,16 +14,28 @@
 
 	let { preset, selected = false, href, onselect }: Props = $props();
 	const interactive = $derived(Boolean(onselect || href));
+	const label = $derived(platformLabel(preset.slug));
 </script>
 
 {#snippet content()}
 	<span class="platform-card__head">
-		<span class="platform-card__name">{preset.name}</span>
-		<span class="platform-card__initial" aria-hidden="true">{preset.initial}</span>
+		<PlatformMark slug={preset.slug} name={preset.name} size={48} />
+		<span class="platform-card__heading">
+			<span class="platform-card__name">{preset.name}</span>
+			<span class="platform-card__meta">{preset.media} · {preset.formats}</span>
+		</span>
 	</span>
-	<span class="platform-card__meta">{preset.media} · {preset.formats}</span>
 	<span class="platform-card__output">{preset.output}</span>
-	<span class="platform-card__note"><strong>Label note:</strong> {preset.labelNote}</span>
+	<span class="platform-card__label-box">
+		<span class="platform-card__label-top">
+			<span class="platform-card__label-caption">Platform label</span>
+			<span class={`platform-card__label platform-card__label--${label.labelKind}`}
+				>{label.labelDisplay}</span
+			>
+		</span>
+		<span class="platform-card__label-subtext">{label.labelSubtext}</span>
+		<span class="platform-card__signals">{label.signalSummary}</span>
+	</span>
 	{#if interactive}
 		<span class="platform-card__action"
 			>{selected ? 'Selected' : 'Choose preset'} <Icon name="arrow-right" size={16} /></span
@@ -55,10 +69,10 @@
 		display: flex;
 		flex-direction: column;
 		font: inherit;
-		gap: 0.42rem;
+		gap: 0.65rem;
 		height: 100%;
-		min-height: 190px;
-		padding: 1.2rem;
+		min-height: 272px;
+		padding: 1.15rem;
 		text-align: left;
 		text-decoration: none;
 		width: 100%;
@@ -83,35 +97,30 @@
 	.platform-card__head {
 		align-items: center;
 		display: flex;
-		gap: 1rem;
-		justify-content: space-between;
+		gap: 0.8rem;
+	}
+
+	.platform-card__heading {
+		display: flex;
+		flex-direction: column;
+		gap: 0.12rem;
+		min-width: 0;
 	}
 
 	.platform-card__name {
 		color: var(--ink);
 		font-family: var(--font-display);
-		font-size: 1.18rem;
+		font-size: 1.16rem;
 		font-weight: 600;
 		letter-spacing: -0.025em;
-	}
-
-	.platform-card__initial {
-		align-items: center;
-		background: var(--primary);
-		border-radius: 50%;
-		color: var(--on-primary);
-		display: inline-flex;
-		flex: 0 0 auto;
-		font-weight: 800;
-		height: 2.25rem;
-		justify-content: center;
-		width: 2.25rem;
+		line-height: 1.15;
 	}
 
 	.platform-card__meta {
 		color: var(--accent-ink);
-		font-size: 0.86rem;
+		font-size: 0.8rem;
 		font-weight: 700;
+		line-height: 1.35;
 	}
 
 	.platform-card__output {
@@ -119,9 +128,62 @@
 		line-height: 1.45;
 	}
 
-	.platform-card__note {
-		font-size: 0.9rem;
+	.platform-card__label-box {
+		border-top: 1px solid var(--line);
+		display: flex;
+		flex-direction: column;
+		gap: 0.38rem;
+		margin-top: auto;
+		padding-top: 0.8rem;
+	}
+
+	.platform-card__label-top {
+		align-items: flex-start;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem 0.6rem;
+		justify-content: space-between;
+	}
+
+	.platform-card__label-caption {
+		color: var(--ink);
+		font-size: 0.78rem;
+		font-weight: 750;
+		padding-top: 0.18rem;
+	}
+
+	.platform-card__label {
+		background: var(--canvas);
+		border: 1px solid var(--mute);
+		border-radius: 999px;
+		color: var(--ink);
+		font-size: 0.78rem;
+		font-weight: 750;
+		line-height: 1.25;
+		padding: 0.22rem 0.5rem;
+	}
+
+	.platform-card__label--none,
+	.platform-card__label--private {
+		background: transparent;
+		border-style: dashed;
+		color: var(--ink-mid);
+	}
+
+	.platform-card__label--provenance {
+		border-color: var(--accent-ink);
+	}
+
+	.platform-card__label-subtext {
+		font-size: 0.86rem;
 		line-height: 1.45;
+	}
+
+	.platform-card__signals {
+		color: var(--accent-ink);
+		font-size: 0.78rem;
+		font-weight: 650;
+		line-height: 1.4;
 	}
 
 	.platform-card__action {
@@ -131,7 +193,6 @@
 		font-size: 0.9rem;
 		font-weight: 720;
 		gap: 0.35rem;
-		margin-top: auto;
-		padding-top: 0.65rem;
+		padding-top: 0.2rem;
 	}
 </style>

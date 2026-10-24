@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import '#lib/mono-font.css';
+	import BrandMark from '#lib/components/BrandMark.svelte';
 	import ConclusionCard from '#lib/components/ConclusionCard.svelte';
 	import FileDrop from '#lib/components/FileDrop.svelte';
 	import Notice from '#lib/components/Notice.svelte';
@@ -12,7 +13,7 @@
 
 	const colors = [
 		['Ink / coffee', '#201515', 'Text, dark actions, moderate evidence'],
-		['Primary / orange', '#FF4F00', 'CTA, focus, active state, brand mark'],
+		['Primary / orange', '#FF4F00', 'Brand mark, CTA, focus, active state'],
 		['Primary hover', '#D94300', 'Interactive emphasis'],
 		['Canvas', '#FFFEFB', 'Page background'],
 		['Canvas soft', '#F8F4F0', 'Cards and quiet bands'],
@@ -52,6 +53,52 @@
 			contract—not a screenshot.
 		</p>
 	</header>
+
+	<section class="brand-section" aria-labelledby="brand-title">
+		<h2 id="brand-title">Primary brand mark</h2>
+		<div class="grid grid--2">
+			<div class="card card--canvas brand-lockup">
+				<BrandMark size={64} />
+				<div>
+					<p class="brand-lockup__name">Provenably</p>
+					<p class="small muted">
+						Founder-supplied primary logo and brand icon. Its 64×64 geometry and alpha are preserved
+						exactly, while its RGB color is palette-forced to the website primary for the header,
+						footer and favicon.
+					</p>
+				</div>
+			</div>
+			<div class="card">
+				<h3>Palette-forced, geometry preserved</h3>
+				<div class="brand-sizes" aria-label="Provenably brand mark at interface sizes">
+					<figure>
+						<BrandMark size={16} decorative />
+						<figcaption>16px</figcaption>
+					</figure>
+					<figure>
+						<BrandMark size={24} decorative />
+						<figcaption>24px</figcaption>
+					</figure>
+					<figure>
+						<BrandMark size={32} decorative />
+						<figcaption>32px</figcaption>
+					</figure>
+					<figure>
+						<BrandMark size={48} decorative />
+						<figcaption>48px</figcaption>
+					</figure>
+				</div>
+				<ul>
+					<li>
+						Use the canonical <code>#FF4F00</code> palette version, never the native
+						<code>#FD7E14</code> source.
+					</li>
+					<li>Preserve its transparent padding and pixel-identical alpha channel.</li>
+					<li>Never trace, crop, stretch, mask, add a background or revive the old square.</li>
+				</ul>
+			</div>
+		</div>
+	</section>
 
 	<section aria-labelledby="colors-title">
 		<h2 id="colors-title">Colors</h2>
@@ -175,7 +222,8 @@
 				>
 				<Notice tone="info" title="Notice (info)"
 					><p>
-						Jurisdiction and Layer-2 disclosures use the same shape with a primary-orange rule.
+						Jurisdiction and Layer-2 disclosures use the same quiet hairline frame; tone is carried
+						by the icon and surface, never by a side stripe.
 					</p></Notice
 				>
 			</div>
@@ -215,7 +263,7 @@
 				<ul>
 					<li>1280px shell, 24px desktop gutters, 16px mobile gutters.</li>
 					<li>Sections use a 48–80px responsive rhythm.</li>
-					<li>Cards are flat cream or hairline outlined—no decorative shadows.</li>
+					<li>Cards are flat cream or hairline outlined—no decorative shadows or side stripes.</li>
 					<li>Buttons/cards use 12px radius; inputs/chips use 6px.</li>
 				</ul>
 			</article>
@@ -242,6 +290,48 @@
 </div>
 
 <style>
+	.brand-section {
+		margin-bottom: clamp(3rem, 7vw, 5rem);
+	}
+
+	.brand-lockup {
+		align-items: center;
+		display: flex;
+		gap: 1.2rem;
+	}
+
+	.brand-lockup__name {
+		color: var(--ink);
+		font-family: var(--font-display);
+		font-size: clamp(2rem, 4vw, 2.7rem);
+		font-weight: 650;
+		letter-spacing: -0.04em;
+		line-height: 1;
+		margin-bottom: 0.55rem;
+	}
+
+	.brand-sizes {
+		align-items: end;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.25rem;
+		margin: 1.1rem 0 0.4rem;
+	}
+
+	.brand-sizes figure {
+		align-items: center;
+		display: grid;
+		gap: 0.35rem;
+		justify-items: center;
+		margin: 0;
+	}
+
+	.brand-sizes figcaption {
+		color: var(--body-mid);
+		font-size: 0.78rem;
+		line-height: 1;
+	}
+
 	.swatches {
 		grid-template-columns: repeat(5, minmax(0, 1fr));
 	}

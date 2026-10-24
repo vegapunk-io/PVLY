@@ -50,12 +50,18 @@ export interface PlatformPreview {
 	platform: string;
 	slug: string;
 	label_text: string;
+	label_subtext: string;
+	detection_summary: string;
+	metadata_signals: string[];
+	creator_duty: string;
+	label_on_edit: string;
 	likely_label: 'yes' | 'no' | 'unknown';
 	reasons: string[];
 	removal_policy: string;
 	monetization_impact: string;
 	confidence: Confidence;
 	last_verified: string;
+	sources: string[];
 }
 
 export interface Report {
@@ -144,6 +150,10 @@ export interface PlatformRule {
 	slug: string;
 	name: string;
 	label_text: string;
+	label_subtext: string;
+	detection_summary: string;
+	metadata_signals: string[];
+	creator_duty: string;
 	auto_label_triggers: string[];
 	label_on_edit: string;
 	removal_policy: string;
@@ -151,6 +161,7 @@ export interface PlatformRule {
 	notes: string;
 	confidence: Confidence;
 	last_verified: string;
+	sources: string[];
 }
 
 export interface JurisdictionRule {

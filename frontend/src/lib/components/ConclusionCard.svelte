@@ -11,10 +11,9 @@
 
 	let { conclusion, coverage, durationMs }: Props = $props();
 	const isTampered = $derived(conclusion.provenance_class === 'tampered_after_signing');
-	const cardTone = $derived(isTampered ? 'tampered' : conclusion.evidence_grade);
 </script>
 
-<section class={`conclusion conclusion--${cardTone}`} aria-labelledby="report-conclusion-title">
+<section class="conclusion" aria-labelledby="report-conclusion-title">
 	<div class="conclusion__header">
 		<div>
 			<p class="eyebrow">Provenance conclusion</p>
@@ -49,10 +48,12 @@
 <style>
 	.conclusion__header {
 		align-items: flex-start;
+		border-bottom: 1px solid var(--line);
 		display: flex;
 		gap: 1rem;
 		justify-content: space-between;
 		margin-bottom: 1rem;
+		padding-bottom: 1rem;
 	}
 
 	.conclusion__header .eyebrow {

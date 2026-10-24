@@ -4,7 +4,9 @@
 	import { errorMessage, getHealth, listScans } from '#lib/api.js';
 	import Notice from '#lib/components/Notice.svelte';
 	import PageHead from '#lib/components/PageHead.svelte';
+	import PlatformMark from '#lib/components/PlatformMark.svelte';
 	import Tag from '#lib/components/Tag.svelte';
+	import { platformLabel } from '#lib/data/platform-labels.js';
 	import { genericPreset, presetDefinitions } from '#lib/data/presets.js';
 	import {
 		defaultPreferences,
@@ -26,6 +28,10 @@
 	let health = $state<Health | null>(null);
 
 	const apiKeyConfigured = $derived(Boolean(apiKey.trim()));
+	const preferredPresetDefinition = $derived(
+		allPresets.find((preset) => preset.slug === preferences.preferredPreset) ?? genericPreset
+	);
+	const preferredPresetLabel = $derived(platformLabel(preferences.preferredPreset));
 
 	onMount(() => {
 		preferences = getPreferences();
@@ -171,11 +177,26 @@
 
 			<div class="field">
 				<label for="settings-preset">Preferred platform preset</label>
-				<select id="settings-preset" bind:value={preferences.preferredPreset}>
-					{#each allPresets as preset (preset.slug)}<option value={preset.slug}
-							>{preset.name}</option
-						>{/each}
-				</select>
+				<div class="preset-choice">
+					<PlatformMark
+						slug={preferredPresetDefinition.slug}
+						name={preferredPresetDefinition.name}
+						size={38}
+					/>
+					<select
+						id="settings-preset"
+						bind:value={preferences.preferredPreset}
+						aria-describedby="settings-preset-hint"
+					>
+						{#each allPresets as preset (preset.slug)}<option value={preset.slug}
+								>{preset.name}</option
+							>{/each}
+					</select>
+				</div>
+				<p class="field-hint" id="settings-preset-hint">
+					<strong>{preferredPresetLabel.labelDisplay}:</strong>
+					{preferredPresetLabel.labelSubtext}
+				</p>
 			</div>
 
 			<button class="btn" type="submit">Save browser preferences</button>
@@ -278,6 +299,17 @@
 		display: grid;
 		gap: 1rem;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.preset-choice {
+		align-items: center;
+		display: flex;
+		gap: 0.7rem;
+	}
+
+	.preset-choice select {
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	.danger-zone {
