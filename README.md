@@ -1,6 +1,5 @@
-<img src="frontend/src/lib/assets/brand/provenably-mark.png" width="56" height="56" alt="Provenably check mark"> 
+ **Provenably** <img src="frontend/src/lib/assets/brand/provenably-mark.png" width="56" height="56" alt="Provenably check mark"> 
 
-**Provenably**
 
 **See what AI left in your media. Remove the footprints you control. Prove it. Publish platform-ready.**
 
