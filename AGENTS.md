@@ -73,7 +73,8 @@ app/
   config.py          ALL configuration via env vars (12-factor)
   analyzers/         base.py (Signal/Context/Analyzer contract) + one module per signal family
   rules/             platforms.json (10) · jurisdictions.json (6) · registry.json (25) · engine.py
-  templates/ static/ Jinja2 pages (10), style.css, app.js — NO build step (DESIGN.md)
+  templates/ static/ Legacy Jinja fallback (kept until Svelte cutover is fully verified)
+frontend/             SvelteKit/Svelte 5 + TypeScript production frontend (adapter-static)
 tools/               dev_cert.py (TEST CA) · make_demo_assets.py (17 fixtures) · fetch_trust_list.py
 tests/               test_smoke.py (pipeline + API + rules + detect-only surface)
 README.md            User-facing overview + 14-item Manual Integration Checklist
@@ -86,6 +87,7 @@ README.md            User-facing overview + 14-item Manual Integration Checklist
 pip install -r requirements.txt
 python tools/dev_cert.py            # TEST root CA + claim-signing cert -> data/certs/
 python tools/make_demo_assets.py    # 17 demo fixtures -> demo_assets/
+(cd frontend && npm ci && npm run build)  # production SvelteKit artifact -> frontend/build/
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 # or simply: ./run.sh
 
@@ -111,7 +113,7 @@ curl -s localhost:8000/v1/capabilities   # live vs manual integration status
 6. **Document the decision** in the same change (§9). Undocumented decisions do not exist.
 7. **No new dependency** without recording why (vs. stdlib/existing deps) in ARCHITECTURE.md's
    Decision Log, and noting CPU-only/GPU impact.
-8. **No build step.** Frontend stays Jinja2 + vanilla JS/CSS unless a Decision Record says otherwise.
+8. **Frontend stack is SvelteKit (A-014/P-015).** Build with TypeScript/Vite, keep public pages prerendered, and run `npm run verify` in `frontend/`; do not add UI frameworks/CSS libraries without a Decision Record.
 9. **Keep README and these three docs consistent.** If they disagree, fix
    them in the same change and note it in the Decision Log.
 
@@ -231,7 +233,7 @@ was **reviewed before adoption** (instructions-only, except `ui-ux-pro-max/scrip
 | `grill-me` + `grilling` | mattpocock/skills | **1 · Requirement grilling** — design-tree interview rounds with recommended answers until shared understanding. Run BEFORE any mockup/design work. |
 | `ui-ux-pro-max` | nextlevelbuilder/ui-ux-pro-max-skill | **2 · Design intelligence** — searchable styles/palettes/font-pairings/UX rules (`scripts/search.py`, priority rules a11y→charts). Evidence for design choices, not decoration. |
 | `frontend-design` | anthropics/skills | **3 · Distinctive direction** — anti-generic design lead process (plan → review vs brief → build → critique; name the AI-default looks and avoid them). Governs mockup v2 aesthetics. |
-| `baseline-ui` | ibelick/ui-skills | **4 · Deslop constraint pass** — spacing/hierarchy/typography cleanup with quoted violations + fixes. Stack-specific rules (Tailwind/React primitives) **adapted** to this vanilla-CSS/Jinja stack, not adopted literally. |
+| `baseline-ui` | ibelick/ui-skills | **4 · Deslop constraint pass** — spacing/hierarchy/typography cleanup with quoted violations + fixes. Stack-specific rules (Tailwind/React primitives) **adapted** to this custom-CSS/SvelteKit stack, not adopted literally. |
 | `frontend-ui-engineering` | addyosmani/agent-skills | **5 · Build quality** — production UI engineering (a11y, responsive, state, performance) when mockup → templates. React examples adapted to existing patterns. |
 | `fixing-accessibility`, `fixing-motion-performance` | ibelick/ui-skills | **6 · Pre-approval audits** — WCAG/keyboard/focus + animation-performance passes with quoted violations. |
 | `improve-ui`, `ui-skills-root` | ibelick/ui-skills | Audit-an-existing-surface workflow (read-only, plans to `design-plans/`) + smallest-context routing discipline (§ minimal skill loading). |

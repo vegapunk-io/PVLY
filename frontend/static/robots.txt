@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /settings
+Disallow: /history
+Disallow: /report/
+Disallow: /v1/

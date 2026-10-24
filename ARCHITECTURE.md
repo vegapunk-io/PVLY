@@ -19,8 +19,8 @@ scale-up swap (queue, Postgres, S3, GPU workers) requires **no route changes**.
 
 ```
                          ┌─────────────────────────────────────────────────────────┐
-  Browser (Jinja2 UI) ──▶│  FastAPI app  app/main.py                              │
-  API client ──────────▶ │  · UI routes (10)        · /v1 JSON API (17)           │
+  Browser (SvelteKit) ──▶│  FastAPI app  app/main.py                              │
+  API client ──────────▶ │  · static frontend       · /v1 JSON API                │
                          │  · SSRF guard            · X-API-Key hook              │
                          │  · BackgroundTasks       · TTL janitor thread          │
                          └────────────────────────┬───────────────────────────────┘
@@ -40,13 +40,14 @@ scale-up swap (queue, Postgres, S3, GPU workers) requires **no route changes**.
 **Design invariants:** analyzers isolated (one crash = one `error` signal) · evidence
 grades gate the verdict · pipeline is a pure entry point `pipeline.run_scan(scan_id)` (a
 future arq/Celery worker calls the same function) · flat DB schema for trivial Postgres
-migration · no frontend build step.
+migration · frontend is an independently built static artifact served same-origin.
 
 ## 3. Tech stack (current, with rationale)
 
 | Layer | Choice | Why | Scale-up path |
 |---|---|---|---|
-| API/UI | FastAPI ≥0.115 + Jinja2 + Pydantic 2, vanilla JS | Boring, typed, OpenAPI free, zero build | Same; nginx/Cloud Run + CDN |
+| API | FastAPI ≥0.115 + Pydantic 2 | Typed JSON/OpenAPI backend; proven analyzer pipeline unchanged | Same; nginx/Cloud Run + CDN |
+| Frontend | SvelteKit 3/Svelte 5 + TypeScript + Vite 8, adapter-static | Prerendering, selective hydration, tiny route chunks for low-end devices | CDN/static host or FastAPI `frontend/build`; Jinja fallback until cutover complete |
 | Jobs | FastAPI `BackgroundTasks` → `pipeline.run_scan` | No infra for prototype | arq/Celery/RQ; GPU workers on same queue |
 | Storage | SQLite WAL + local blob dir + TTL janitor | Zero-config, flat schema | Postgres/SQLAlchemy; S3/GCS + lifecycle |
 | Provenance | `c2pa-python` 0.38 (c2pa-rs 0.91) | Official SDK: validation + demo signing | Same; + official trust list, remote manifests |
@@ -62,7 +63,8 @@ Heavy/GPU deps (torch, audioseal, videoseal, trustmark, transformers) are intent
 
 | Module | LOC | Responsibility |
 |---|---|---|
-| `app/main.py` | 443 | FastAPI app, all routes, SSRF-guarded fetch, API-key dependency, startup + janitor, `capabilities()` |
+| `app/main.py` | 573 | FastAPI app, JSON routes, SSRF-guarded fetch, API-key dependency, startup + janitor, Svelte static serving/fallback, `capabilities()` |
+| `frontend/` | — | SvelteKit source, typed API client, 17 page routes + 3 redirects, Vitest, bundle-budget gate |
 | `app/pipeline.py` | 193 | `sniff()` magic-byte modality detection; scan creation; analyzer orchestration (isolated, timed); report assembly; blob cleanup |
 | `app/aggregate.py` | 91 | Signals → conclusion (priority rules §6); `coverage()` |
 | `app/db.py` | 113 | SQLite schema + helpers (`scans`, `events`), thread lock, WAL |
@@ -228,7 +230,7 @@ watermark-then-JPEG-q75 fragility demo, signed WAV/MP4).
 
 | ID | Date | Decision | Context / Why | Alternatives rejected | Consequences | Status |
 |---|---|---|---|---|---|---|
-| A-001 | ≤2026-10-14 | "Deliberately boring" stack: FastAPI+Jinja2+SQLite, no build step | CPU-only, 1-dev prototype; scale by swapping layers, not routes | SPA framework; Postgres from day 1 | Fast to run anywhere; UI ceiling; K5 hardening owed | Accepted |
+| A-001 | ≤2026-10-14 | "Deliberately boring" stack: FastAPI+Jinja2+SQLite, no build step | CPU-only, 1-dev prototype; scale by swapping layers, not routes | SPA framework; Postgres from day 1 | Fast to run anywhere; UI ceiling; K5 hardening owed | Accepted; frontend clause superseded by A-014 |
 | A-002 | ≤2026-10-14 | Evidence-grade model; weak never outranks strong; forensics never decisive | AI-detector market over-claims; defensibility is the product | Single "% AI" score | Most unsigned files → `no_provenance_signal` (honest, risks perceived uselessness) | Accepted |
 | A-003 | ≤2026-10-14 | Unbuilt capabilities ship as wired `not_configured` connectors + coverage in every report | "Clean" must never over-claim; manual steps visible to buyers | Hiding stubs; mock results | 14-item manual checklist is the de-facto roadmap | Accepted |
 | A-004 | ≤2026-10-14 | Delegate C2PA to official c2pa-rs; add pure-Python JUMBF walker for education | Correctness + trust semantics are hard; walker aids transparency/demo | Hand-rolled C2PA validation | Dep on c2pa-python settings API (cf. K1 thread-local issue) | Accepted |
@@ -241,6 +243,7 @@ watermark-then-JPEG-q75 fragility demo, signed WAV/MP4).
 | A-013 | 2026-10-24 | **Planned architecture per PHILOSOPHY.md: restore removal (R0 images/PDF/DOCX from `beb4143`, lossless+verify+attestation+blob-expiry), then R1 audio (`mutagen` + RIFF walker), R2 video (ffmpeg stream-copy + BMFF C2PA-box pass, async), R3 eight platform presets + batch, R4 HEIC/AVIF/GIF/TIFF. Verify reuses existing analyzers throughout.** | Founder philosophy clarification (P-011): detect AND remove, all formats, platform-ready | Detect-only (A-012) | Nothing built yet — current system remains as documented above until R0; surface test to be replaced at R0 | Accepted (direction; build pending founder go-ahead) |
 | A-011 | 2026-10-24 | Adopt AGENTS/ARCHITECTURE/DESIGN + mandatory Decision/Change-Review logging before further development | Founder directive: every decision reviewable later; ends mega-commit pattern | Docs-as-code only in README | This system governs all future changes (AGENTS.md §9) | Accepted |
 | A-012 | 2026-10-24 | **Detect-only: remove the Sanitizer everywhere** (code, routes, `/sanitize` UI, `/v1/detect`, `sanitize_jobs`, pikepdf/lxml deps, sanitizer tests, `docs/PRD.md`); homepage becomes Scan (file/text/URL tabs, recent scans) | Founder directive resolving DESIGN D1: one product wedge, no dual Detect-vs-remove positioning, no removal legal exposure | Keep both surfaces; deprioritize-only (hide nav) | −1,078 LOC; 27 routes; README "no removal" true; K3/K4/K7 closed; code recoverable at `beb4143`; regression test locks surface | **Superseded by A-013 (same day)** |
+| A-014 | 2026-10-24 | **SvelteKit/Svelte 5 + TypeScript + Vite static frontend; FastAPI remains same-origin JSON backend and serves `frontend/build` when present** | Founder approved P-014/P-015 and prioritized premium low-end UX; measured route chunks and zero-JS public pages beat SPA/Jinja ceilings | Astro (second), Next.js (third), keep Jinja/vanilla | Node 22+/npm build added; public pages prerendered, interactive code route-split; legacy Jinja remains fallback; future SSR would need a Node adapter decision | Accepted |
 
 ## 15. Document history
 
@@ -249,3 +252,4 @@ watermark-then-JPEG-q75 fragility demo, signed WAV/MP4).
 | 2026-10-24 | Initial creation from full codebase audit + live test run (27/32 passing, K1). | Engineering (agent-assisted), pending founder review |
 | 2026-10-24 | A-012 executed: sanitizer architecture removed (diagram, flows, routes, schema, matrix, tests); counts updated (27 routes, 18 tests, 13 pass / 5×K1). | Founder + Engineering |
 | 2026-10-24 | A-013 direction recorded (restore + audio/video removal + platform presets per PHILOSOPHY.md); A-012 superseded; as-built sections unchanged (honest gap). | Founder + Engineering |
+| 2026-10-24 | A-014 implemented: SvelteKit static frontend, FastAPI compressed/cached static serving, legacy fallback, `/v1/demo-files`. | Founder + Engineering |

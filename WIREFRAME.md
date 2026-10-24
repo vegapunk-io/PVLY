@@ -5,10 +5,7 @@
 > further frontend invention. Companion docs: [`PHILOSOPHY.md`](PHILOSOPHY.md) ·
 > [`DESIGN.md`](DESIGN.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md) · [`AGENTS.md`](AGENTS.md).
 >
-> Status: **Mockup v2 built 2026-10-24 (DESIGN P-014) — Zapier design language applied to all 15 pages, pending founder approval.** v1 was rejected by founder ("AI-sloppy").
-> v2 will be produced under the installed skills (AGENTS §12) after a `grilling` session and
-> founder guidance; this spec's sitemap/backend-contract sections remain useful inputs,
-> its visual execution does not. Decisions: DESIGN P-012 → P-013.
+> Status: **Founder-approved and implemented 2026-10-24 (DESIGN P-014/P-015).** The Zapier-derived mockup v2 is now the SvelteKit production frontend in `frontend/`; `mockup/` is retained only as the design archive. v1 remains rejected ("AI-sloppy").
 
 ---
 
@@ -19,7 +16,11 @@
 | Design direction | **Evolved Flat Forensic (light)** | Keep DESIGN.md's flat system (no gradients, no decorative shadows, tables/tags/grades), modernized spacing/radius |
 | Brand accent | **Violet AI** — `#6D28D9` (replaces blue `#1A4FD6`) | All accents, focus, primary buttons, "moderate" evidence grade become violet; grade set otherwise fixed (§4) |
 | Scope | **Full end-to-end** | Marketing + app + reference + account, incl. empty/loading/error states (§2) |
-| Deliverable | **This spec + clickable HTML** in `mockup/` | HTML converts 1:1 to Jinja templates later (§8) |
+| Deliverable | **This spec + clickable HTML** in `mockup/` | Converted to Svelte routes/components in `frontend/` (§8) |
+
+> **P-014 supersedes the v1 “Evolved Flat Forensic / Violet AI” values above.** The binding
+> visual system is the warm Zapier-derived system in current `DESIGN.md`; the sitemap and
+> backend-contract sections below remain the implementation map.
 
 ## 2. Sitemap (15 pages, all in `mockup/`)
 
@@ -129,9 +130,8 @@ new tokens via the shared stylesheet.
 
 ## 5. Typography & graphics
 
-- **Fonts:** `Inter` (UI/headings, 400–800) with system fallback stack; `JetBrains Mono`
-  (hashes, IDs, code, format chips) with ui-monospace fallback. Loaded via Google Fonts
-  `@import` in the mockup; self-host or keep import at conversion (founder/infra choice).
+- **Fonts:** `Inter` (UI/headings) and `JetBrains Mono` (hashes, IDs, code) are self-hosted
+  as Latin variable subsets; mono loads only on data-heavy routes.
 - **Scale:** base 16px/1.55 · hero H1 3rem · page H1 2.1/1.9rem · H2 1.35rem · H3 1.02rem ·
   small .86rem · eyebrow .72rem uppercase violet.
 - **Graphics:** inline SVG check-mark logo (violet rounded square) + single-letter platform
@@ -145,7 +145,7 @@ new tokens via the shared stylesheet.
 horizontal scroll on small screens · grids collapse 4→2 (≤900px) →1 (≤680px) · signal rows
 stack ≤680px. A11y contract: semantic landmarks, 2px violet focus outlines, labels on all
 controls, dropzone always contains a real file input, status never by color alone.
-Known gaps to close at conversion: ARIA live regions for async results, muted-text contrast audit.
+Production implementation includes live regions, roving-tabindex tabs, labelled file input, visible focus, reduced-motion handling, and non-color grade text.
 
 ## 7. Backend contract summary (what "just connect the backend" means)
 
@@ -161,16 +161,16 @@ Known gaps to close at conversion: ARIA live regions for async results, muted-te
 Every mocked field (verdicts, diffs, hashes, coverage, preset specs) maps to the report
 schemas in ARCHITECTURE §8 (RemoveReport schema returns with R0).
 
-## 8. Conversion plan (mockup → production frontend, later)
+## 8. Conversion status (completed 2026-10-24)
 
-1. `mockup/style.css` → `app/static/style.css` (tokens overwrite; blue→violet is the only
-   breaking visual change; class names were intentionally kept compatible with current CSS).
-2. Each `mockup/*.html` → `app/templates/*.html`: extract shared nav/footer into
-   `base.html`, replace mock data with Jinja variables, replace `data-mock-action` with
-   real fetches/forms (patterns already in `app/static/app.js`: tabs/dropzone/polling).
-3. New templates (`remove/batch/presets/history/settings/auth/pricing`) ship only with
-   their backend milestones (R0–R3/auth) — never as dead pages in production.
-4. Delete `mockup/` after conversion is verified page-by-page (or keep as design archive).
+1. `mockup/style.css` was decomposed into `frontend/src/app.css` (tokens/global patterns)
+   plus scoped Svelte component/route styles.
+2. Each mockup page became a typed Svelte route; shared Header/Footer, FileDrop, Tabs,
+   SignalCard, PlatformCard, notices and state blocks are reusable components.
+3. Existing FastAPI endpoints are wired through `frontend/src/lib/api.ts`. Remove, native
+   Batch/Presets, Auth and billing remain honest unavailable/local-planning states until
+   R0/R3/auth backends exist; no mock success is presented as server work.
+4. `mockup/` is retained as the founder-approved design archive, not a production source.
 
 ## 9. Applying DESIGN.md — evaluation (what changed, what deliberately didn't)
 

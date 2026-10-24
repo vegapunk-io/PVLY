@@ -23,18 +23,20 @@ cd provenably
 pip install -r requirements.txt          # CPU only; ~1 min
 python tools/dev_cert.py                 # TEST root CA + claim-signing cert -> data/certs/
 python tools/make_demo_assets.py         # 17 fixtures -> demo_assets/
+(cd frontend && npm ci && npm run build) # SvelteKit production UI -> frontend/build/
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 # or simply: ./run.sh
 ```
 
-Open http://localhost:8000 — Scan · Demo files · Registry · Rules · Text tools · Lab · API & status.
-Interactive OpenAPI at `/api/docs`. Tests: `pytest -q` (18 tests, ~3 s).
+Open http://localhost:8000 — Landing · Scan · Report · Remove (R0 pending) · Batch · Presets · Registry · Rules · Tools · Lab · API.
+Interactive OpenAPI at `/api/docs`. Backend tests: `pytest -q`. Frontend gate: `cd frontend && npm run verify`.
 
 ## Stack (deliberately boring and scalable)
 
 | Layer | Prototype | Scale-up path (no route changes) |
 |---|---|---|
-| API / UI | FastAPI + Jinja2 + Pydantic, plain JS (no build step) | same; put behind nginx/Cloud Run; add CDN for `/static` |
+| API | FastAPI + Pydantic | same JSON routes behind nginx/Cloud Run |
+| UI | SvelteKit/Svelte 5 + TypeScript, static build served by FastAPI | move `frontend/build` to a CDN/static host without API route changes |
 | Jobs | `BackgroundTasks` → `pipeline.run_scan(scan_id)` | arq/Celery/RQ worker calling the same function; GPU workers subscribe to the same queue |
 | Storage | SQLite (WAL) + local blobs with TTL janitor | Postgres via SQLAlchemy (schema is flat), S3/GCS blobs with lifecycle rules |
 | Provenance | `c2pa-python` 0.38 (c2pa-rs 0.91) | same library; add official trust list + remote-manifest fetch |
@@ -124,7 +126,7 @@ Each item is already wired (config → connector → report rendering) and visib
 * URL ingestion resolves DNS and rejects private/loopback/link-local/multicast targets; http(s) only; size cap.
 * Uploads are deleted after `BLOB_TTL_HOURS` (default 24 h) by a janitor thread; `hash_only=true` deletes immediately after analysis and keeps only SHA-256 + report.
 * Reports never state "human-made" or "no watermark" — only which checks ran and what they found.
-* No removal/evasion functionality anywhere; the text cleaner is explicitly hygiene (zero-width/bidi/homoglyph), and does not touch statistical watermarks.
+* The Remove backend is not implemented yet (PHILOSOPHY R0); the UI never claims a server-side removal succeeded. The text cleaner is hygiene only and does not touch statistical watermarks.
 
 ## Layout
 
@@ -138,7 +140,8 @@ app/
   analyzers/         base.py (Signal/Context), c2pa_an, jumbf, metadata_an, dwtdct, imwm_an,
                      forensics_an, audio_an, video_an, text_an, vendor_an
   rules/             platforms.json, jurisdictions.json, registry.json, engine.py
-  templates/, static/  Jinja2 pages, style.css (flat palette, no gradients), app.js
+  templates/, static/  legacy Jinja fallback
+frontend/              SvelteKit production frontend (src/routes, src/lib, scripts/check-bundle-budget.mjs)
 tools/               dev_cert.py, make_demo_assets.py, fetch_trust_list.py
 tests/test_smoke.py  pipeline + API + rules tests
 ```

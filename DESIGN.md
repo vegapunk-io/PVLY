@@ -43,10 +43,10 @@ spacing: { xxs: 2px, xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 
 
 # DESIGN.md — Provenably design system (complete)
 
-> Status: **v2 applied to the clickable mockup (`mockup/`), pending founder approval** · 2026-10-24 · Decision **P-014**
+> Status: **v2 founder-approved and implemented in the SvelteKit production frontend (`frontend/`)** · 2026-10-24 · Decisions **P-014/P-015**
 > Source reverse-engineered: [`zapier/DESIGN.md`](zapier/DESIGN.md) (identical to the founder-supplied `DESIGN-zapier.md`; fetched via `npx getdesign@latest add zapier`).
 > Companions: [`PHILOSOPHY.md`](PHILOSOPHY.md) · [`WIREFRAME.md`](WIREFRAME.md) · [`AGENTS.md`](AGENTS.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md).
-> Implementation of record for the mockup: `mockup/style.css` (single stylesheet, all 15 pages). **No linear gradients anywhere. No decorative shadows.**
+> Implementation of record: `frontend/src/app.css` + Svelte components/routes. `mockup/` remains the approved visual archive. **No linear gradients anywhere. No decorative shadows.**
 
 ---
 
@@ -199,17 +199,20 @@ hand-rolled focus behavior to break.
 | `ui-ux-pro-max` | Local searches (`style`: Minimalism & Swiss — clean/grid/high-contrast corroborates the flat choice; `typography`: Inter-led pairing). Priority rules enforced: 44px+ targets, semantic tokens (no raw hex in components — all via `:root`), no emoji icons, reduced-motion. |
 | `frontend-design` | Two-pass method: token plan first (§§3–7), reviewed against brief, then code. Its "AI tell" list confronted honestly: v1's violet SaaS-card kit is gone; the ALL-CAPS eyebrow survives **only** because the Zapier spec itself mandates it (brief wins) and is rationed to page/section heads. Boldness spent in one place: orange CTA + loop motif; everything else quiet. |
 | `baseline-ui` | Deslop constraints adapted (not its Tailwind mandate): consistent spacing scale, errors at the action, no placeholder-only labels, paste never blocked, skeletons→progress patterns. |
-| `frontend-ui-engineering` | One stylesheet, token-driven, class-compatible with the existing app CSS so conversion (§11) stays mechanical; responsive + state coverage per component. |
+| `frontend-ui-engineering` | Token-driven global CSS plus small typed Svelte components; route-level CSS/JS splitting, responsive layouts, and explicit loading/empty/error/success states per surface. |
 | `fixing-accessibility` | §9 checklist run: names/labels, focus visibility, contrast table, non-color cues. |
 | `fixing-motion-performance` | Single compositor-friendly `transform` animation (progress); nothing animates layout/paint properties. |
 | `improve-ui` / `ui-skills-root` | Smallest-context discipline: v1 re-skinned via one file instead of 15 rewrites; v1 structure/copy audited against the new system rather than discarded wholesale. |
 
-## 11. Conversion contract (mockup → production, unchanged from WIREFRAME §8)
+## 11. Production implementation (completed 2026-10-24)
 
-`mockup/style.css` → `app/static/style.css` (token names already CSS variables; the live
-app's class vocabulary was preserved on purpose) → each `mockup/*.html` →
-`app/templates/*.html` with Jinja data → drop MOCKUP chips & `data-mock-action` for real
-endpoints (WIREFRAME §7). New pages ship only with their backend milestones (R0–R3/auth).
+The approved mockup is implemented as a SvelteKit/Svelte 5 + TypeScript static frontend in
+`frontend/`, served same-origin by FastAPI from `frontend/build` when built. Public pages are
+prerendered; landing/pricing ship no client JS; interactive routes load only their own code.
+FastAPI remains the JSON backend. Routes whose backends do not exist yet (Remove R0, native
+Batch/Presets R3, Auth/billing) render explicit unavailable/local-only states and never fake a
+successful server operation. Jinja remains only as a no-build fallback until deployment has
+fully cut over.
 
 ## 12. Product design carried over (still binding)
 
@@ -221,9 +224,9 @@ required honesty copy (coverage, Layer-2 disclaimer, attestation, "not legal adv
 TEST-signer labeling). Personas: newsroom/OSINT, creator, compliance/publisher,
 platform/moderation, developer.
 
-**Open decisions:** D3 pricing numbers (tiers in mockup are placeholders) · D4 batch-scan
-UX detail · D5 HEIC/AVIF/RAW coverage messaging · D6 font hosting (Google Fonts import
-vs self-host Inter/JetBrains Mono at conversion).
+**Open decisions:** D3 pricing numbers (tiers are placeholders) · D4 batch-scan UX detail ·
+D5 HEIC/AVIF/RAW coverage messaging. **D6 resolved (P-015):** self-host only the Latin
+variable subsets of Inter and JetBrains Mono via Fontsource; mono is route-split.
 
 ## 13. Decision log (append-only)
 
@@ -239,7 +242,8 @@ vs self-host Inter/JetBrains Mono at conversion).
 | P-009 | 2026-10-24 | Mandatory decision logging in these docs | Accepted |
 | P-012 | 2026-10-24 | Mockup-first, full end-to-end; violet flat-forensic mockup v1 | Superseded by P-014 (visuals) |
 | P-013 | 2026-10-24 | Mockup v1 **rejected** by founder ("AI-sloppy"); 10 skills installed; v2 gated on skills + founder guidance | Accepted |
-| **P-014** | **2026-10-24** | **Adopt Zapier design language (reverse-engineered from `zapier/DESIGN.md`) as Provenably's complete design system** — warm cream/coffee/orange, display-Inter, 12px radius, flat elevation — applied to all 15 mockup pages via one stylesheet; bounded semantic-grade exception (§3.3); skills log §10 | **Accepted — pending founder approval of the rendered result** |
+| **P-014** | **2026-10-24** | **Adopt Zapier design language (reverse-engineered from `zapier/DESIGN.md`) as Provenably's complete design system** — warm cream/coffee/orange, display-Inter, 12px radius, flat elevation — applied to all 15 mockup pages via one stylesheet; bounded semantic-grade exception (§3.3); skills log §10 | **Accepted — founder-approved 2026-10-24** |
+| **P-015** | **2026-10-24** | **Implement P-014 as SvelteKit/Svelte 5 + TypeScript static frontend with FastAPI retained as JSON backend** — prerendered public pages, selective hydration, self-hosted Latin font subsets, measured bundle budget | **Accepted — founder-approved implementation direction** |
 
 ## 14. Document history
 
@@ -248,3 +252,4 @@ vs self-host Inter/JetBrains Mono at conversion).
 | 2026-10-24 | v1: product/UX design from codebase audit (flat v0 tokens, pages, flows, copy rules). | Engineering |
 | 2026-10-24 | P-010/P-011/P-012/P-013 sequence: Detect wedge → philosophy → mockup v1 (violet) → v1 rejected, skills installed. | Founder + Engineering |
 | 2026-10-24 | **v2 complete rewrite (P-014):** full Zapier-derived token/component/pattern system above; product sections (§12) and decision history preserved. | Founder (direction + source file) + Engineering |
+| 2026-10-24 | **P-015 implementation:** design approved and converted to the production SvelteKit frontend with performance budgets. | Founder + Engineering |
