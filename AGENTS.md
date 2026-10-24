@@ -1,6 +1,6 @@
 # AGENTS.md — Provenably (PVLY)
 
-> **Read this file first.** It is the binding operating manual for every human and AI agent
+> **Read [`PHILOSOPHY.md`](PHILOSOPHY.md) first** (mission: Detect → Remove → Verify, all formats, platform-ready — founder clarification 2026-10-24, P-011/A-013), then this file. It is the binding operating manual for every human and AI agent
 > working in this repository. Then read [`ARCHITECTURE.md`](ARCHITECTURE.md) (how the system
 > is built) and [`DESIGN.md`](DESIGN.md) (how the product/UX works). Every decision and every
 > non-trivial change MUST be recorded in these documents (see §9).
@@ -12,8 +12,10 @@
 ## 1. What this product is
 
 **Provenably** — AI content provenance & compliance. One graded **Provenance Report** per
-file (image, audio, video, text). **Product wedge: DETECT** (founder decision 2026-10-24,
-DESIGN.md P-010). There is no sanitizer/removal functionality anywhere in this product.
+file (image, audio, video, text). **Philosophy: DETECT → REMOVE → VERIFY, platform-ready**
+(founder clarification 2026-10-24, `PHILOSOPHY.md`, P-011/A-013). NOTE the honest gap:
+code is *currently* Detect-only (removal was deleted under the superseded P-010); restoring
+removal is roadmap R0–R4 — do not describe removal as shipped until it is.
 
 - **Detect:** C2PA/Content Credentials validation, metadata forensics, open watermark
   decoders, forensic context, text hygiene, platform-label preview, jurisdiction
@@ -32,9 +34,11 @@ DESIGN.md P-010). There is no sanitizer/removal functionality anywhere in this p
 3. **No silent stubs.** Anything that cannot run honestly is implemented as a wired
    connector returning `not_configured` / `not_installed` **with the exact enabling step**
    in `manual_integration`. Never fake a detector result.
-4. **Detect-only.** No removal/evasion functionality anywhere: no metadata stripping, no
-   C2PA removal, no watermark removal or degradation — in UI, API, or copy. Reintroducing
-   any of it requires a new founder Decision Record (it was removed by P-010/A-012).
+4. **Removal scope (Layer 1 only).** Per `PHILOSOPHY.md §5`, removal means **container
+   footprints** (C2PA manifests, EXIF/XMP/IPTC, container tags, doc props) — removed
+   lossless-first and **proven by re-scan**. Content-embedded watermarks (Layer 2: SynthID,
+   AudioSeal, VideoSeal, DWT-DCT…) are NEVER claimed removed; no "undetectable AI" positioning;
+   removal ships only with user attestation + jurisdiction disclosure notes.
 5. **Analyzer isolation.** One analyzer crashing must never kill a report (enforced in
    `app/pipeline.py`). New analyzers must not break this.
 6. **Read-only scanning.** Analysis never modifies the uploaded file; the stored blob
@@ -141,12 +145,15 @@ curl -s localhost:8000/v1/capabilities   # live vs manual integration status
   "weak never outranks strong". Add a conclusion test per new `provenance_class`.
 - `provenance_class` values are a public API — never rename an existing one.
 
-### 8.3 Removal features (prohibited)
-- There is **no sanitizer** in this product (removed 2026-10-24, founder decision P-010/A-012;
-  code recoverable from git history at `beb4143`). Do not add metadata-stripping, manifest
-  removal, watermark removal/degradation, or "platform-ready export" of modified files.
-- The regression test `test_detect_only_surface` asserts the old routes stay 404. Removing
-  that test requires a new founder Decision Record superseding P-010.
+### 8.3 Removal features (Detect → Remove → Verify)
+- Removal is a **core objective** (`PHILOSOPHY.md`), currently NOT implemented (deleted under
+  superseded P-010/A-012; source recoverable at `beb4143`). Rebuild strictly per roadmap
+  R0 (images/PDF/DOCX restore) → R1 audio → R2 video → R3 platform presets (PHILOSOPHY §8).
+- Every removal path must: Detect first, strip Layer-1 only (§2.4), validate output
+  decodes, be idempotent, Verify by re-scan (before/after diff + verdict), record
+  hashes-in/out + fields removed, expire output blobs, and carry the Layer-2 disclaimer.
+- `test_detect_only_surface` guards today's Detect-only code; replace it in the R0 change
+  with surface tests for the restored routes (per A-013), never just delete it.
 
 ### 8.4 Changing rules/registry data
 - JSON in `app/rules/`; pure functions in `app/rules/engine.py` (no I/O in logic paths).
@@ -218,3 +225,4 @@ config → connector → report rendering → `/v1/capabilities` flip → test �
 |---|---|---|
 | 2026-10-24 | Initial creation from full codebase audit (structure, contracts, known issues K1–K7, decision/review system). | Engineering (agent-assisted), pending founder review |
 | 2026-10-24 | Founder decision: wedge = Detect. Sanitizer removed everywhere; rules §2.4/§2.6/§8.3 rewritten, K3/K4/K7 resolved, homepage = Scan. | Founder + Engineering |
+| 2026-10-24 | Founder philosophy clarification supersedes the above: Detect → Remove → Verify, all formats, platform-ready. PHILOSOPHY.md added; §1/§2.4/§8.3 re-aimed; code gap (Detect-only until R0) recorded honestly. | Founder + Engineering |

@@ -1,6 +1,7 @@
 # ARCHITECTURE.md — Provenably (PVLY)
 
 > System architecture as it **currently exists** (`0.1.0-prototype`, verified 2026-10-24).
+> **Direction: [`PHILOSOPHY.md`](PHILOSOPHY.md)** (founder clarification 2026-10-24, A-013: Detect → Remove → Verify, all formats). This doc describes architecture as built; the R0–R4 build (PHILOSOPHY §8) is planned, not present.
 > Companion docs: [`AGENTS.md`](AGENTS.md) (operating rules) · [`DESIGN.md`](DESIGN.md)
 > (product/UX) · [`README.md`](README.md).
 > **Every technical decision must be logged in §14.**
@@ -237,8 +238,9 @@ watermark-then-JPEG-q75 fragility demo, signed WAV/MP4).
 | A-008 | 2026-10-23 (PRD) | Sanitizer: lossless-first, idempotent, Detect→Strip→Verify; NEVER claim watermark removal | Privacy utility without false "clean AI" claims; verifiable diff is differentiator | Re-encode-always; silent strip | Segment-level walkers to maintain per format; legal guardrails required (K7) | **Superseded by A-012** |
 | A-009 | ≤2026-10-14 | Retention: blob TTL 24h + `hash_only`; reports persist | Privacy-by-default for untrusted user media | Keep everything | Sanitizer-blob expiry gap (K4) moot after A-012 | Accepted |
 | A-010 | ≤2026-10-14 | Static API-key hook, enforced only if configured | Prototype openness with a clear swap point | Full auth now | Cannot deploy publicly as-is (K5) | Accepted (prototype only) |
+| A-013 | 2026-10-24 | **Planned architecture per PHILOSOPHY.md: restore removal (R0 images/PDF/DOCX from `beb4143`, lossless+verify+attestation+blob-expiry), then R1 audio (`mutagen` + RIFF walker), R2 video (ffmpeg stream-copy + BMFF C2PA-box pass, async), R3 eight platform presets + batch, R4 HEIC/AVIF/GIF/TIFF. Verify reuses existing analyzers throughout.** | Founder philosophy clarification (P-011): detect AND remove, all formats, platform-ready | Detect-only (A-012) | Nothing built yet — current system remains as documented above until R0; surface test to be replaced at R0 | Accepted (direction; build pending founder go-ahead) |
 | A-011 | 2026-10-24 | Adopt AGENTS/ARCHITECTURE/DESIGN + mandatory Decision/Change-Review logging before further development | Founder directive: every decision reviewable later; ends mega-commit pattern | Docs-as-code only in README | This system governs all future changes (AGENTS.md §9) | Accepted |
-| A-012 | 2026-10-24 | **Detect-only: remove the Sanitizer everywhere** (code, routes, `/sanitize` UI, `/v1/detect`, `sanitize_jobs`, pikepdf/lxml deps, sanitizer tests, `docs/PRD.md`); homepage becomes Scan (file/text/URL tabs, recent scans) | Founder directive resolving DESIGN D1: one product wedge, no dual Detect-vs-remove positioning, no removal legal exposure | Keep both surfaces; deprioritize-only (hide nav) | −1,078 LOC; 27 routes; README "no removal" true; K3/K4/K7 closed; code recoverable at `beb4143`; regression test locks surface | Accepted |
+| A-012 | 2026-10-24 | **Detect-only: remove the Sanitizer everywhere** (code, routes, `/sanitize` UI, `/v1/detect`, `sanitize_jobs`, pikepdf/lxml deps, sanitizer tests, `docs/PRD.md`); homepage becomes Scan (file/text/URL tabs, recent scans) | Founder directive resolving DESIGN D1: one product wedge, no dual Detect-vs-remove positioning, no removal legal exposure | Keep both surfaces; deprioritize-only (hide nav) | −1,078 LOC; 27 routes; README "no removal" true; K3/K4/K7 closed; code recoverable at `beb4143`; regression test locks surface | **Superseded by A-013 (same day)** |
 
 ## 15. Document history
 
@@ -246,3 +248,4 @@ watermark-then-JPEG-q75 fragility demo, signed WAV/MP4).
 |---|---|---|
 | 2026-10-24 | Initial creation from full codebase audit + live test run (27/32 passing, K1). | Engineering (agent-assisted), pending founder review |
 | 2026-10-24 | A-012 executed: sanitizer architecture removed (diagram, flows, routes, schema, matrix, tests); counts updated (27 routes, 18 tests, 13 pass / 5×K1). | Founder + Engineering |
+| 2026-10-24 | A-013 direction recorded (restore + audio/video removal + platform presets per PHILOSOPHY.md); A-012 superseded; as-built sections unchanged (honest gap). | Founder + Engineering |
