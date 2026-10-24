@@ -2,7 +2,7 @@
 
 > Product & UX/UI design as it **currently exists** (`0.1.0-prototype`, verified 2026-10-24).
 > Companion docs: [`AGENTS.md`](AGENTS.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md) ·
-> (The former Sanitizer PRD was withdrawn 2026-10-24 — see P-010.)
+> **Read [`PHILOSOPHY.md`](PHILOSOPHY.md) first** — founder philosophy clarified 2026-10-24 (P-011): Detect → Remove → Verify, all formats, platform-ready. Current code is temporarily Detect-only (see PHILOSOPHY §10 gap note).
 > **Every product/UX decision must be logged in §12.** Open decisions live in §11.
 
 ---
@@ -12,9 +12,11 @@
 **Provenably — AI content provenance & compliance.** One-liner in force:
 *"One graded Provenance Report per file"* (README).
 
-**Wedge DECIDED — DETECT (founder, 2026-10-24, P-010).** Provenably detects provenance;
-it does not remove, strip, or alter content. The former Sanitizer surface (homepage, API,
-PRD) was removed everywhere; homepage `/` is **Scan**. All copy assumes Detect exclusively.
+**Philosophy CLARIFIED — DETECT → REMOVE → VERIFY (founder, 2026-10-24, P-011, see
+`PHILOSOPHY.md`).** Detect is the front door; removal of C2PA/metadata/AI footprints across
+image/video/audio/document/text, verified and platform-ready, completes the job. This
+supersedes the same-day Detect-only call (P-010); until roadmap R0 lands, shipped code is
+Detect-only and copy must not promise removal.
 
 ## 2. Target personas (Detect-only, revised 2026-10-24 — unvalidated)
 
@@ -146,7 +148,7 @@ no reduced-motion handling for `.progress`. Any redesign must close these before
 
 | ID | Decision needed | Why it blocks | Revisit |
 |---|---|---|---|
-| D1 | ~~**Wedge: Detect vs Sanitize**~~ **DECIDED 2026-10-24 by founder: DETECT.** Sanitizer removed everywhere (P-010/A-012). | — resolved — | Closed |
+| D1 | **Wedge — RE-CLOSED 2026-10-24 by founder clarification: DETECT → REMOVE → VERIFY** (PHILOSOPHY.md, P-011). Supersedes the same-day Detect-only decision; R0 restore pending founder go-ahead. | Positioning/copy must be re-aimed when R0 ships | Closed (direction) |
 | D2 | ~~Sanitizer attestation/legal UX~~ **CLOSED 2026-10-24** — surface removed; moot for a read-only detector. | — resolved — | Closed |
 | D3 | Monetization UX: per-scan vs subscription; where the paywall appears (blueprint only: $0.02 img / $0.03 text / $0.08 audio-min / $0.15 video-min). | Auth/billing scope | Before billing build |
 | D4 | ~~Sanitizer batch/platform-preset UX~~ **CLOSED 2026-10-24** (P-010). *Replacement open item:* batch **scanning** UX (multi-file upload → report list/ZIP of JSON) — unspec'd. | Newsroom/moderation workflow | When batch is prioritized |
@@ -166,7 +168,8 @@ no reduced-motion handling for `.progress`. Any redesign must close these before
 | P-007 | 2026-10-23 (PRD) | Add Sanitize with Detect→Strip→Verify + explicit non-goals (no watermark-removal claims, no forgery/DRM) | Creator/privacy demand; differentiator = verified diff | Strip-only tool; watermark "removal" | Created wedge tension D1 + guardrail debt D2 | **Superseded by P-010** |
 | P-008 | ≤2026-10-14 | Homepage `/` renders Sanitize (README still Detect-first) | *Undocumented at the time — recorded here retroactively* | Scan-first homepage | Top-of-funnel implies Sanitizer wedge; contradicts README | **Superseded by P-010** |
 | P-009 | 2026-10-24 | Adopt this design doc + mandatory decision logging before further development | Founder directive (AGENTS.md §9) | Ad-hoc decisions in code | All future UX/product calls logged here | Accepted |
-| P-010 | 2026-10-24 | **Product wedge = DETECT. No sanitizers anywhere.** Remove Sanitizer UI/API/PRD; homepage + first nav item = Scan (file/text/URL); personas re-aimed at verification/compliance | Founder directive (verbatim: *"For the product wedge, make it detect, no sanitizers anywhere"*) | Sanitizer/creator wedge; keep both | D1/D2/D4 closed; single positioning + copy system; engineering in A-012 | Accepted |
+| P-011 | 2026-10-24 | **Philosophy clarified: detect AND remove C2PA/AI footprints in all formats (image/video/audio/doc/text), platform-ready for YouTube/LinkedIn/Instagram/TikTok/Pinterest/Reddit/X et al.** Recorded in `PHILOSOPHY.md` (Detect → Remove → Verify; honest Layer-1/Layer-2 boundary; R0–R4 roadmap) | Founder clarification, explicitly reversing P-010's "no sanitizers" | Detect-only product | Single north star; R0 restore + audio/video removal now the roadmap; engineering pending founder confirmation | Accepted |
+| P-010 | 2026-10-24 | **Product wedge = DETECT. No sanitizers anywhere.** Remove Sanitizer UI/API/PRD; homepage + first nav item = Scan (file/text/URL); personas re-aimed at verification/compliance | Founder directive (verbatim: *"For the product wedge, make it detect, no sanitizers anywhere"*) | Sanitizer/creator wedge; keep both | D1/D2/D4 closed; single positioning + copy system; engineering in A-012 | **Superseded by P-011 (same day)** |
 
 ## 13. Document history
 
@@ -174,3 +177,4 @@ no reduced-motion handling for `.progress`. Any redesign must close these before
 |---|---|---|
 | 2026-10-24 | Initial creation from full codebase/PRD audit (pages, flows, design tokens, copy rules, open decisions D1–D6). | Engineering (agent-assisted), pending founder review |
 | 2026-10-24 | P-010 executed: wedge = Detect; Scan homepage/flows/personas/copy updated; D1/D2/D4 closed. | Founder + Engineering |
+| 2026-10-24 | P-011: philosophy clarified (PHILOSOPHY.md created); D1 re-closed as Detect→Remove→Verify; P-010 superseded. | Founder + Engineering |
