@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Provenably — Provenably (Mockup)</title><link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%236d28d9'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
+<nav class="nav"><div class="wrap">
+<a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.8" stroke="#fff" stroke-width="2.2"/></svg></span>Provenably<span class="tagline">Detect → Remove → Verify</span></a>
+<a class="item " href="scan.html">Scan</a><a class="item " href="remove.html">Remove</a><a class="item " href="batch.html">Batch</a><a class="item " href="presets.html">Presets</a><a class="item " href="registry.html">Registry</a><a class="item " href="rules.html">Rules</a><a class="item " href="pricing.html">Pricing</a><a class="item " href="api.html">API</a><span class="spacer"></span><span class="mockchip">MOCKUP — no backend</span>
+<a class="item " href="history.html">History</a>
+<a class="item " href="settings.html">Settings</a>
+<a class="btn small" href="auth.html">Sign in</a></div></nav><main>
+<section class="hero"><div class="eyebrow">AI content provenance &amp; metadata control</div>
+<h1>See what your file says about you. Then decide what stays.</h1>
+<p class="lede">Every photo, video, and audio file you export carries hidden cargo — Content Credentials (C2PA), AI source tags, GPS, device and generator fingerprints. Provenably <strong>detects</strong> it, <strong>removes</strong> the removable footprints losslessly, and <strong>verifies</strong> the result before you publish anywhere.</p>
+<div class="loop"><span class="stepchip">1 · Detect</span><span class="arrow">→</span><span class="stepchip">2 · Remove</span><span class="arrow">→</span><span class="stepchip">3 · Verify</span><span class="arrow">→</span><span class="stepchip">4 · Platform-ready</span></div>
+<div class="row"><a class="btn" href="scan.html">Scan a file — free</a><a class="btn secondary" href="remove.html">Remove metadata</a><a class="btn dark" href="report.html">See a sample report</a></div>
+<div style="margin-top:26px"><div class="fmtstrip"><span class="fmt">JPG</span><span class="fmt">PNG</span><span class="fmt">WebP</span><span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">WebM</span><span class="fmt">WAV</span><span class="fmt">MP3</span><span class="fmt">M4A</span><span class="fmt">FLAC</span><span class="fmt">OGG</span><span class="fmt">PDF</span><span class="fmt">DOCX</span><span class="fmt">TXT</span><span class="fmt">HEIC*</span><span class="fmt">AVIF*</span></div><p class="small muted" style="margin-top:6px">* roadmap (PHILOSOPHY R4)</p></div></section>
+
+<section class="section soft" style="margin:0 -20px;padding-left:20px;padding-right:20px"><div class="eyebrow">How it works</div><h2 style="margin-top:0">One pass, fully proven</h2>
+<div class="grid3">
+<div class="box"><span class="tag accent">Detect</span><h3>Provenance report first</h3><p class="small muted">C2PA trust &amp; tamper, EXIF/XMP/IPTC, AI source-type tags, generator strings, open watermarks — every signal evidence-graded, with coverage shown. Never remove blind.</p><a href="report.html">Sample report →</a></div>
+<div class="box"><span class="tag accent">Remove</span><h3>Lossless footprint removal</h3><p class="small muted">Container footprints (C2PA manifests, metadata tags, doc properties) stripped without touching pixels or samples by default. Idempotent, validated, audited.</p><a href="remove.html">Removal flow →</a></div>
+<div class="box"><span class="tag accent">Verify</span><h3>Proof, not promises</h3><p class="small muted">The cleaned file is re-scanned by the same detectors. You get the before/after diff and a verdict — plus an honest note on embedded watermarks that can't be removed.</p><a href="presets.html">Platform presets →</a></div>
+</div></section>
+
+<section class="section"><div class="eyebrow">Honest by design</div><h2 style="margin-top:0">Two layers. One promise we can keep.</h2>
+<div class="grid2"><div class="box"><span class="tag ok">Layer 1 · Removable</span><h3>Container footprints</h3><p class="small muted">C2PA manifests, EXIF/XMP/IPTC, PNG text, ID3 / RIFF / MP4 tags, document authors &amp; revision history.</p><p><strong>Removed completely — and verified.</strong></p></div>
+<div class="box"><span class="tag warn">Layer 2 · Reported, never faked</span><h3>Watermarks inside the content</h3><p class="small muted">SynthID, AudioSeal, VideoSeal and similar marks live in the pixels/samples themselves. Metadata removal doesn't touch them.</p><p><strong>We tell you. We never claim they're gone.</strong></p></div></div>
+<div class="notice info" style="margin-top:14px">Removing metadata from your own files is a privacy choice — it doesn't remove your duty to disclose synthetic content where the law requires it. Every output carries its jurisdiction note. <a href="rules.html">See the rules →</a></div></section>
+
+<section class="section soft" style="margin:0 -20px;padding-left:20px;padding-right:20px"><div class="eyebrow">Publish anywhere</div><h2 style="margin-top:0">Ready for every platform</h2>
+<p class="muted">One verified-clean master, exported correctly for each destination — with each platform's labelling rules in view.</p>
+<div class="grid4" id="plats"></div><p style="margin-top:14px"><a class="btn secondary" href="presets.html">Explore all presets</a></p></section>
+
+<section class="section"><div class="grid3">
+<div><div class="eyebrow">Registry</div><h3>Which generators leave marks?</h3><p class="small muted">25 AI generators: visible marks, invisible watermarks, C2PA and public detectors — with confidence &amp; last-verified dates.</p><a href="registry.html">Browse the registry →</a></div>
+<div><div class="eyebrow">Compliance</div><h3>Will this get labelled?</h3><p class="small muted">Platform label preview + disclosure checklist for EU, California, India, China, Korea &amp; the US — from your scan in one click.</p><a href="rules.html">Check your obligations →</a></div>
+<div><div class="eyebrow">Developers</div><h3>One API for the whole loop</h3><p class="small muted">Scan, remove, verify and presets over a typed JSON API with per-file audit hashes. Mocked here, wired later.</p><a href="api.html">API &amp; status →</a></div>
+</div><hr><div class="center"><h2>Try the full loop on a demo file</h2><p class="muted">17 built-in fixtures: signed, tampered, watermarked, stripped.</p><a class="btn" href="scan.html">Open the scanner</a> <a class="btn dark" href="pricing.html">See pricing</a></div></section>
+<script>document.getElementById('plats').innerHTML=['YouTube','Instagram','TikTok','LinkedIn','Pinterest','Reddit','X / Twitter','Facebook'].map(function(p){return '<div class="platcard"><div class="pname"><span>'+p+'</span><span class="picon">'+p[0]+'</span></div><p class="small muted" style="margin-top:6px">Preset + label rules</p></div>'}).join('')</script>
+</main><footer><div class="wrap"><div class="cols">
+<div><strong>Provenably</strong> <span class="mockchip">mockup v1</span><p style="margin-top:8px">Detect → Remove → Verify → Platform-ready.<br>Reports describe signals &amp; evidence grades; not a verdict on authorship. Not legal advice.</p></div>
+<div><strong>Product</strong><br><a href="scan.html">Scan</a><br><a href="remove.html">Remove</a><br><a href="batch.html">Batch</a><br><a href="presets.html">Platform presets</a></div>
+<div><strong>Reference</strong><br><a href="registry.html">Watermark registry</a><br><a href="rules.html">Platform &amp; law rules</a><br><a href="api.html">API &amp; status</a><br><a href="design-system.html">Design system</a></div>
+<div><strong>Company</strong><br><a href="pricing.html">Pricing</a><br><a href="auth.html">Sign in</a><br><a href="history.html">History</a><br><a href="settings.html">Settings</a></div>
+</div><p style="margin-top:18px">Static mockup — every action is simulated. Backend wiring contract: <span class="mono">WIREFRAME.md</span></p></div></footer>
+<script src="mockup.js"></script></body></html>

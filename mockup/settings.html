@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings — account, API keys, retention — Provenably (Mockup)</title><link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%236d28d9'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
+<nav class="nav"><div class="wrap">
+<a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.8" stroke="#fff" stroke-width="2.2"/></svg></span>Provenably<span class="tagline">Detect → Remove → Verify</span></a>
+<a class="item " href="scan.html">Scan</a><a class="item " href="remove.html">Remove</a><a class="item " href="batch.html">Batch</a><a class="item " href="presets.html">Presets</a><a class="item " href="registry.html">Registry</a><a class="item " href="rules.html">Rules</a><a class="item " href="pricing.html">Pricing</a><a class="item " href="api.html">API</a><span class="spacer"></span><span class="mockchip">MOCKUP — no backend</span>
+<a class="item " href="history.html">History</a>
+<a class="item active" href="settings.html">Settings</a>
+<a class="btn small" href="auth.html">Sign in</a></div></nav><main><div class="wrap"><div class="pagehead"><div class="eyebrow">Provenably · Mockup</div><h1>Settings — account, API keys, retention</h1></div>
+<div class="grid2" style="margin-top:20px"><div><div class="box"><strong>Account</strong>
+<label>Display name</label><input type="text" value="Founder (mock)"><label>Email</label><input type="email" value="founder@example.com">
+<label>Plan</label><select><option>Free (mock)</option><option>Creator</option><option>Pro</option></select>
+<div class="row" style="margin-top:12px"><button type="button" data-mock-action="#set-result">Save</button><a class="btn secondary small" href="pricing.html">Change plan</a></div><div id="set-result" class="result hidden"></div></div>
+<div class="box"><strong>Privacy &amp; retention</strong>
+<label>Default retention</label><select><option>24 hours, then delete bytes (default)</option><option>Hash-only always</option><option>7 days (Creator+)</option></select>
+<label class="check"><input type="checkbox" checked> Include jurisdiction disclosure note in every removal output</label></div></div>
+<div><div class="box"><div class="row" style="justify-content:space-between"><strong>API keys</strong><button class="small secondary" type="button">+ New key</button></div>
+<table style="margin-top:8px"><tr><th>Key</th><th>Created</th><th>Last used</th><th></th></tr>
+<tr><td class="mono">pvly_live_••••9f2c</td><td class="small">2026-10-24</td><td class="small">—</td><td><a href="#">revoke</a></td></tr></table>
+<p class="small muted">Send as <span class="mono">X-API-Key</span>. Usage is metered per scan/removal.</p></div>
+<div class="box"><strong>Billing</strong><p class="small muted" style="margin-top:5px">Mock placeholder — Stripe checkout &amp; invoices arrive with the billing milestone. Current usage (mock):</p>
+<div class="progress" style="margin-top:8px"><span style="width:30%"></span></div><p class="small">3 / 10 free scans this month</p></div>
+<div class="box"><strong style="color:var(--bad)">Danger zone</strong><p class="small muted">Delete all my stored files now · Delete account (exports audit hashes first)</p><button class="small secondary" type="button">Delete stored files</button></div></div></div>
+</div></main><footer><div class="wrap"><div class="cols">
+<div><strong>Provenably</strong> <span class="mockchip">mockup v1</span><p style="margin-top:8px">Detect → Remove → Verify → Platform-ready.<br>Reports describe signals &amp; evidence grades; not a verdict on authorship. Not legal advice.</p></div>
+<div><strong>Product</strong><br><a href="scan.html">Scan</a><br><a href="remove.html">Remove</a><br><a href="batch.html">Batch</a><br><a href="presets.html">Platform presets</a></div>
+<div><strong>Reference</strong><br><a href="registry.html">Watermark registry</a><br><a href="rules.html">Platform &amp; law rules</a><br><a href="api.html">API &amp; status</a><br><a href="design-system.html">Design system</a></div>
+<div><strong>Company</strong><br><a href="pricing.html">Pricing</a><br><a href="auth.html">Sign in</a><br><a href="history.html">History</a><br><a href="settings.html">Settings</a></div>
+</div><p style="margin-top:18px">Static mockup — every action is simulated. Backend wiring contract: <span class="mono">WIREFRAME.md</span></p></div></footer>
+<script src="mockup.js"></script></body></html>

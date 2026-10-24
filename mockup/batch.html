@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Batch — many files, one pass — Provenably (Mockup)</title><link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%236d28d9'/%3E%3Cpath d='M4 8.5l3 3 5-6' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E"></head><body>
+<nav class="nav"><div class="wrap">
+<a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 4.8" stroke="#fff" stroke-width="2.2"/></svg></span>Provenably<span class="tagline">Detect → Remove → Verify</span></a>
+<a class="item " href="scan.html">Scan</a><a class="item " href="remove.html">Remove</a><a class="item active" href="batch.html">Batch</a><a class="item " href="presets.html">Presets</a><a class="item " href="registry.html">Registry</a><a class="item " href="rules.html">Rules</a><a class="item " href="pricing.html">Pricing</a><a class="item " href="api.html">API</a><span class="spacer"></span><span class="mockchip">MOCKUP — no backend</span>
+<a class="item " href="history.html">History</a>
+<a class="item " href="settings.html">Settings</a>
+<a class="btn small" href="auth.html">Sign in</a></div></nav><main><div class="wrap"><div class="pagehead"><div class="eyebrow">Provenably · Mockup</div><h1>Batch — many files, one pass</h1></div>
+<div class="drop" style="margin-top:20px"><div class="big">Drop up to 50 files</div><p>Images, video, audio, docs — mixed is fine. Each gets Detect → (optional Remove) → Verify.</p><input type="file" multiple><p class="small drop-file" style="margin-top:8px">4 sample files queued (mock)</p></div>
+<div class="row" style="margin:16px 0"><label style="margin:0">Mode</label><select style="width:auto"><option>Detect only</option><option>Detect → Remove → Verify</option></select>
+<label style="margin:0">Preset</label><select style="width:auto"><option>Generic master</option><option>Instagram</option><option>YouTube</option><option>TikTok</option></select>
+<button type="button" data-mock-action="#batch-result">Run batch</button><span class="small muted">Async for video — poll or webhook (API)</span></div>
+<table><tr><th>File</th><th>Type</th><th>Status</th><th>Conclusion / verdict</th><th>Out</th><th></th></tr>
+<tr><td class="mono">launch_hero.png</td><td>image</td><td><span class="tag ok">done</span></td><td class="small">watermark · <span class="tag ok">clean after remove</span></td><td class="small">1.4 MB → 1.2 MB</td><td><a href="report.html">report</a></td></tr>
+<tr><td class="mono">teaser.mp4</td><td>video</td><td><span class="tag accent">running 62%</span><div class="progress" style="margin-top:5px"><span style="width:62%"></span></div></td><td class="small muted">verifying frames…</td><td class="small muted">—</td><td></td></tr>
+<tr><td class="mono">voiceover.wav</td><td>audio</td><td><span class="tag">queued</span></td><td class="small muted">—</td><td class="small muted">—</td><td></td></tr>
+<tr><td class="mono">legacy.doc</td><td>doc</td><td><span class="tag bad">error</span></td><td class="small">Legacy .doc unsupported — convert to .docx</td><td class="small muted">—</td><td><a href="#">details</a></td></tr></table>
+<div id="batch-result" class="result hidden"></div>
+<div class="box" style="margin-top:18px"><strong>Batch outputs</strong><p class="small muted" style="margin-top:5px">ZIP of cleaned files + <span class="mono">manifest.json</span> (per-file hashes in/out, removed fields, verdicts) + combined Detect report. Outputs expire with your retention policy.</p>
+<div class="row"><a class="btn small" href="#">Download ZIP (mock)</a><a class="btn small secondary" href="#">Download manifest.json</a></div></div>
+<h2>States covered by this wireframe</h2><div class="grid3"><div class="empty">Empty state<br><span class="small">no files yet → dropzone guidance</span></div><div class="box"><strong>Loading</strong><div class="progress indet" style="margin-top:8px"><span></span></div><p class="small muted">Indeterminate + per-file progress</p></div><div class="notice bad">Error state<br><span class="small">Per-file errors never fail the batch; reason shown inline.</span></div></div>
+</div></main><footer><div class="wrap"><div class="cols">
+<div><strong>Provenably</strong> <span class="mockchip">mockup v1</span><p style="margin-top:8px">Detect → Remove → Verify → Platform-ready.<br>Reports describe signals &amp; evidence grades; not a verdict on authorship. Not legal advice.</p></div>
+<div><strong>Product</strong><br><a href="scan.html">Scan</a><br><a href="remove.html">Remove</a><br><a href="batch.html">Batch</a><br><a href="presets.html">Platform presets</a></div>
+<div><strong>Reference</strong><br><a href="registry.html">Watermark registry</a><br><a href="rules.html">Platform &amp; law rules</a><br><a href="api.html">API &amp; status</a><br><a href="design-system.html">Design system</a></div>
+<div><strong>Company</strong><br><a href="pricing.html">Pricing</a><br><a href="auth.html">Sign in</a><br><a href="history.html">History</a><br><a href="settings.html">Settings</a></div>
+</div><p style="margin-top:18px">Static mockup — every action is simulated. Backend wiring contract: <span class="mono">WIREFRAME.md</span></p></div></footer>
+<script src="mockup.js"></script></body></html>
