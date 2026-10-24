@@ -12,13 +12,14 @@
 ## 1. What this product is
 
 **Provenably** — AI content provenance & compliance. One graded **Provenance Report** per
-file (image, audio, video, text), plus a **Sanitizer** that strips container metadata/C2PA
-and verifies the result.
+file (image, audio, video, text). **Product wedge: DETECT** (founder decision 2026-10-24,
+DESIGN.md P-010). There is no sanitizer/removal functionality anywhere in this product.
 
 - **Detect:** C2PA/Content Credentials validation, metadata forensics, open watermark
   decoders, forensic context, text hygiene, platform-label preview, jurisdiction
   disclosure checklist, AI Watermark Registry (25 generators).
-- **Sanitize:** Detect → Strip → Verify for JPEG/PNG/WebP/PDF/DOCX (see `docs/PRD.md`).
+- **Detect only.** Provenably inspects content; it never modifies, strips, or "cleans" it
+  (the text hidden-character cleaner in Text tools is unicode hygiene, not evasion).
 
 ## 2. Non-negotiable rules (never violate)
 
@@ -31,15 +32,13 @@ and verifies the result.
 3. **No silent stubs.** Anything that cannot run honestly is implemented as a wired
    connector returning `not_configured` / `not_installed` **with the exact enabling step**
    in `manual_integration`. Never fake a detector result.
-4. **Sanitizer scope.** Sanitizer removes **container metadata & C2PA manifests only**.
-   Embedded statistical watermarks (SynthID, AudioSeal, VideoSeal, DWT-DCT, green-list)
-   are NEVER claimed removable. Required copy in every UI/report path:
-   *"Metadata removed. Embedded watermarks, if present, are not removed."*
+4. **Detect-only.** No removal/evasion functionality anywhere: no metadata stripping, no
+   C2PA removal, no watermark removal or degradation — in UI, API, or copy. Reintroducing
+   any of it requires a new founder Decision Record (it was removed by P-010/A-012).
 5. **Analyzer isolation.** One analyzer crashing must never kill a report (enforced in
    `app/pipeline.py`). New analyzers must not break this.
-6. **Lossless-first sanitization.** Default `reencode=False`; pixels byte-identical where
-   the format allows. Sanitizing must be **idempotent** and the output must decode —
-   on failure return an error, never a silently corrupted file.
+6. **Read-only scanning.** Analysis never modifies the uploaded file; the stored blob
+   must remain byte-identical to the upload (its SHA-256 is part of the report).
 7. **Privacy defaults.** Uploads deleted after `BLOB_TTL_HOURS` (default 24h);
    `hash_only=true` deletes bytes immediately after analysis. Never log file contents.
 8. **Rules data is editorial.** Every entry in `app/rules/*.json` carries `confidence` +
@@ -54,10 +53,10 @@ and verifies the result.
 | Version | `0.1.0-prototype` (`app/config.py: APP_VERSION`) |
 | Repo history | Single commit `beb4143` on `main`; work happens on feature/session branches |
 | Code size | ~4,700 LOC Python · ~1,000 LOC templates/CSS/JS · 51 tracked files |
-| Tests | 32 tests collected: **27 pass, 5 FAIL** (see §7 — known bug, fix before new features) |
+| Tests | 18 tests collected: **13 pass, 5 FAIL** (see §7 — known bug K1, fix before new features) |
 | CI / Docker / LICENSE | **Absent** — known gaps, tracked in ARCHITECTURE.md §13 |
 | Deployment | Local/uvicorn only; no production deployment yet |
-| Homepage | `/` renders **Sanitize**; README still leads with Detect — **open product decision** (DESIGN.md §11) |
+| Homepage | `/` renders **Scan** (Detect) — wedge DECIDED 2026-10-24 (DESIGN.md P-010) |
 
 ## 4. Repository map (where things live)
 
@@ -66,15 +65,13 @@ app/
   main.py            FastAPI app: UI routes + /v1 API, SSRF guard, API-key hook, janitor (527 LOC)
   pipeline.py        magic-byte sniffing, analyzer orchestration, persistence, TTL cleanup
   aggregate.py       evidence-graded conclusion + coverage (priority rules — ARCHITECTURE.md §6)
-  db.py              SQLite (WAL): scans, sanitize_jobs, events
+  db.py              SQLite (WAL): scans, events
   config.py          ALL configuration via env vars (12-factor)
   analyzers/         base.py (Signal/Context/Analyzer contract) + one module per signal family
-  sanitizer/         image.py (JPEG/PNG/WebP + dispatch), pdf.py (pikepdf), docx.py (lxml/OOXML)
   rules/             platforms.json (10) · jurisdictions.json (6) · registry.json (25) · engine.py
   templates/ static/ Jinja2 pages (10), style.css, app.js — NO build step (DESIGN.md)
 tools/               dev_cert.py (TEST CA) · make_demo_assets.py (17 fixtures) · fetch_trust_list.py
-tests/               test_smoke.py · test_sanitizer.py · test_sanitizer_phase2.py
-docs/PRD.md          Sanitizer PRD (phases, acceptance criteria)
+tests/               test_smoke.py (pipeline + API + rules + detect-only surface)
 README.md            User-facing overview + 14-item Manual Integration Checklist
 ```
 
@@ -101,9 +98,9 @@ curl -s localhost:8000/v1/capabilities   # live vs manual integration status
 
 1. **Branch.** Never commit directly to `main`. Work on the assigned branch.
 2. **Read before writing.** Identify the owning module from §4; follow its existing pattern
-   (analyzer contract §8, sanitizer golden fixtures, rules-JSON schema).
-3. **Tests are mandatory.** New behavior = new/extended test. Sanitizer changes need a
-   golden-fixture test incl. idempotence. Pipeline changes need a smoke conclusion test.
+   (analyzer contract §8, golden demo fixtures, rules-JSON schema).
+3. **Tests are mandatory.** New behavior = new/extended test. Pipeline changes need a
+   smoke conclusion test; route changes need a surface test (cf. `test_detect_only_surface`).
 4. **Run the full suite** before proposing a change; report pass/fail honestly.
 5. **Small, reviewable commits.** One logical change per commit, imperative subject line.
    (Do NOT repeat the single-mega-commit pattern of `beb4143`.)
@@ -111,7 +108,7 @@ curl -s localhost:8000/v1/capabilities   # live vs manual integration status
 7. **No new dependency** without recording why (vs. stdlib/existing deps) in ARCHITECTURE.md's
    Decision Log, and noting CPU-only/GPU impact.
 8. **No build step.** Frontend stays Jinja2 + vanilla JS/CSS unless a Decision Record says otherwise.
-9. **Keep README, `docs/PRD.md` and these three docs consistent.** If they disagree, fix
+9. **Keep README and these three docs consistent.** If they disagree, fix
    them in the same change and note it in the Decision Log.
 
 ## 7. Known issues (do not re-discover; fix in priority order)
@@ -120,11 +117,11 @@ curl -s localhost:8000/v1/capabilities   # live vs manual integration status
 |---|---|---|---|
 | K1 | Demo trust anchor not honored: signed fixtures grade `moderate`, expected `strong`. 5 failing tests (`test_pipeline_conclusions` for signed jpg/composite/wav/mp4). | `pytest -q` (2026-10-24). Suspect per-thread c2pa-rs settings in `app/analyzers/c2pa_an.py::_load_trust`. | Fix anchor loading; suite must be green before feature work. |
 | K2 | No CI — K1 shipped unnoticed. | `.github/` absent. | Add GitHub Actions: install → dev_cert → demo assets → pytest. |
-| K3 | README contradictions: "17 tests" (actually 32); "No removal/evasion anywhere" (Sanitizer exists); homepage described as Scan (actually Sanitize). | `README.md:31,127`; `app/main.py:113`. | Resolve once product wedge is decided (DESIGN.md §11). |
-| K4 | Sanitized outputs never expire (janitor only cleans scan blobs). | `app/db.py: expired_blobs` scans `scans` only. | Add expiry to `sanitize_jobs` or ephemeral mode. |
-| K5 | Auth open by default; report/preview/download are unauthenticated capability URLs (12-hex IDs); no rate limiting; ≤200 MB uploads read fully into memory. | `app/main.py: require_api_key`, `create_scan`, `sanitize_download`, `scan_preview`. | Required before any public deploy (ARCHITECTURE.md §11). |
+| K3 | ~~README contradictions (test count, "no removal", homepage)~~ **RESOLVED 2026-10-24** by the Detect-only decision: README/test count corrected, "no removal" is true again, homepage is Scan. | Fix in commit "Make Detect the product wedge…" | — |
+| K4 | ~~Sanitized outputs never expire~~ **RESOLVED 2026-10-24** — sanitizer (and its blobs/table) removed entirely. | — | — |
+| K5 | Auth open by default; report/preview are unauthenticated capability URLs (12-hex IDs); no rate limiting; ≤200 MB uploads read fully into memory. | `app/main.py: require_api_key`, `create_scan`, `scan_preview`. | Required before any public deploy (ARCHITECTURE.md §11). |
 | K6 | Deprecated `@app.on_event("startup")`; unpinned `>=` deps, no lockfile. | `app/main.py:96`, `requirements.txt`. | Migrate to lifespan; pin/lock deps. |
-| K7 | PRD guardrails unimplemented: no user attestation in Sanitize UI. | `docs/PRD.md §13` vs `app/templates/sanitize.html`. | Implement before marketing Sanitizer publicly. |
+| K7 | ~~Sanitizer attestation guardrails unimplemented~~ **RESOLVED 2026-10-24** — product surface removed; no attestation needed for a read-only detector. | — | — |
 
 ## 8. Contracts you must follow
 
@@ -144,12 +141,12 @@ curl -s localhost:8000/v1/capabilities   # live vs manual integration status
   "weak never outranks strong". Add a conclusion test per new `provenance_class`.
 - `provenance_class` values are a public API — never rename an existing one.
 
-### 8.3 Changing the sanitizer
-- Entry: `sanitizer.sanitize_bytes(data, filename, policy) -> (bytes, report)` and
-  `sanitizer.inspect_bytes(data)`. Formats dispatch in `app/sanitizer/image.py`.
-- Preserve: lossless default, idempotence, output-decodes validation, Verify (re-scan diff),
-  `RemoveReport` schema (`removed/kept/failed/verify/watermark_note`).
-- New format = new module + golden fixture + idempotence test + PRD acceptance-criteria update.
+### 8.3 Removal features (prohibited)
+- There is **no sanitizer** in this product (removed 2026-10-24, founder decision P-010/A-012;
+  code recoverable from git history at `beb4143`). Do not add metadata-stripping, manifest
+  removal, watermark removal/degradation, or "platform-ready export" of modified files.
+- The regression test `test_detect_only_surface` asserts the old routes stay 404. Removing
+  that test requires a new founder Decision Record superseding P-010.
 
 ### 8.4 Changing rules/registry data
 - JSON in `app/rules/`; pure functions in `app/rules/engine.py` (no I/O in logic paths).
@@ -189,7 +186,7 @@ can be reviewed later:
    ```markdown
    Change: <what> · Why: <linked decision DR-XXX>
    Touched: <modules/routes/schema> · API/UX impact: <none|describe>
-   Tests: <added/updated, suite result> · Docs updated: AGENTS/ARCHITECTURE/DESIGN/README/PRD
+   Tests: <added/updated, suite result> · Docs updated: AGENTS/ARCHITECTURE/DESIGN/README
    Risks & rollback: <describe>
    ```
 
@@ -204,7 +201,7 @@ can be reviewed later:
 - [ ] API/schema changes reflected in ARCHITECTURE.md §7–§9
 - [ ] UX/copy changes reflected in DESIGN.md (§5–§8)
 - [ ] Decision Log row added (§9); superseded decisions marked, not deleted
-- [ ] README / PRD updated if user-facing claims changed
+- [ ] README updated if user-facing claims changed
 - [ ] No secrets, no `data/`/`demo_assets/` files committed
 
 ## 11. Manual-integration discipline
@@ -220,3 +217,4 @@ config → connector → report rendering → `/v1/capabilities` flip → test �
 | Date | Change | Author |
 |---|---|---|
 | 2026-10-24 | Initial creation from full codebase audit (structure, contracts, known issues K1–K7, decision/review system). | Engineering (agent-assisted), pending founder review |
+| 2026-10-24 | Founder decision: wedge = Detect. Sanitizer removed everywhere; rules §2.4/§2.6/§8.3 rewritten, K3/K4/K7 resolved, homepage = Scan. | Founder + Engineering |

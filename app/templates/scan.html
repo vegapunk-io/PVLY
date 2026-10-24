@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% set active = 'scan' %}
+{% block title %}Scan{% endblock %}
+{% block content %}
+<h1>Detect AI provenance</h1>
+<p class="muted">One graded <strong>Provenance Report</strong> per file — Content Credentials (C2PA), metadata forensics, open watermark decoders, forensic context and text checks, each signal with its own evidence grade. A report describes signals and their evidence grade; it is not a verdict on authorship.</p>
+
+<div class="grid2" style="margin-top:22px">
+  <div>
+    <div class="tabs" data-tabs>
+      <button type="button" data-tab="file" class="active">File</button>
+      <button type="button" data-tab="text">Text</button>
+      <button type="button" data-tab="url">URL</button>
+    </div>
+
+    <div class="tabpanel active" data-panel="file">
+      <form id="file-form" method="post" action="/v1/scans" enctype="multipart/form-data">
+        <div class="drop" id="drop">Drop an image, audio, video or text file here, or choose one below.<br>
+          <input type="file" name="file" id="file-input" style="margin-top:10px" required></div>
+        <label class="check" style="margin-top:12px"><input type="checkbox" name="hash_only" value="true"> Hash-only — delete the uploaded bytes right after analysis (keep only SHA-256 + report)</label>
+        <label for="gl-key">Green-list key <span class="muted">(optional — only for keyed text-watermark checks, see Lab)</span></label>
+        <input type="text" name="greenlist_key" id="gl-key" placeholder="e.g. demo-key">
+        <div class="row" style="margin-top:12px"><button type="submit">Scan file</button>
+          <span class="small muted">up to 200 MB · uploads are deleted after 24 h</span></div>
+      </form>
+    </div>
+
+    <div class="tabpanel" data-panel="text">
+      <form method="post" action="/v1/scans" enctype="multipart/form-data">
+        <label for="scan-text">Paste text</label>
+        <textarea name="text" id="scan-text" placeholder="Paste text to scan for hidden characters and provenance signals…" required></textarea>
+        <label for="gl-key-2">Green-list key <span class="muted">(optional)</span></label>
+        <input type="text" name="greenlist_key" id="gl-key-2" placeholder="e.g. demo-key">
+        <div class="row" style="margin-top:12px"><button type="submit">Scan text</button></div>
+      </form>
+    </div>
+
+    <div class="tabpanel" data-panel="url">
+      <form method="post" action="/v1/scans" enctype="multipart/form-data">
+        <label for="scan-url">Public file URL</label>
+        <input type="url" name="url" id="scan-url" placeholder="https://example.com/image.jpg" required>
+        <label class="check" style="margin-top:12px"><input type="checkbox" name="hash_only" value="true"> Hash-only — delete the fetched bytes right after analysis</label>
+        <div class="row" style="margin-top:12px"><button type="submit">Fetch &amp; scan</button>
+          <span class="small muted">http(s) only · public hosts only · up to 200 MB</span></div>
+      </form>
+    </div>
+
+    <p class="small muted" style="margin-top:16px">No file handy? Try the <a href="/demo">demo files</a> — 17 fixtures covering signed, tampered, watermarked and stripped content.</p>
+  </div>
+
+  <div>
+    <div class="box">
+      <h3 style="margin-top:0">What gets checked</h3>
+      <table>
+        <tr><td><strong>Content Credentials</strong></td><td class="small">C2PA signature, trust state, digital source type, actions, ingredients, tamper (hard-binding mismatch)</td></tr>
+        <tr><td><strong>Metadata</strong></td><td class="small">EXIF, XMP/IPTC DigitalSourceType, PNG text (A1111 <code>parameters</code>), generator strings</td></tr>
+        <tr><td><strong>Watermarks</strong></td><td class="small">DWT-DCT invisible watermark (SD/SDXL) with bit accuracy + p-value; per-frame for video</td></tr>
+        <tr><td><strong>Forensic context</strong></td><td class="small">JPEG quality, canonical sizes, noise, audio spectrum, MP4 boxes — context only, never the verdict</td></tr>
+        <tr><td><strong>Text</strong></td><td class="small">Hidden-character scan, stylometric features, keyed green-list watermark z-test</td></tr>
+        <tr><td><strong>Rules</strong></td><td class="small">Platform label preview for the result (Instagram, YouTube, TikTok, LinkedIn, …)</td></tr>
+      </table>
+    </div>
+    <div class="box">
+      <strong>Honest limits</strong>
+      <p class="small muted" style="margin-top:6px">Every report shows <strong>coverage</strong> — what ran vs. what is not configured in this deployment (see <a href="/docs-guide">API &amp; status</a>). Absence of provenance is <strong>not</strong> evidence of human origin: most generators still ship nothing, and metadata is stripped by screenshots and most social platforms.</p>
+    </div>
+  </div>
+</div>
+
+{% if recent %}
+<h2>Recent scans</h2>
+<table>
+  <tr><th>When</th><th>File</th><th>Type</th><th>Conclusion</th><th>Evidence</th><th></th></tr>
+  {% for r in recent %}
+  <tr>
+    <td class="small muted">{{ r.created_at|ts }}</td>
+    <td class="mono">{{ r.filename }}</td>
+    <td>{{ r.modality }}</td>
+    <td class="mono small">{{ r.conclusion or r.status }}</td>
+    <td>{% if r.evidence_grade %}<span class="tag {{ 'ok' if r.evidence_grade == 'strong' else 'accent' if r.evidence_grade == 'moderate' else 'warn' if r.evidence_grade == 'weak' else '' }}">{{ r.evidence_grade }}</span>{% endif %}</td>
+    <td><a class="small" href="/report/{{ r.id }}">report</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

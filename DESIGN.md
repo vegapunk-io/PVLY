@@ -2,33 +2,29 @@
 
 > Product & UX/UI design as it **currently exists** (`0.1.0-prototype`, verified 2026-10-24).
 > Companion docs: [`AGENTS.md`](AGENTS.md) · [`ARCHITECTURE.md`](ARCHITECTURE.md) ·
-> [`docs/PRD.md`](docs/PRD.md) (Sanitizer PRD — personas §4, requirements §6, acceptance §14).
+> (The former Sanitizer PRD was withdrawn 2026-10-24 — see P-010.)
 > **Every product/UX decision must be logged in §12.** Open decisions live in §11.
 
 ---
 
 ## 1. Product definition (current)
 
-**Provenably — AI content provenance & compliance.** One-liners in force today:
+**Provenably — AI content provenance & compliance.** One-liner in force:
+*"One graded Provenance Report per file"* (README).
 
-- Detect: *"One graded Provenance Report per file"* (README).
-- Sanitize: *"Check a file for AI provenance, strip the metadata that identifies it, then
-  prove what was removed — in one pass"* (PRD §1).
+**Wedge DECIDED — DETECT (founder, 2026-10-24, P-010).** Provenably detects provenance;
+it does not remove, strip, or alter content. The former Sanitizer surface (homepage, API,
+PRD) was removed everywhere; homepage `/` is **Scan**. All copy assumes Detect exclusively.
 
-**Two surfaces, one unresolved wedge** (see §11-D1): the app homepage `/` is **Sanitize**;
-brand statement, nav and README lead with provenance/compliance. Until D1 is decided, do
-not introduce copy that assumes either wedge exclusively.
-
-## 2. Target personas (from PRD §4 — current, unvalidated)
+## 2. Target personas (Detect-only, revised 2026-10-24 — unvalidated)
 
 | Persona | Need | Primary surface |
 |---|---|---|
-| Creator / influencer | Publish without leaking GPS/device; pass platform checks | Sanitize + Rules |
-| Privacy-conscious user | Strip metadata before sharing | Sanitize |
-| Newsroom / OSINT | Verify provenance; sanitize sources with audit trail | Detect + Sanitize |
-| Platform / moderation | Understand what metadata arrives | Detect + Registry |
-| Developer | Programmatic scan/strip + report via API | `/v1` API + `/api/docs` |
-| Compliance / publisher (implied by Rules) | EU/CA/India/China/Korea disclosure readiness | Detect + Rules |
+| Newsroom / OSINT | Verify content provenance before publishing | Scan + Report |
+| Creator / influencer | Know how platforms will label a file before posting | Scan + Rules |
+| Compliance / publisher | EU/CA/India/China/Korea disclosure readiness | Detect + Rules |
+| Platform / moderation | Understand what provenance signals arrive with uploads | Detect + Registry |
+| Developer | Programmatic scan + report via API | `/v1` API + `/api/docs` |
 
 ## 3. Design principles (binding)
 
@@ -38,9 +34,9 @@ not introduce copy that assumes either wedge exclusively.
    the decisive signal; weak evidence is visually weaker (§7 conclusion block).
 3. **Coverage is part of the result.** what ran vs. what's `not_configured` (dashed "manual"
    tags) appears on the report and on *API & status* — a clean result must show its limits.
-4. **Honest limits up front.** Sanitizer states before use: metadata/C2PA removable;
-   statistical watermarks are NOT (§8 required copy). Fragility is demonstrated, not hidden
-   (the q75-JPEG watermark-loss demo fixture).
+4. **Honest limits up front.** The Scan page states coverage limits before use (§8);
+   fragility is demonstrated, not hidden (the q75-JPEG watermark-loss demo fixture).
+   Detection is read-only — nothing in the product modifies user files.
 5. **Flat, minimal, fast.** No gradients, no decorative shadows, system fonts, no build
    step, no tracking/analytics (current state), tables over cards for data density.
 6. **Prototype is labelled.** The `prototype` chip in the nav and TEST-signer labelling stay
@@ -49,11 +45,11 @@ not introduce copy that assumes either wedge exclusively.
 ## 4. Information architecture (current pages)
 
 Nav (`app/templates/base.html`): **Provenably** *"AI content provenance & compliance"* ·
-Sanitize · Demo files · Registry · Rules · Text tools · Lab · API & status · `prototype` chip.
+Scan · Demo files · Registry · Rules · Text tools · Lab · API & status · `prototype` chip.
 
 | Route | Template | Purpose (H1) |
 |---|---|---|
-| `/` = `/sanitize` | `sanitize.html` | "Remove metadata & Content Credentials" — dropzone, policy checks (Keep ICC, Re-encode), before/after result, recent jobs |
+| `/` = `/scan` | `scan.html` | "Detect AI provenance" — tabs (File dropzone / Text / URL) posting to `/v1/scans`, hash-only + green-list options,"What gets checked", "Honest limits", recent scans |
 | `/demo` | `demo.html` | "Demo files" — 17 fixtures, one-click scan (primary demo entry) |
 | `/report/{id}` | `report.html` | Provenance Report: conclusion block, signals, coverage, platform preview, raw JSON |
 | `/registry`, `/registry/{slug}` | `registry*.html` | "AI watermark & provenance registry" (25) · "Does {tool} watermark or sign its output?" |
@@ -64,13 +60,11 @@ Sanitize · Demo files · Registry · Rules · Text tools · Lab · API & status
 
 ## 5. Core user flows (current)
 
-**F1 Scan:** Demo files (or API upload/URL/text) → queued → report page polls/renders →
+**F1 Scan:** Scan page tabs (file/text/URL) or Demo files → HTML form posts to `/v1/scans` →
+303 redirect to report page → polls until done →
 conclusion (label + grade + decisive signal) → signals (expandable raw data) → coverage →
 platform-label preview → download `report.json`.
-**F2 Sanitize:** pick file (JPEG/PNG/WebP/PDF/DOCX ≤200 MB) → options (Keep ICC ✓ default;
-Re-encode ☐) → "Remove metadata" → result: removed/kept lists, verify before/after,
-verdict tag (`clean` green / residual amber), size in→out, download `<name>.sanitized<ext>`
-→ appears in "Recent sanitize jobs".
+~~**F2 Sanitize**~~ — REMOVED 2026-10-24 (P-010). No flow modifies files.
 **F3 Check a generator:** Registry → filter by modality → generator page (visible mark /
 invisible watermark / C2PA / IPTC / public detector / robustness + confidence + last-verified).
 **F4 Compliance check:** Rules page / `POST /v1/disclosure/check` → per-jurisdiction open items.
@@ -112,7 +106,8 @@ main padding 28px/60px · footer with disclaimer + OpenAPI/health links.
 | Forms | `.check` checkbox rows; labels above inputs; mono textarea for text tools |
 
 Client JS (`app/static/app.js`, 185 LOC, no framework): `window.Provenably` namespace with
-per-page initializers (`sanitizePage()` etc.), `fetch` to `/v1`, `esc()` HTML-escaping helper
+per-page initializers (`toolsPage()`, `labPage()`, `disclosurePage()`) plus generic tabs /
+dropzone (`#drop`+`#file-form`, used by Scan) and report polling; `fetch` to `/v1`, `esc()` helper
 — **always** escape interpolated values; the few `innerHTML` sinks rely on it.
 
 ## 8. Copy & voice rules (binding)
@@ -121,9 +116,8 @@ per-page initializers (`sanitizePage()` etc.), `fetch` to `/v1`, `esc()` HTML-es
 - **Forbidden claims:** "human-made", "100% AI/human", "no watermark", "watermark removed",
   "undetectable", any legal-advice phrasing. Use: "No provenance signal found **by the
   checks that ran**", "Absence of provenance is not evidence of human origin".
-- **Required sanitizer copy** (every entry point): *"Metadata removed. Embedded watermarks,
-  if present, are not removed."* + what-was-removed list. Never market as evading
-  disclosure laws or platform labels (PRD §13).
+- **No removal language anywhere.** Never imply Provenably can strip metadata/manifests or
+  remove/degrade watermarks, or help evade disclosure laws/platform labels. (Detect-only, P-010.)
 - **Required labels:** TEST signer disclosed ("issuer: Provenably Demo"); `prototype` chip;
   rules data carries "researched 2026-10-14 · not legal advice".
 - Provenance classes render their human `label` (e.g. "AI-generated (declared in a Content
@@ -152,11 +146,11 @@ no reduced-motion handling for `.progress`. Any redesign must close these before
 
 | ID | Decision needed | Why it blocks | Revisit |
 |---|---|---|---|
-| D1 | **Wedge: Detect (compliance) vs Sanitize (creator/privacy)?** Homepage, tagline, README lead and nav order depend on it; the two currently contradict (README: "No removal/evasion anywhere"). | Positioning, pricing, legal posture, first customer segment | Before any public launch/marketing |
-| D2 | Sanitizer legal UX: attestation checkbox + jurisdiction-aware warning (PRD §13) — specified, **not implemented**. | Legal exposure if marketed publicly (K7) | With D1 |
-| D3 | Monetization UX: per-file vs per-GB vs subscription; where paywall appears (blueprint only: $0.02 img / $0.03 text / $0.08 audio-min / $0.15 video-min). | Auth/billing scope (PRD Phase 5) | Before Phase 5 |
-| D4 | Batch + platform-preset UX (PRD Phase 4: 10 presets, ZIP+manifest). | The monetizable creator workflow | Phase 4 planning |
-| D5 | HEIC/AVIF/RAW support messaging (mobile photos) — PRD Open Q1. | Creator persona coverage | v2 scoping |
+| D1 | ~~**Wedge: Detect vs Sanitize**~~ **DECIDED 2026-10-24 by founder: DETECT.** Sanitizer removed everywhere (P-010/A-012). | — resolved — | Closed |
+| D2 | ~~Sanitizer attestation/legal UX~~ **CLOSED 2026-10-24** — surface removed; moot for a read-only detector. | — resolved — | Closed |
+| D3 | Monetization UX: per-scan vs subscription; where the paywall appears (blueprint only: $0.02 img / $0.03 text / $0.08 audio-min / $0.15 video-min). | Auth/billing scope | Before billing build |
+| D4 | ~~Sanitizer batch/platform-preset UX~~ **CLOSED 2026-10-24** (P-010). *Replacement open item:* batch **scanning** UX (multi-file upload → report list/ZIP of JSON) — unspec'd. | Newsroom/moderation workflow | When batch is prioritized |
+| D5 | HEIC/AVIF/RAW detection coverage + messaging (mobile photos currently sniff-only). | Creator persona coverage | v2 scoping |
 | D6 | Brand: formal logo, landing/pricing pages, SEO treatment of Registry pages. | No marketing surface exists | With D1 |
 
 ## 12. Decision Log (append-only — see AGENTS.md §9)
@@ -169,12 +163,14 @@ no reduced-motion handling for `.progress`. Any redesign must close these before
 | P-004 | ≤2026-10-14 | Flat/minimal visual system: no gradients/shadows, system fonts, tables-first | Forensic tool credibility; zero build | Marketing-style SaaS UI | Tokens §6 are the design system until D6 | Accepted |
 | P-005 | ≤2026-10-14 | Registry as public, per-generator Q&A pages with confidence + last-verified | Reference/SEO value; "never documents removal" | Keeping data API-only | Quarterly re-verification obligation | Accepted |
 | P-006 | ≤2026-10-14 | Demo fixtures as first-class product surface (17, one-click) | Teach trust/tamper/fragility without uploads | Upload-only empty state | Fixtures double as tests (ARCH §12) | Accepted |
-| P-007 | 2026-10-23 (PRD) | Add Sanitize with Detect→Strip→Verify + explicit non-goals (no watermark-removal claims, no forgery/DRM) | Creator/privacy demand; differentiator = verified diff | Strip-only tool; watermark "removal" | Created wedge tension D1 + guardrail debt D2 | Accepted; D1/D2 open |
-| P-008 | ≤2026-10-14 | Homepage `/` renders Sanitize (README still Detect-first) | *Undocumented at the time — recorded here retroactively* | Scan-first homepage | Top-of-funnel implies Sanitizer wedge; contradicts README | **Open — resolve via D1** |
+| P-007 | 2026-10-23 (PRD) | Add Sanitize with Detect→Strip→Verify + explicit non-goals (no watermark-removal claims, no forgery/DRM) | Creator/privacy demand; differentiator = verified diff | Strip-only tool; watermark "removal" | Created wedge tension D1 + guardrail debt D2 | **Superseded by P-010** |
+| P-008 | ≤2026-10-14 | Homepage `/` renders Sanitize (README still Detect-first) | *Undocumented at the time — recorded here retroactively* | Scan-first homepage | Top-of-funnel implies Sanitizer wedge; contradicts README | **Superseded by P-010** |
 | P-009 | 2026-10-24 | Adopt this design doc + mandatory decision logging before further development | Founder directive (AGENTS.md §9) | Ad-hoc decisions in code | All future UX/product calls logged here | Accepted |
+| P-010 | 2026-10-24 | **Product wedge = DETECT. No sanitizers anywhere.** Remove Sanitizer UI/API/PRD; homepage + first nav item = Scan (file/text/URL); personas re-aimed at verification/compliance | Founder directive (verbatim: *"For the product wedge, make it detect, no sanitizers anywhere"*) | Sanitizer/creator wedge; keep both | D1/D2/D4 closed; single positioning + copy system; engineering in A-012 | Accepted |
 
 ## 13. Document history
 
 | Date | Change | Author |
 |---|---|---|
 | 2026-10-24 | Initial creation from full codebase/PRD audit (pages, flows, design tokens, copy rules, open decisions D1–D6). | Engineering (agent-assisted), pending founder review |
+| 2026-10-24 | P-010 executed: wedge = Detect; Scan homepage/flows/personas/copy updated; D1/D2/D4 closed. | Founder + Engineering |

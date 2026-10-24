@@ -92,3 +92,14 @@ def test_sniff():
     assert pipeline.sniff(b"RIFF\0\0\0\0WAVEfmt " + b"\0" * 48, "x") == ("audio/wav", "audio")
     assert pipeline.sniff(b"\0\0\0\x18ftypmp42" + b"\0" * 52, "x") == ("video/mp4", "video")
     assert pipeline.sniff(b"plain words", "notes.txt") == ("text/plain", "text")
+
+
+def test_detect_only_surface():
+    """Product wedge = Detect (founder decision 2026-10-24): no sanitizer anywhere."""
+    assert client.get("/").status_code == 200
+    assert client.get("/scan").status_code == 200
+    for method, path in [("get", "/sanitize"), ("get", "/v1/sanitize"),
+                         ("post", "/v1/sanitize"), ("post", "/v1/detect")]:
+        assert getattr(client, method)(path).status_code == 404, (method, path)
+    caps = client.get("/v1/capabilities").json()
+    assert not any("sanitize" in k for k in caps["live"])

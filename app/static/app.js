@@ -136,50 +136,5 @@
     $("#d-wrongkey").addEventListener("click", () => detect("not-the-key"));
   }
 
-  // ---- sanitize page ---------------------------------------------------------------------------
-  function sanitizePage() {
-    const form = $("#san-form");
-    if (!form) return;
-    const drop = $("#san-drop"), input = $("#san-file");
-    if (drop) {
-      ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
-      ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
-      drop.addEventListener("drop", (e) => { if (e.dataTransfer && e.dataTransfer.files.length) { input.files = e.dataTransfer.files; form.requestSubmit(); } });
-    }
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const out = $("#san-result");
-      if (!input.files.length) { out.innerHTML = '<p class="notice">Choose an image, PDF or DOCX first.</p>'; return; }
-      const fd = new FormData();
-      fd.append("file", input.files[0]);
-      fd.append("keep_icc", $("#san-icc").checked ? "true" : "false");
-      fd.append("reencode", $("#san-reencode").checked ? "true" : "false");
-      out.innerHTML = '<p class="muted small">Removing metadata…</p>';
-      try {
-        const r = await fetch("/v1/sanitize", {method: "POST", body: fd, headers: {accept: "application/json"}});
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(d.detail ? (typeof d.detail === "string" ? d.detail : JSON.stringify(d.detail)) : r.statusText);
-        const det = d.detected || {}, ver = d.verify || {}, aft = ver.after || {};
-        const has = (v) => Array.isArray(v) ? v.length > 0 : (v && typeof v === "object" ? Object.keys(v).some((k) => has(v[k])) : !!v);
-        const fmt = (d.file && d.file.format) || "jpeg";
-        const keys = fmt === "pdf" ? ["info", "xmp", "attachments", "c2pa"]
-          : fmt === "docx" ? ["core", "app", "custom_properties", "comments", "tracked_changes", "media_metadata", "c2pa"]
-          : ["c2pa", "exif", "xmp", "iptc", "icc"];
-        const rows = keys.map((k) => {
-          const was = has(det[k]), now = has(aft[k]);
-          return `<tr><td class="mono">${k.toUpperCase()}</td><td>${was ? '<span class="tag warn">present</span>' : '<span class="muted">absent</span>'}</td><td>${now ? '<span class="tag warn">residual</span>' : '<span class="tag ok">absent</span>'}</td></tr>`;
-        }).join("");
-        let h = `<div class="box"><div class="row" style="justify-content:space-between"><strong>${esc(d.file.filename)}</strong>${ver.verdict === "clean" ? '<span class="tag ok">clean</span>' : '<span class="tag warn">residual</span>'}</div>`;
-        h += `<table style="margin-top:10px"><tr><th>Group</th><th>Before</th><th>After</th></tr>${rows}</table>`;
-        h += `<p class="small muted" style="margin-top:8px">${d.file.bytes_in} B → ${d.file.bytes_out} B · lossless: ${d.lossless ? "yes" : "no"}${d.pixels_identical === true ? " · pixels identical" : ""}</p>`;
-        if (d.removed && d.removed.length) h += `<p class="small">Removed: ${d.removed.map((x) => esc(x.field) + (x.count > 1 ? " ×" + x.count : "")).join(", ")}</p>`;
-        (d.warnings || []).forEach((w) => { h += `<p class="notice small">${esc(w)}</p>`; });
-        h += `<p class="small muted">${esc(d.watermark_note)}</p>`;
-        h += `<p style="margin-top:10px"><a class="btn small" href="${d.download_url}">Download sanitized file</a></p></div>`;
-        out.innerHTML = h;
-      } catch (err) { out.innerHTML = `<p class="notice">${esc(err.message)}</p>`; }
-    });
-  }
-
-  window.Provenably = {disclosurePage, toolsPage, labPage, sanitizePage};
+  window.Provenably = {disclosurePage, toolsPage, labPage};
 })();
