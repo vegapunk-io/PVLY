@@ -38,13 +38,13 @@ def aggregate(signals: list[Signal], modality: str) -> dict:
         pc = s.data.get("provenance_class")
         if pc == "tampered_after_signing" or s.data.get("modified_after_signing"):
             return _conc("tampered_after_signing", "strong", s, [
-                "The embedded Content Credential's hard binding no longer matches the pixels/bytes — the content was edited or re-encoded after signing. This is NOT by itself evidence of AI; treat the manifest as stale."])
+                "The embedded Content Credential's hard binding no longer matches the pixels/bytes. The content was edited or re-encoded after signing. This is NOT by itself evidence of AI; treat the manifest as stale."])
     for s in c2pa:
         pc = s.data.get("provenance_class")
         if s.status == "detected" and pc in ("ai_generated_declared", "ai_assisted_declared", "captured_declared", "signed_no_source_type"):
             notes = []
             if s.evidence_grade == "moderate":
-                notes.append("Signature verifies but the signer is not on the configured trust list — identity unverified.")
+                notes.append("Signature verifies but the signer is not on the configured trust list, so the signer's identity is unverified.")
             if pc == "signed_no_source_type":
                 notes.append("Manifest is valid but declares no digitalSourceType; check actions and ingredients.")
             return _conc(pc, s.evidence_grade, s, notes)
@@ -83,7 +83,7 @@ def _conc(cls: str, grade: str, s: Signal, notes: list[str]) -> dict:
 
 
 def coverage(signals: list[Signal]) -> dict:
-    """How much of the detector surface actually ran — shown on the report so 'clean' never over-claims."""
+    """How much of the detector surface actually ran, shown on the report so 'clean' never over-claims."""
     live = [s for s in signals if s.status in ("detected", "absent", "info", "inconclusive")]
     manual = [s for s in signals if s.status in ("not_installed", "not_configured")]
     errors = [s for s in signals if s.status == "error"]

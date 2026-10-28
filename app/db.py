@@ -27,6 +27,38 @@ CREATE TABLE IF NOT EXISTS scans (
   report_json TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_scans_created ON scans(created_at DESC);
+CREATE TABLE IF NOT EXISTS removals (
+  id TEXT PRIMARY KEY,
+  scan_id TEXT NOT NULL,
+  created_at REAL NOT NULL,
+  updated_at REAL NOT NULL,
+  status TEXT NOT NULL,            -- queued | running | done | error
+  modality TEXT,
+  attested INTEGER DEFAULT 0,
+  input_sha256 TEXT,
+  output_sha256 TEXT,
+  output_blob_path TEXT,
+  output_blob_expires_at REAL,
+  fields_removed TEXT,             -- JSON list
+  report_json TEXT,
+  error TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_removals_created ON removals(created_at DESC);
+CREATE TABLE IF NOT EXISTS batches (
+  id TEXT PRIMARY KEY,
+  created_at REAL NOT NULL,
+  updated_at REAL NOT NULL,
+  status TEXT NOT NULL,
+  preset TEXT,
+  attested INTEGER DEFAULT 0,
+  scan_ids TEXT,
+  removal_ids TEXT,
+  output_blob_path TEXT,
+  output_blob_expires_at REAL,
+  report_json TEXT,
+  error TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_batches_created ON batches(created_at DESC);
 CREATE TABLE IF NOT EXISTS events (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ts REAL NOT NULL, scan_id TEXT, kind TEXT, detail TEXT
@@ -110,4 +142,84 @@ def stats():
     with conn() as c:
         total = c.execute("SELECT COUNT(*) FROM scans").fetchone()[0]
         done = c.execute("SELECT COUNT(*) FROM scans WHERE status='done'").fetchone()[0]
-        return {"scans_total": total, "scans_done": done}
+        rtotal = c.execute("SELECT COUNT(*) FROM removals").fetchone()[0]
+        rdone = c.execute("SELECT COUNT(*) FROM removals WHERE status='done'").fetchone()[0]
+        return {"scans_total": total, "scans_done": done,
+                "removals_total": rtotal, "removals_done": rdone}
+
+
+def create_removal(removal_id, scan_id, modality, input_sha256, attested):
+    now = time.time()
+    expires = now + config.BLOB_TTL_HOURS * 3600
+    with _lock, conn() as c:
+        c.execute(
+            "INSERT INTO removals(id,scan_id,created_at,updated_at,status,modality,attested,input_sha256,output_blob_expires_at)"
+            " VALUES(?,?,?,?,?,?,?,?,?)",
+            (removal_id, scan_id, now, now, "queued", modality, int(attested), input_sha256, expires))
+    return removal_id
+
+
+def set_removal_status(removal_id, status, error=None):
+    with _lock, conn() as c:
+        c.execute("UPDATE removals SET status=?, error=?, updated_at=? WHERE id=?",
+                  (status, error, time.time(), removal_id))
+
+
+def save_removal_result(removal_id, output_sha256, output_blob_path, fields_removed, report):
+    now = time.time()
+    with _lock, conn() as c:
+        c.execute(
+            "UPDATE removals SET status='done', output_sha256=?, output_blob_path=?, fields_removed=?, report_json=?, updated_at=? WHERE id=?",
+            (output_sha256, output_blob_path, json.dumps(fields_removed), json.dumps(report), now, removal_id))
+
+
+def get_removal(removal_id):
+    with conn() as c:
+        row = c.execute("SELECT * FROM removals WHERE id=?", (removal_id,)).fetchone()
+        return dict(row) if row else None
+
+
+def expired_removal_blobs(now=None):
+    now = now or time.time()
+    with conn() as c:
+        return [dict(r) for r in c.execute(
+            "SELECT id, output_blob_path FROM removals WHERE output_blob_path IS NOT NULL AND output_blob_expires_at IS NOT NULL AND output_blob_expires_at < ?",
+            (now,)).fetchall()]
+
+
+def create_batch(batch_id, scan_ids, preset, attested):
+    now = time.time()
+    expires = now + config.BLOB_TTL_HOURS * 3600
+    with _lock, conn() as c:
+        c.execute(
+            "INSERT INTO batches(id,created_at,updated_at,status,preset,attested,scan_ids,output_blob_expires_at)"
+            " VALUES(?,?,?,?,?,?,?,?)",
+            (batch_id, now, now, "queued", preset, int(attested), json.dumps(scan_ids), expires))
+
+
+def set_batch_status(batch_id, status, error=None):
+    with _lock, conn() as c:
+        c.execute("UPDATE batches SET status=?, error=?, updated_at=? WHERE id=?",
+                  (status, error, time.time(), batch_id))
+
+
+def save_batch_result(batch_id, removal_ids, output_blob_path, report):
+    now = time.time()
+    with _lock, conn() as c:
+        c.execute(
+            "UPDATE batches SET status='done', removal_ids=?, output_blob_path=?, report_json=?, updated_at=? WHERE id=?",
+            (json.dumps(removal_ids), output_blob_path, json.dumps(report), now, batch_id))
+
+
+def get_batch(batch_id):
+    with conn() as c:
+        row = c.execute("SELECT * FROM batches WHERE id=?", (batch_id,)).fetchone()
+        return dict(row) if row else None
+
+
+def expired_batch_blobs(now=None):
+    now = now or time.time()
+    with conn() as c:
+        return [dict(r) for r in c.execute(
+            "SELECT id, output_blob_path FROM batches WHERE output_blob_path IS NOT NULL AND output_blob_expires_at IS NOT NULL AND output_blob_expires_at < ?",
+            (now,)).fetchall()]

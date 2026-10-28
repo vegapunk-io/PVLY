@@ -3,8 +3,7 @@
 LIVE:   Unicode hygiene (hidden code points, homoglyphs, bidi controls) with safe normalisation.
 LIVE:   Transparent stylometric *features* + a deliberately 'weak' heuristic (never a verdict).
 LIVE:   Educational green-list watermark demo (Kirchenbauer et al. 2023) with a *known* key.
-MANUAL: Binoculars / Fast-DetectGPT (GPU), vendor text watermark detectors (SynthID-Text, textGrain, Claude mark)
-        — no public third-party detector exists today; EU CoP requires providers to expose detection by 2 Feb 2027.
+MANUAL: Binoculars / Fast-DetectGPT (GPU), vendor text watermark detectors (SynthID-Text, textGrain, Claude mark), no public third-party detector exists today; EU CoP requires providers to expose detection by 2 Feb 2027.
 """
 from __future__ import annotations
 

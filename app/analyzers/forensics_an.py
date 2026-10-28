@@ -20,10 +20,10 @@ STD_LUMA = np.array([
     49, 64, 78, 87, 103, 121, 120, 101, 72, 92, 95, 98, 112, 100, 103, 99], dtype=float)
 
 GENERATOR_SIZES = {
-    (1024, 1024): "1024² — DALL·E 3 / SDXL / Firefly / Midjourney default", (1792, 1024): "1792×1024 — DALL·E 3 wide",
-    (1024, 1792): "1024×1792 — DALL·E 3 tall", (512, 512): "512² — SD 1.x default", (768, 768): "768² — SD 2.x",
-    (1536, 1024): "1536×1024 — ChatGPT images landscape", (1024, 1536): "1024×1536 — ChatGPT images portrait",
-    (1456, 816): "1456×816 — Midjourney 16:9 (v6)", (1344, 768): "1344×768 — SDXL 16:9",
+    (1024, 1024): "1024²: DALL·E 3 / SDXL / Firefly / Midjourney default", (1792, 1024): "1792×1024: DALL·E 3 wide",
+    (1024, 1792): "1024×1792: DALL·E 3 tall", (512, 512): "512²: SD 1.x default", (768, 768): "768²: SD 2.x",
+    (1536, 1024): "1536×1024: ChatGPT images landscape", (1024, 1536): "1024×1536: ChatGPT images portrait",
+    (1456, 816): "1456×816: Midjourney 16:9 (v6)", (1344, 768): "1344×768: SDXL 16:9",
 }
 
 
@@ -71,7 +71,7 @@ class ImageForensicsAnalyzer(Analyzer):
             hints.append(info["generator_size_hint"])
         if info.get("estimated_jpeg_quality") is not None and info["estimated_jpeg_quality"] <= 80:
             hints.append(f"re-compressed at ~q{info['estimated_jpeg_quality']} (typical of social/messaging re-encodes)")
-        summary = ("Context only — not evidence of AI. " + "; ".join(hints)) if hints else "Context only — nothing notable."
+        summary = ("Context only: not evidence of AI. " + "; ".join(hints)) if hints else "Context only: nothing notable."
         out.append(Signal(kind="forensics", name="Image forensic context", status="info", evidence_grade="none",
                           summary=summary, data=info, method="PIL quantisation tables + Laplacian noise estimate"))
         out.append(Signal(kind="passive", name="Passive AI-image classifier", status="not_installed", evidence_grade="none",

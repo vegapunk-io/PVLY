@@ -81,7 +81,7 @@ class VideoAnalyzer(Analyzer):
             facts = {"error": str(e)[:200]}
         hints = []
         if facts.get("encoder_tag"):
-            hints.append(f"encoder tag '{facts['encoder_tag']}'" + (" (FFmpeg/Lavf re-mux — metadata may have been dropped)" if "Lavf" in facts["encoder_tag"] else ""))
+            hints.append(f"encoder tag '{facts['encoder_tag']}'" + (" (FFmpeg/Lavf re-mux; metadata may have been dropped)" if "Lavf" in facts["encoder_tag"] else ""))
         out.append(Signal(kind="container", name="MP4 / ISO-BMFF structure", status="info", evidence_grade="none",
                           summary=("C2PA uuid box present. " if facts.get("c2pa_uuid_box") else "No C2PA uuid box. ") + "; ".join(hints),
                           data=facts, method="pure-python box walker"))

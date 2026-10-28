@@ -112,7 +112,7 @@
       "slug": "linkedin",
       "name": "LinkedIn",
       "label_text": "cr pin (Content Credentials)",
-      "label_subtext": "A Content Credentials provenance pin—not a standalone verdict that the media is AI-generated.",
+      "label_subtext": "A Content Credentials provenance pin, not a standalone verdict that the media is AI-generated.",
       "detection_summary": "LinkedIn shows the lower-case “cr” pin when an image or video carries cryptographically signed C2PA Content Credentials. Opening it can show the signer’s recorded AI use, app or device, creator, issuer and date. No general LinkedIn pixel classifier is documented.",
       "metadata_signals": ["Cryptographically signed C2PA Content Credentials"],
       "creator_duty": "Decide before upload whether the signed provenance history should be publicly inspectable on LinkedIn.",

@@ -61,13 +61,12 @@ def _load_trust():
         settings["trust"]["allowed_list"] = config.TRUST_ALLOWED_PEM.read_text()
         sources.append("allowed list")
     try:
-        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            c2pa.load_settings(json.dumps(settings))
+        s = c2pa.Settings.from_dict(settings)
+        _thread_state.context = c2pa.Context(settings=s)
         _trust_loaded["sources"] = sources
     except Exception as e:  # pragma: no cover
-        log.warning("could not load trust settings: %s", e)
+        log.warning("could not build trust context: %s", e)
+        _thread_state.context = None
         _trust_loaded["sources"] = [f"error: {e}"]
     _thread_state.done = True
 
@@ -134,18 +133,18 @@ class C2PAAnalyzer(Analyzer):
         structure = jumbf.describe(data)
         if not HAVE_SDK:
             return [Signal(kind="c2pa", name="Content Credentials (C2PA)", status="not_installed",
-                           summary="Official SDK missing — structure scan only.",
+                           summary="Official SDK missing; structure scan only.",
                            data={"structure": structure}, manual_integration="pip install c2pa-python",
                            method="pure-python JUMBF scan")]
         _load_trust()
         try:
-            reader = c2pa.Reader(ctx.path)
+            reader = c2pa.Reader(ctx.path, context=getattr(_thread_state, "context", None))
         except Exception as e:
             msg = str(e)
             absent = "ManifestNotFound" in msg or "no JUMBF" in msg or "manifest not found" in msg.lower() or "not found" in msg.lower()
             if absent or structure is None:
                 return [Signal(kind="c2pa", name="Content Credentials (C2PA)", status="absent", evidence_grade="none",
-                               summary="No C2PA manifest embedded. Absence is NOT evidence of human origin — "
+                               summary="No C2PA manifest embedded. Absence is NOT evidence of human origin. "
                                        "most upload pipelines and screenshots strip metadata.",
                                data={"structure": structure, "sdk_error": None if absent else msg},
                                method=f"c2pa-python {getattr(c2pa, '__version__', '')} / c2pa-rs {c2pa.sdk_version()}")]
@@ -195,7 +194,7 @@ class C2PAAnalyzer(Analyzer):
             grade = "none"
 
         if modified_after_signing:
-            summary = "Manifest present but the asset bytes no longer match the signed hash — modified after signing (or spliced)."
+            summary = "Manifest present but the asset bytes no longer match the signed hash. It was modified after signing (or spliced)."
         elif state == "Trusted":
             summary = f"Valid Content Credential signed by {active['signer']['issuer'] or 'unknown'} (certificate chains to a configured trust anchor)."
         elif state == "Valid":

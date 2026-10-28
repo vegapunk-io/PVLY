@@ -1,10 +1,10 @@
 """Audio analyzers.
 
-LIVE:   WAV container facts + spectral context (bandwidth, flatness, silence, clipping) — context only.
+LIVE:   WAV container facts + spectral context (bandwidth, flatness, silence, clipping), context only.
 LIVE:   MP3 ID3v2 tag summary (encoder strings are attribution hints).
 LIVE:   C2PA in WAV/MP3 runs through the shared C2PA analyzer.
-MANUAL: AudioSeal (Meta) detector — auto-enables when `torch` + `audioseal` are importable.
-MANUAL: SynthID-Audio (Google / OpenAI / ElevenLabs) — vendor surfaces only.
+MANUAL: AudioSeal (Meta) detector, auto-enables when `torch` + `audioseal` are importable.
+MANUAL: SynthID-Audio (Google / OpenAI / ElevenLabs), vendor surfaces only.
 """
 from __future__ import annotations
 
@@ -121,7 +121,7 @@ class AudioAnalyzer(Analyzer):
                 enc = (facts.get("frames") or {}).get("TSSE") or (facts.get("frames") or {}).get("TENC")
                 if enc:
                     hints.append(f"encoder tag: {enc}")
-            summary = ("Context only — not evidence of AI. " + "; ".join(hints)) if hints else "Context only — nothing notable."
+            summary = ("Context only: not evidence of AI. " + "; ".join(hints)) if hints else "Context only: nothing notable."
             out.append(Signal(kind="forensics", name="Audio container & spectral context", status="info", evidence_grade="none",
                               summary=summary, data=facts, method="wave/ID3 parsing + numpy FFT"))
         except Exception as e:

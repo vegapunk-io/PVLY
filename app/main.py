@@ -1,13 +1,14 @@
-"""Provenably — FastAPI application (UI + JSON API).
+"""Provenably. FastAPI application (UI + JSON API).
 
 Run:  uvicorn app.main:app --host 0.0.0.0 --port 8000
 Docs: /api/docs (OpenAPI)   Health: /health
 
 Scaling path (see README): the analyzer pipeline is a pure function `pipeline.run_scan(scan_id)`; swap
-BackgroundTasks for a queue worker (arq/Celery), SQLite for Postgres, local blobs for S3 — routes stay the same.
+BackgroundTasks for a queue worker (arq/Celery), SQLite for Postgres, local blobs for S3, routes stay the same.
 """
 from __future__ import annotations
 
+import contextvars
 import ipaddress
 import json
 import logging
@@ -16,13 +17,15 @@ import pathlib
 import socket
 import threading
 import time
+import uuid
 import urllib.parse
 import urllib.request
 from typing import Optional
 
+from contextlib import asynccontextmanager
 from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.concurrency import run_in_threadpool
@@ -30,16 +33,120 @@ from pydantic import BaseModel, Field
 
 from . import config, db, pipeline
 from .analyzers import text_an
+from . import removal as removal_mod
 from .analyzers.c2pa_an import HAVE_SDK as HAVE_C2PA, trust_sources
 from .rules import engine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("provenably")
 
+_request_id_var: contextvars.ContextVar[str] = contextvars.ContextVar("request_id", default="-")
+
+# --- lightweight Prometheus-style metrics (stdlib only, no extra dependency) ---
+_metrics_lock = threading.Lock()
+_metrics: dict[str, int] = {"requests_total": 0, "requests_5xx": 0, "scans_created": 0, "rate_limited": 0}
+_request_counts: dict[str, int] = {}  # "METHOD path status" -> count
+
+# --- in-process rate limiter (per client IP, token bucket) ---
+_rate_lock = threading.Lock()
+_rate_buckets: dict[str, list[float]] = {}
+
+
+def _check_rate_limit(client_ip: str) -> bool:
+    """Return True if allowed, False if rate-limited."""
+    if config.RATE_LIMIT_PER_MINUTE <= 0:
+        return True
+    now = time.time()
+    window = 60.0
+    with _rate_lock:
+        bucket = _rate_buckets.setdefault(client_ip, [])
+        # drop entries outside window
+        cutoff = now - window
+        while bucket and bucket[0] < cutoff:
+            bucket.pop(0)
+        if len(bucket) >= config.RATE_LIMIT_PER_MINUTE:
+            return False
+        bucket.append(now)
+        return True
+
 BASE = pathlib.Path(__file__).resolve().parent
 FRONTEND_DIR = BASE.parent / "frontend" / "build"
-app = FastAPI(title="Provenably API", version=config.APP_VERSION, docs_url="/api/docs", redoc_url=None, openapi_url="/api/openapi.json")
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    db.init_db()
+
+    def janitor():
+        while True:
+            time.sleep(600)
+            try:
+                n = pipeline.cleanup_expired_blobs()
+                # also clean expired removal + batch output blobs
+                for fn in (db.expired_removal_blobs, db.expired_batch_blobs):
+                    for row in fn():
+                        p = row.get("output_blob_path")
+                        if p:
+                            try:
+                                pathlib.Path(p).unlink(missing_ok=True)
+                            except Exception:
+                                pass
+                if n:
+                    log.info("janitor removed %d expired blobs", n)
+            except Exception:
+                log.exception("janitor")
+    threading.Thread(target=janitor, daemon=True, name="blob-janitor").start()
+    yield
+
+
+app = FastAPI(title="Provenably API", version=config.APP_VERSION, docs_url="/api/docs", redoc_url=None, openapi_url="/api/openapi.json", lifespan=_lifespan)
 app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+
+@app.middleware("http")
+async def request_id_and_logging(request: Request, call_next):
+    rid = request.headers.get("x-request-id") or uuid.uuid4().hex
+    token = _request_id_var.set(rid)
+    start = time.perf_counter()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        response.headers["X-Request-ID"] = rid
+        return response
+    except Exception:
+        status_code = 500
+        raise
+    finally:
+        dur = time.perf_counter() - start
+        path = request.url.path
+        key = f"{request.method} {path} {status_code}"
+        with _metrics_lock:
+            _metrics["requests_total"] += 1
+            if status_code >= 500:
+                _metrics["requests_5xx"] += 1
+            _request_counts[key] = _request_counts.get(key, 0) + 1
+        log.info("rid=%s method=%s path=%s status=%d dur=%.3fs", rid, request.method, path, status_code, dur)
+        _request_id_var.reset(token)
+
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    # Only API calls are limited; page shells and static assets (dozens per page view) are exempt.
+    if not request.url.path.startswith("/v1/"):
+        return await call_next(request)
+    client_ip = request.client.host if request.client else "unknown"
+    # X-Forwarded-For is client-controlled; honor it only behind a proxy that overwrites it.
+    xff = request.headers.get("x-forwarded-for")
+    if xff and config.TRUST_PROXY_HEADERS:
+        client_ip = xff.split(",")[0].strip()
+    if not _check_rate_limit(client_ip):
+        with _metrics_lock:
+            _metrics["rate_limited"] += 1
+        return JSONResponse({"detail": "You are sending requests too quickly. Wait a minute and try again."},
+                            status_code=429, headers={"Retry-After": "60"})
+    return await call_next(request)
+
+
+
 app.mount("/static", StaticFiles(directory=BASE / "static"), name="static")
 templates = Jinja2Templates(directory=BASE / "templates")
 templates.env.globals.update(app_name=config.APP_NAME, app_version=config.APP_VERSION)
@@ -47,9 +154,13 @@ templates.env.globals.update(app_name=config.APP_NAME, app_version=config.APP_VE
 
 # ------------------------------------------------------------------------------------------------ helpers
 def require_api_key(x_api_key: Optional[str] = Header(default=None)):
-    """MANUAL INTEGRATION: replace with your IdP/JWT or Stripe-issued keys. Enforced only when PROVENABLY_API_KEYS is set."""
-    if config.API_KEYS and x_api_key not in config.API_KEYS:
-        raise HTTPException(401, "invalid or missing X-API-Key")
+    """Auth hook. Enforced when keys are configured OR PROVENABLY_REQUIRE_AUTH is set."""
+    if config.API_KEYS:
+        if x_api_key not in config.API_KEYS:
+            raise HTTPException(401, "invalid or missing X-API-Key")
+        return True
+    if config.REQUIRE_AUTH:
+        raise HTTPException(401, "authentication required (no API keys configured)")
     return True
 
 
@@ -168,23 +279,6 @@ def _run_bg(scan_id: str, options: dict | None = None):
         db.set_status(scan_id, "error", str(e)[:500])
 
 
-# ------------------------------------------------------------------------------------------------ lifecycle
-@app.on_event("startup")
-def _startup():
-    db.init_db()
-
-    def janitor():
-        while True:
-            time.sleep(600)
-            try:
-                n = pipeline.cleanup_expired_blobs()
-                if n:
-                    log.info("janitor removed %d expired blobs", n)
-            except Exception:
-                log.exception("janitor")
-    threading.Thread(target=janitor, daemon=True, name="blob-janitor").start()
-
-
 # ------------------------------------------------------------------------------------------------ UI routes
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
@@ -265,9 +359,19 @@ async def create_scan(background: BackgroundTasks, request: Request,
     if greenlist_key:
         options["greenlist_key"] = greenlist_key
     if file is not None and file.filename:
-        data = await file.read()
-        if len(data) > config.MAX_UPLOAD_MB * 1024 * 1024:
-            raise HTTPException(413, f"file exceeds {config.MAX_UPLOAD_MB} MB")
+        # Stream in chunks to avoid reading huge uploads fully into memory.
+        max_bytes = config.MAX_UPLOAD_MB * 1024 * 1024
+        chunks = []
+        total = 0
+        while True:
+            chunk = await file.read(1024 * 1024)
+            if not chunk:
+                break
+            total += len(chunk)
+            if total > max_bytes:
+                raise HTTPException(413, f"file exceeds {config.MAX_UPLOAD_MB} MB")
+            chunks.append(chunk)
+        data = b"".join(chunks)
         if not data:
             raise HTTPException(400, "empty file")
         scan_id = pipeline.new_scan_from_bytes(data, file.filename, hash_only=hash_only)
@@ -278,6 +382,8 @@ async def create_scan(background: BackgroundTasks, request: Request,
         scan_id = pipeline.new_scan_from_bytes(data, name, hash_only=hash_only)
     else:
         raise HTTPException(400, "provide one of: file, text, url")
+    with _metrics_lock:
+        _metrics["scans_created"] += 1
     if wait:
         await run_in_threadpool(_run_bg, scan_id, options)
         row = db.get_scan(scan_id)
@@ -334,6 +440,99 @@ async def scan_demo(name: str, background: BackgroundTasks, request: Request, wa
     if "text/html" in accept and "application/json" not in accept:
         return RedirectResponse(f"/report/{scan_id}", status_code=303)
     return {"id": scan_id, "status": "queued", "html_url": f"/report/{scan_id}"}
+
+
+@app.post("/v1/remove", dependencies=[Depends(require_api_key)])
+def remove_endpoint(scan_id: str, attested: bool = False, background: BackgroundTasks = None):
+    """Layer-1 removal with re-scan verification. Requires attested=true (Layer-2 disclaimer acceptance)."""
+    if not attested:
+        raise HTTPException(400, "attested=true required (accept the Layer-2 disclaimer)")
+    try:
+        result = removal_mod.remove_layer1(scan_id, attested=True)
+    except removal_mod.RemovalError as e:
+        raise HTTPException(400, str(e))
+    except Exception as e:
+        log.exception("removal %s failed", scan_id)
+        raise HTTPException(500, str(e)[:300])
+    return {
+        "removal_id": result.removal_id,
+        "scan_id": result.scan_id,
+        "status": result.status,
+        "modality": result.modality,
+        "input_sha256": result.input_sha256,
+        "output_sha256": result.output_sha256,
+        "fields_removed": result.fields_removed,
+        "output_download_url": result.output_download_url,
+        "verdict": result.verdict,
+        "before": result.before,
+        "after": result.after,
+        "layer2_disclaimer": result.layer2_disclaimer,
+    }
+
+
+@app.get("/v1/removals/{removal_id}", dependencies=[Depends(require_api_key)])
+def get_removal(removal_id: str):
+    row = db.get_removal(removal_id)
+    if not row:
+        raise HTTPException(404)
+    out = {k: row[k] for k in ("id", "scan_id", "status", "modality", "input_sha256",
+                               "output_sha256", "fields_removed", "error", "created_at", "updated_at")}
+    if row.get("report_json"):
+        out["report"] = json.loads(row["report_json"])
+    return out
+
+
+@app.get("/v1/removals/{removal_id}/download", dependencies=[Depends(require_api_key)])
+def download_removal(removal_id: str):
+    row = db.get_removal(removal_id)
+    if not row or not row.get("output_blob_path"):
+        raise HTTPException(404)
+    p = pathlib.Path(row["output_blob_path"])
+    if not p.exists():
+        raise HTTPException(404, "output expired")
+    return FileResponse(p, filename=f"cleaned-{removal_id}{p.suffix}")
+
+
+class BatchIn(BaseModel):
+    scan_ids: list[str] = Field(min_length=1)
+    preset: str = "generic"
+    attested: bool = False
+
+
+@app.post("/v1/batches", dependencies=[Depends(require_api_key)])
+def create_batch_endpoint(body: BatchIn, background: BackgroundTasks):
+    if not body.attested:
+        raise HTTPException(400, "attested=true required (accept the Layer-2 disclaimer)")
+    # validate scans exist
+    for sid in body.scan_ids:
+        if not db.get_scan(sid):
+            raise HTTPException(404, f"scan not found: {sid}")
+    batch_id = uuid.uuid4().hex
+    db.create_batch(batch_id, body.scan_ids, body.preset, body.attested)
+    background.add_task(removal_mod.run_batch, batch_id, body.scan_ids, body.preset, body.attested)
+    return {"batch_id": batch_id, "status": "queued", "download_url": f"/v1/batches/{batch_id}/download"}
+
+
+@app.get("/v1/batches/{batch_id}", dependencies=[Depends(require_api_key)])
+def get_batch(batch_id: str):
+    row = db.get_batch(batch_id)
+    if not row:
+        raise HTTPException(404)
+    out = {k: row[k] for k in ("id", "status", "preset", "attested", "scan_ids", "removal_ids", "error", "created_at", "updated_at")}
+    if row.get("report_json"):
+        out["report"] = json.loads(row["report_json"])
+    return out
+
+
+@app.get("/v1/batches/{batch_id}/download", dependencies=[Depends(require_api_key)])
+def download_batch(batch_id: str):
+    row = db.get_batch(batch_id)
+    if not row or not row.get("output_blob_path"):
+        raise HTTPException(404, "not ready")
+    p = pathlib.Path(row["output_blob_path"])
+    if not p.exists():
+        raise HTTPException(404, "output expired")
+    return FileResponse(p, filename=f"batch-{batch_id}.zip")
 
 
 @app.get("/v1/scans/{scan_id}/preview.jpg")
@@ -457,7 +656,7 @@ def greenlist_api(body: GreenlistIn):
 
 # ------------------------------------------------------------------------------------------------ API: meta
 def capabilities() -> dict:
-    """What is live vs. manual in this deployment — surfaced in the UI and API so nobody over-trusts a 'clean' result."""
+    """What is live vs. manual in this deployment, surfaced in the UI and API so nobody over-trusts a 'clean' result."""
     def _try(mod):
         try:
             __import__(mod)
@@ -507,6 +706,25 @@ def health():
     return {"ok": True, "version": config.APP_VERSION, **db.stats()}
 
 
+@app.get("/metrics", include_in_schema=False)
+def metrics():
+    """Prometheus text exposition (no external dependency)."""
+    lines = []
+    with _metrics_lock:
+        for k in ("requests_total", "requests_5xx", "scans_created"):
+            lines.append(f"provenably_{k} {_metrics[k]}")
+        for key, val in sorted(_request_counts.items()):
+            method, path, status = key.split(" ", 2)
+            lines.append(f'provenably_request_count{{method="{method}",path="{path}",status="{status}"}} {val}')
+    try:
+        stats = db.stats()
+        for k, v in stats.items():
+            lines.append(f"provenably_db_{k} {v}")
+    except Exception:
+        pass
+    return Response("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")
+
+
 def _demo_files() -> list[dict]:
     desc = {
         "ai_generated_signed.jpg": ("image", "Valid Content Credential declaring trainedAlgorithmicMedia (demo signer)."),
@@ -514,14 +732,14 @@ def _demo_files() -> list[dict]:
         "ai_edited_composite_signed.jpg": ("image", "Composite with ingredient chain: camera parent + generative edit."),
         "ai_generated_tampered.jpg": ("image", "Pixels edited after signing; manifest spliced back → hash mismatch."),
         "ai_generated_stripped.jpg": ("image", "Same AI image with all metadata removed (what a screenshot leaves)."),
-        "iptc_ai_tagged_no_c2pa.jpg": ("image", "Only unsigned IPTC DigitalSourceType — editable in both directions."),
+        "iptc_ai_tagged_no_c2pa.jpg": ("image", "Only unsigned IPTC DigitalSourceType, which can be edited either way."),
         "a1111_parameters.png": ("image", "Automatic1111-style 'parameters' PNG text chunk with prompt + model."),
         "sdxl_watermarked.png": ("image", "SDXL 48-bit DWT-DCT invisible watermark, pristine PNG."),
-        "sdxl_watermarked_q75.jpg": ("image", "Same file re-saved as JPEG q75 — chroma subsampling destroys the mark."),
+        "sdxl_watermarked_q75.jpg": ("image", "Same file re-saved as JPEG q75; chroma subsampling destroys the mark."),
         "plain_photo_like.jpg": ("image", "No metadata, no marks, no credential."),
         "text_clean.txt": ("text", "Ordinary meeting minutes."),
         "text_hidden_chars.txt": ("text", "Zero-width spaces, soft hyphen, NNBSP, Cyrillic homoglyph, LRM."),
-        "text_greenlist_marked.txt": ("text", "Toy green-list watermark (key 'demo-key') — detected with the key."),
+        "text_greenlist_marked.txt": ("text", "Toy green-list watermark (key 'demo-key'), detectable with that key."),
         "speech_like_signed.wav": ("audio", "Synthetic speech-like WAV with Content Credential (RIFF C2PA chunk)."),
         "speech_like_plain.wav": ("audio", "Same kind of audio, no credential."),
         "clip_signed.mp4": ("video", "MP4 with Content Credential (BMFF hash) + per-frame scan."),

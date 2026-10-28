@@ -1,4 +1,4 @@
-"""DWT-DCT 'invisible-watermark' (ShieldMnt, MIT) — faithful port of EmbedMaxDct so we do not need the
+"""DWT-DCT 'invisible-watermark' (ShieldMnt, MIT), faithful port of EmbedMaxDct so we do not need the
 package's torch/onnx dependencies. Byte-for-byte compatible with the `dwtDct` method used by the
 Stable Diffusion reference scripts ("StableDiffusionV1") and diffusers' SDXL watermarker (48-bit pattern).
 

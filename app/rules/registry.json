@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "note": "AI Watermark & Provenance Registry — what each generator actually embeds, as researched on 2026-10-14. 'confidence' is editorial; 'last_verified' must be refreshed when vendors change behaviour. Public answers only; this registry never documents removal techniques.",
+    "note": "AI Watermark & Provenance Registry: what each generator actually embeds, as researched on 2026-10-14. 'confidence' is editorial; 'last_verified' must be refreshed when vendors change behaviour. Public answers only; this registry never documents removal techniques.",
     "last_reviewed": "2026-10-14",
     "fields": {
       "visible_mark": "Visible logo/overlay on default outputs",
@@ -13,7 +13,7 @@
   },
   "entries": [
     {"slug": "openai-gpt-image", "vendor": "OpenAI", "tool": "ChatGPT Images / gpt-image (API)", "modality": "image",
-     "visible_mark": "none", "invisible_watermark": "SynthID (since 19 May 2026)", "c2pa": "yes — C2PA Conforming Generator (v0.2 list)", "iptc": "yes (trainedAlgorithmicMedia via manifest)",
+     "visible_mark": "none", "invisible_watermark": "SynthID (since 19 May 2026)", "c2pa": "yes: C2PA Conforming Generator (v0.2 list)", "iptc": "yes (trainedAlgorithmicMedia via manifest)",
      "public_detector": "OpenAI Verify (web + API); Google SynthID Detector also reads it", "survives": "SynthID survives resize/crop/JPEG q≥50 reasonably; C2PA lost on screenshot/re-encode",
      "confidence": "high", "last_verified": "2026-10-14", "notes": "Since 19 May 2026 all ChatGPT / API / Codex images carry both."},
     {"slug": "openai-sora", "vendor": "OpenAI", "tool": "Sora 2 (app)", "modality": "video",
@@ -25,7 +25,7 @@
      "public_detector": "OpenAI Verify API (audio)", "survives": "robust to MP3/AAC transcode per vendor; no published FPR",
      "confidence": "medium", "last_verified": "2026-10-14", "notes": ""},
     {"slug": "openai-text", "vendor": "OpenAI", "tool": "ChatGPT / Codex text (textGrain)", "modality": "text",
-     "visible_mark": "n/a", "invisible_watermark": "textGrain statistical watermark — EU consumer surfaces on by default (5 Oct 2026); API opt-in, off by default", "c2pa": "no", "iptc": "n/a",
+     "visible_mark": "n/a", "invisible_watermark": "textGrain statistical watermark. EU consumer surfaces on by default (5 Oct 2026); API opt-in, off by default", "c2pa": "no", "iptc": "n/a",
      "public_detector": "none public", "survives": "degrades with paraphrase/translation; short texts undetectable",
      "confidence": "medium", "last_verified": "2026-10-14", "notes": "Earlier U+202F NNBSP oddity (o3/o4-mini, Apr 2025) was an RL artefact, not a watermark."},
     {"slug": "google-imagen", "vendor": "Google", "tool": "Imagen / Gemini image (Nano Banana)", "modality": "image",
@@ -39,7 +39,7 @@
     {"slug": "google-gemini-text", "vendor": "Google", "tool": "Gemini text", "modality": "text",
      "visible_mark": "n/a", "invisible_watermark": "SynthID-Text (tournament sampling; Nature 634, 2024)", "c2pa": "no", "iptc": "n/a",
      "public_detector": "no (SynthID Detector has no text box)", "survives": "weak on short/low-entropy text; degrades with heavy editing",
-     "confidence": "high", "last_verified": "2026-10-14", "notes": "Open-sourced via Hugging Face transformers (SynthIDTextWatermarkingConfig) — detection requires the key."},
+     "confidence": "high", "last_verified": "2026-10-14", "notes": "Open-sourced via Hugging Face transformers (SynthIDTextWatermarkingConfig); detection requires the key."},
     {"slug": "anthropic-claude-text", "vendor": "Anthropic", "tool": "Claude (all surfaces)", "modality": "text",
      "visible_mark": "n/a", "invisible_watermark": "statistical text watermark on all models released on/after 2 Aug 2026", "c2pa": "yes on generated files (images/docs)", "iptc": "n/a",
      "public_detector": "announced, not released", "survives": "copy-paste and light edits; not heavy rewrite/translation",
@@ -53,7 +53,7 @@
      "public_detector": "none", "survives": "n/a",
      "confidence": "medium", "last_verified": "2026-10-14", "notes": "Repeatedly reported as the major holdout (Jul/Aug 2026). Passive classifiers are the only option."},
     {"slug": "stability-sdxl", "vendor": "Stability AI / community", "tool": "SDXL / SD 1.5 (diffusers & A1111 default pipelines)", "modality": "image",
-     "visible_mark": "none", "invisible_watermark": "invisible-watermark dwtDct (48-bit 0b1011… for SDXL; 'StableDiffusionV1' for SD1) — easily disabled; often absent", "c2pa": "no", "iptc": "no (A1111 writes 'parameters' PNG text)",
+     "visible_mark": "none", "invisible_watermark": "invisible-watermark dwtDct (48-bit 0b1011… for SDXL; 'StableDiffusionV1' for SD1); easily disabled; often absent", "c2pa": "no", "iptc": "no (A1111 writes 'parameters' PNG text)",
      "public_detector": "open decoder (this product's open_watermark analyzer)", "survives": "weak: fails under mild JPEG/resizing",
      "confidence": "high", "last_verified": "2026-10-14", "notes": "Presence proves generation by a default pipeline; absence proves nothing."},
     {"slug": "stability-sd3-api", "vendor": "Stability AI", "tool": "Stable Diffusion 3.x / Stable Image API", "modality": "image",
@@ -70,7 +70,7 @@
      "confidence": "medium", "last_verified": "2026-10-14", "notes": ""},
     {"slug": "meta-audioseal", "vendor": "Meta (open)", "tool": "AudioSeal (open-source)", "modality": "audio",
      "visible_mark": "n/a", "invisible_watermark": "AudioSeal 16-bit localized watermark", "c2pa": "no", "iptc": "n/a",
-     "public_detector": "open detector (torch) — manual integration in this product", "survives": "robust to MP3/resample/noise; fails on heavy time-stretch",
+     "public_detector": "open detector (torch); manual integration in this product", "survives": "robust to MP3/resample/noise; fails on heavy time-stretch",
      "confidence": "high", "last_verified": "2026-10-14", "notes": "arXiv 2401.17264"},
     {"slug": "meta-videoseal", "vendor": "Meta (open)", "tool": "Video Seal (open-source)", "modality": "video",
      "visible_mark": "n/a", "invisible_watermark": "Video Seal multi-bit (96-bit) with temporal propagation", "c2pa": "no", "iptc": "n/a",

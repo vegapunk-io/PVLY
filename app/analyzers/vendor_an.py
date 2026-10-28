@@ -5,9 +5,9 @@ surface. The connector shape is implemented end-to-end (config -> request -> nor
 is only sent when the operator supplies credentials. Without credentials the analyzer reports `not_configured`
 and explains exactly what to fill in.
 
-OpenAI Verify API         — image (SynthID + C2PA, since 19 May 2026) and audio (since 31 Jul 2026).
-Google SynthID Detector   — public web tool since 7 Oct 2026; third-party API access is partner-gated  [verify].
-Anthropic                 — text watermark on Claude models released on/after 2 Aug 2026; public detector announced, not released.
+OpenAI Verify API, image (SynthID + C2PA, since 19 May 2026) and audio (since 31 Jul 2026).
+Google SynthID Detector, public web tool since 7 Oct 2026; third-party API access is partner-gated  [verify].
+Anthropic, text watermark on Claude models released on/after 2 Aug 2026; public detector announced, not released.
 """
 from __future__ import annotations
 

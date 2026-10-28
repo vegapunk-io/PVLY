@@ -136,12 +136,14 @@ def test_sniff():
     assert pipeline.sniff(b"plain words", "notes.txt") == ("text/plain", "text")
 
 
-def test_detect_only_surface():
-    """Product wedge = Detect (founder decision 2026-10-24): no sanitizer anywhere."""
-    assert client.get("/").status_code == 200
-    assert client.get("/scan").status_code == 200
+def test_detect_remove_verify_surface():
+    """Replaces the old Detect-only guard (A-013): removal routes exist, legacy sanitizer routes do not."""
+    for path in ("/", "/scan", "/remove", "/guide"):
+        assert client.get(path).status_code == 200, path
+    # Removal is gated on attestation, never silently performed.
+    assert client.post("/v1/remove", params={"scan_id": "x"}).status_code == 400
+    for path in ("/v1/removals/doesnotexist", "/v1/batches/doesnotexist"):
+        assert client.get(path).status_code == 404, path
     for method, path in [("get", "/sanitize"), ("get", "/v1/sanitize"),
                          ("post", "/v1/sanitize"), ("post", "/v1/detect")]:
         assert getattr(client, method)(path).status_code == 404, (method, path)
-    caps = client.get("/v1/capabilities").json()
-    assert not any("sanitize" in k for k in caps["live"])

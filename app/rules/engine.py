@@ -124,7 +124,7 @@ def disclosure_check(*, content_type: str, is_ai_generated: bool, is_ai_edited: 
             if key == "deepfake_label":
                 applies = synthetic and content_type in ("image", "video", "audio")
                 if applies and not depicts_real_person and not is_ai_edited:
-                    why = "Applies to content resembling real persons/objects/places/events that would falsely appear authentic; purely abstract or obviously synthetic art may fall outside the deepfake definition — document your assessment."
+                    why = "Applies to content resembling real persons/objects/places/events that would falsely appear authentic; purely abstract or obviously synthetic art may fall outside the deepfake definition, document your assessment."
                 if artistic:
                     why += " Artistic/satirical exception: disclose in a non-hampering way (e.g. caption/credits)."
                 status = "done" if has_visible_label else "todo"
@@ -142,7 +142,7 @@ def disclosure_check(*, content_type: str, is_ai_generated: bool, is_ai_edited: 
                 applies = synthetic
                 status = "done" if (has_c2pa or has_metadata_id) else "todo"
                 if applies and key == "latent_disclosure":
-                    why = "Provider-side duty: if you generated with a covered provider (OpenAI, Google, Adobe …) the latent disclosure is already embedded — do not strip metadata when re-encoding."
+                    why = "Provider-side duty: if you generated with a covered provider (OpenAI, Google, Adobe …) the latent disclosure is already embedded. Do not strip metadata when re-encoding."
             elif key == "manifest_disclosure":
                 applies = synthetic
                 status = "done" if has_c2pa else "optional"
@@ -162,7 +162,7 @@ def disclosure_check(*, content_type: str, is_ai_generated: bool, is_ai_edited: 
     if synthetic and not has_c2pa:
         recommendations.append("Attach a C2PA manifest (c2pa-python / c2patool) with digitalSourceType=trainedAlgorithmicMedia (generated) or compositeWithTrainedAlgorithmicMedia (edited) before publishing; keep the original signed file.")
     if synthetic and not has_visible_label and content_type in ("image", "video", "audio"):
-        recommendations.append("Add a visible/audible label (EU 'AI' icon or 'AI-generated' caption; India: prominent label; China: ≥5% text) — platform labels do not discharge the deployer duty.")
+        recommendations.append("Add a visible/audible label (EU 'AI' icon or 'AI-generated' caption; India: prominent label; China: ≥5% text). Platform labels do not discharge the deployer duty.")
     if synthetic and not has_metadata_id:
         recommendations.append("Write IPTC/XMP Iptc4xmpExt:DigitalSourceType so Meta/Google/Pinterest label automatically and consistently.")
     if not synthetic:

@@ -18,6 +18,9 @@ BLOB_TTL_HOURS = float(os.getenv("BLOB_TTL_HOURS", "24"))
 # Hash-only mode: never keep the uploaded bytes after analysis.
 HASH_ONLY_DEFAULT = os.getenv("HASH_ONLY", "false").lower() == "true"
 MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "200"))
+REQUIRE_AUTH = os.getenv("PROVENABLY_REQUIRE_AUTH", "").lower() in ("1", "true", "yes")
+RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "120"))
+TRUST_PROXY_HEADERS = os.getenv("TRUST_PROXY_HEADERS", "").lower() in ("1", "true", "yes")
 
 # API keys. Empty list = open prototype (local use). Comma separated list enables enforcement.
 API_KEYS = [k.strip() for k in os.getenv("PROVENABLY_API_KEYS", "").split(",") if k.strip()]

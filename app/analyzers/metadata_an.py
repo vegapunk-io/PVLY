@@ -211,7 +211,7 @@ class MetadataAnalyzer(Analyzer):
             status, summary = "detected", f"IPTC DigitalSourceType = {dst_key} ({cls}). This is exactly the field Meta/Google read to label AI content."
         elif hints:
             status, grade = "detected", "weak"
-            summary = "Generator/tool clues in metadata: " + ", ".join(hints) + ". Attribution hint only — easily forged or removed."
+            summary = "Generator/tool clues in metadata: " + ", ".join(hints) + ". Attribution hint only: easily forged or removed."
         elif stripped:
             status, grade, summary = "info", "none", stripped[0][:1].upper() + stripped[0][1:] + "."
         else:

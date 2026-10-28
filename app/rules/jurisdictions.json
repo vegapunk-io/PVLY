@@ -6,7 +6,7 @@
   "jurisdictions": [
     {
       "slug": "eu",
-      "name": "European Union — AI Act Art. 50",
+      "name": "European Union: AI Act Art. 50",
       "effective": "2026-08-02",
       "status": "in force (grace to 2026-12-02 for Art. 50(2) marking on systems already on the market; interoperable detection expected by 2027-02-02)",
       "penalty": "Up to €15M or 3% of worldwide turnover",
@@ -29,7 +29,7 @@
     },
     {
       "slug": "california",
-      "name": "California — SB 942 / AB 853 (AI Transparency Act)",
+      "name": "California: SB 942 / AB 853 (AI Transparency Act)",
       "effective": "2026-08-02",
       "status": "operative; platform duties 2027; capture-device duties 2028-01-01",
       "penalty": "$5,000 per violation per day (AG / city attorney)",
@@ -47,19 +47,19 @@
         "audio": ["latent_disclosure", "manifest_disclosure"],
         "text": []
       },
-      "notes": "Monthly-user threshold for 'covered provider' reported both as >1M and as removed — verify against the enrolled text before relying on it.",
+      "notes": "Monthly-user threshold for 'covered provider' reported both as >1M and as removed; verify against the enrolled text before relying on it.",
       "confidence": "medium",
       "last_verified": "2026-10-14",
       "sources": ["secureprivacy.ai", "verda.ai", "techtimes"]
     },
     {
       "slug": "india",
-      "name": "India — IT (Intermediary Guidelines) Amendment Rules 2026 (Synthetically Generated Information)",
+      "name": "India: IT (Intermediary Guidelines) Amendment Rules 2026 (Synthetically Generated Information)",
       "effective": "2026-02-20",
       "status": "in force; 21 Apr 2026 draft proposes a continuous visible label",
       "penalty": "Loss of safe harbour (Sec. 79) for intermediaries; takedown within 3 hours of order",
       "obligations": {
-        "label": "SGI must carry a prominent label (visible for visual media / audible for audio; the 2025 draft specified ≥10% of the display area — the enrolled rule says 'prominent').",
+        "label": "SGI must carry a prominent label (visible for visual media / audible for audio; the 2025 draft specified ≥10% of the display area; the enrolled rule says 'prominent').",
         "metadata": "Permanent unique metadata/identifier embedded in SGI that identifies it as synthetic and, where feasible, the generating service.",
         "no_removal": "Intermediaries must not enable modification, suppression or removal of the label/metadata.",
         "ssmi_verification": "Significant social media intermediaries must obtain a user declaration on upload and deploy reasonable technical measures to verify it.",
@@ -77,7 +77,7 @@
     },
     {
       "slug": "china",
-      "name": "China — Labeling Measures + GB 45438-2025",
+      "name": "China: Labeling Measures + GB 45438-2025",
       "effective": "2025-09-01",
       "status": "in force (mandatory national standard)",
       "penalty": "Administrative penalties under CAC rules; platforms must enforce",
@@ -99,7 +99,7 @@
     },
     {
       "slug": "south_korea",
-      "name": "South Korea — AI Basic Act",
+      "name": "South Korea: AI Basic Act",
       "effective": "2026-01-22",
       "status": "in force; enforcement decree details labelling",
       "penalty": "Up to KRW 30M administrative fine",
@@ -119,7 +119,7 @@
     },
     {
       "slug": "us_federal",
-      "name": "United States (federal) — TAKE IT DOWN Act + FTC Act §5",
+      "name": "United States (federal): TAKE IT DOWN Act + FTC Act §5",
       "effective": "2025-05-19",
       "status": "in force (platform 48h removal duty for intimate deepfakes from May 2026)",
       "penalty": "Criminal penalties (TAKE IT DOWN); FTC enforcement for deceptive practices",
