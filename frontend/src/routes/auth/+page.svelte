@@ -160,7 +160,7 @@
 		<div class="divider-row" aria-hidden="true"><span></span>or<span></span></div>
 
 		<button class="btn btn--secondary btn--block" type="button" disabled>
-			Continue with Google — identity provider pending
+			Continue with Google (coming soon)
 		</button>
 	</section>
 

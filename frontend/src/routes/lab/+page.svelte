@@ -78,12 +78,12 @@
 	}
 
 	function exponential(value: number | undefined): string {
-		return typeof value === 'number' && Number.isFinite(value) ? value.toExponential(2) : '—';
+		return typeof value === 'number' && Number.isFinite(value) ? value.toExponential(2) : '–';
 	}
 </script>
 
 <PageHead
-	title="Lab — Green-list text watermark"
+	title="Lab: Green-list text watermark"
 	description="Generate and detect a toy keyed green-list text watermark to understand z-scores, green-token counts and why key possession changes the conclusion."
 />
 
@@ -97,7 +97,7 @@
 		</p>
 	</header>
 
-	<Notice tone="warning" title="A teaching model—not a production AI detector">
+	<Notice tone="warning" title="A teaching model, not a production AI detector">
 		<p>
 			The lab uses a toy vocabulary and a known key. Real vendor text watermarks are keyed inside
 			generation; without the provider’s key or detector, Provenably reports that check as not

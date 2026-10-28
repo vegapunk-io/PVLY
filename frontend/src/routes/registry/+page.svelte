@@ -55,7 +55,10 @@
 			loadError = '';
 		} catch (error) {
 			if (!(error instanceof DOMException && error.name === 'AbortError')) {
-				loadError = errorMessage(error, 'The registry could not be loaded.');
+				loadError = errorMessage(
+					error,
+					'We could not load the AI generator list. Please try again.'
+				);
 			}
 		} finally {
 			if (!signal?.aborted) loading = false;
@@ -84,7 +87,7 @@
 
 <PageHead
 	title="AI watermark & provenance registry"
-	description="What image, video, audio and text generators embed: visible marks, invisible watermarks, Content Credentials, IPTC and public detectors—with confidence and verification dates."
+	description="What image, video, audio and text generators embed: visible marks, invisible watermarks, Content Credentials, IPTC and public detectors, with confidence and verification dates."
 />
 
 <div class="shell page">
@@ -93,7 +96,7 @@
 		<h1>What does each generator actually leave behind?</h1>
 		<p class="lede">
 			Researched, confidence-graded and dated records for visible marks, invisible watermarks,
-			Content Credentials, IPTC and public detectors. Public behavior only—this registry never
+			Content Credentials, IPTC and public detectors. Public behavior only: this registry never
 			documents evasion techniques.
 		</p>
 	</header>
@@ -294,7 +297,7 @@
 
 	@media (max-width: 900px) {
 		.registry-controls {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.registry-cta {

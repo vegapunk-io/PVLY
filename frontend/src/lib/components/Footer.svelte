@@ -15,11 +15,10 @@
 				</a>
 				<p>
 					Detect content credentials and AI footprints, understand the removable Layer-1 metadata,
-					and report embedded Layer-2 signals honestly—before you publish.
+					and report embedded Layer-2 signals honestly before you publish.
 				</p>
 				<p class="footer__status">
-					<span class="dot dot--ok" aria-hidden="true"></span> Detect is live; removal, batch and presets
-					follow the published roadmap.
+					<span class="dot dot--ok" aria-hidden="true"></span> Scan, clean and batch scan are live.
 				</p>
 			</div>
 
@@ -37,11 +36,21 @@
 			<nav aria-label="Reference">
 				<h2>Reference</h2>
 				<ul>
-					<li><a href={resolve('/registry')}>Generator registry</a></li>
-					<li><a href={resolve('/rules')}>Disclosure rules</a></li>
-					<li><a href={resolve('/tools')}>Text tools</a></li>
-					<li><a href={resolve('/lab')}>Watermark lab</a></li>
-					<li><a href={resolve('/design-system')}>Design system</a></li>
+					<li><a href={resolve('/guide')}>How it works</a></li>
+					<li>
+						<a href={resolve('/registry')} title="Known AI generators and their marks"
+							>AI generators</a
+						>
+					</li>
+					<li>
+						<a href={resolve('/rules')} title="What each platform labels as AI">Platform rules</a>
+					</li>
+					<li>
+						<a href={resolve('/tools')} title="Clean hidden characters in text">Text tools</a>
+					</li>
+					<li>
+						<a href={resolve('/lab')} title="Check for invisible watermarks">Watermark check</a>
+					</li>
 				</ul>
 			</nav>
 
@@ -162,7 +171,7 @@
 
 	@media (max-width: 560px) {
 		.footer__grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

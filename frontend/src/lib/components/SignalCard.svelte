@@ -45,11 +45,11 @@
 
 	function signerText(manifest: JsonRecord): string {
 		const signer = asRecord(manifest.signer);
-		if (!signer) return '—';
+		if (!signer) return '–';
 		return (
 			[asText(signer.issuer), asText(signer.common_name), asText(signer.alg), asText(signer.time)]
 				.filter(Boolean)
-				.join(' · ') || '—'
+				.join(' · ') || '–'
 		);
 	}
 
@@ -79,7 +79,7 @@
 				`${asText(ingredient.title) || 'Untitled ingredient'}${relationship ? ` [${relationship}${statuses ? `, ${statuses} status item(s)` : ''}]` : ''}`
 			];
 		});
-		return values.join(', ') || '—';
+		return values.join(', ') || '–';
 	}
 
 	function softBindingText(manifest: JsonRecord): string {
@@ -156,11 +156,11 @@
 
 						<dl class="kv manifest__facts">
 							<dt>Claim generator</dt>
-							<dd>{asText(manifest.claim_generator) || '—'}</dd>
+							<dd>{asText(manifest.claim_generator) || '–'}</dd>
 							<dt>Signer</dt>
 							<dd>{signerText(manifest)}</dd>
 							<dt>Source classes</dt>
-							<dd>{joined(manifest.dst_classes) || '—'}</dd>
+							<dd>{joined(manifest.dst_classes) || '–'}</dd>
 							<dt>Actions</dt>
 							<dd>
 								{#if actionRows(manifest).length}
@@ -173,12 +173,12 @@
 											</li>
 										{/each}
 									</ul>
-								{:else}—{/if}
+								{:else}–{/if}
 							</dd>
 							<dt>Ingredients</dt>
 							<dd>{ingredientText(manifest)}</dd>
 							<dt>Assertions</dt>
-							<dd class="mono">{joined(manifest.assertion_labels) || '—'}</dd>
+							<dd class="mono">{joined(manifest.assertion_labels) || '–'}</dd>
 							{#if softBindingText(manifest)}<dt>Soft bindings</dt>
 								<dd>{softBindingText(manifest)}</dd>{/if}
 							{#if manifest.training_mining}<dt>Training/mining</dt>
@@ -257,7 +257,7 @@
 
 	.action-list {
 		margin: 0;
-		padding-left: 1.1rem;
+		padding-inline-start: 1.1rem;
 	}
 
 	.validations {

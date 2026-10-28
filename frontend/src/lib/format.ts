@@ -3,7 +3,7 @@ import type { Confidence, EvidenceGrade, SignalStatus } from './types';
 const byteUnits = ['B', 'KB', 'MB', 'GB'];
 
 export function formatBytes(value: number | null | undefined): string {
-	if (value === null || value === undefined || !Number.isFinite(value)) return '—';
+	if (value === null || value === undefined || !Number.isFinite(value)) return '–';
 	if (value < 1024) return `${Math.max(0, Math.round(value))} B`;
 	const exponent = Math.min(Math.floor(Math.log(value) / Math.log(1024)), byteUnits.length - 1);
 	const normalized = value / 1024 ** exponent;
@@ -11,7 +11,7 @@ export function formatBytes(value: number | null | undefined): string {
 }
 
 export function formatTimestamp(epochSeconds: number | null | undefined): string {
-	if (!epochSeconds || !Number.isFinite(epochSeconds)) return '—';
+	if (!epochSeconds || !Number.isFinite(epochSeconds)) return '–';
 	return (
 		new Intl.DateTimeFormat('en-GB', {
 			day: '2-digit',
@@ -27,19 +27,19 @@ export function formatTimestamp(epochSeconds: number | null | undefined): string
 
 export function formatDuration(milliseconds: number | null | undefined): string {
 	if (milliseconds === null || milliseconds === undefined || !Number.isFinite(milliseconds))
-		return '—';
+		return '–';
 	if (milliseconds < 1000) return `${Math.round(milliseconds)} ms`;
 	return `${(milliseconds / 1000).toFixed(milliseconds < 10_000 ? 1 : 0)} s`;
 }
 
 export function shortenHash(hash: string | null | undefined, visible = 10): string {
-	if (!hash) return '—';
+	if (!hash) return '–';
 	if (hash.length <= visible * 2 + 1) return hash;
 	return `${hash.slice(0, visible)}…${hash.slice(-visible)}`;
 }
 
 export function titleCaseToken(value: string | null | undefined): string {
-	if (!value) return '—';
+	if (!value) return '–';
 	return value.replaceAll('_', ' ').replace(/\b\w/g, (character) => character.toUpperCase());
 }
 

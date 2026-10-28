@@ -59,7 +59,7 @@ export const presetDefinitions: PresetDefinition[] = [
 		creatorDuty:
 			'Prioritize author, employer, location and document-revision hygiene before posting.',
 		platformBehavior:
-			'Any signed C2PA credential—not only an AI credential—can produce the public “cr” pin and its provenance panel.'
+			'Any signed C2PA credential (not only an AI credential) can produce the public “cr” pin and its provenance panel.'
 	},
 	{
 		slug: 'pinterest',

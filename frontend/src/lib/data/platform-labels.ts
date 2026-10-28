@@ -58,11 +58,11 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'YouTube Help — How this content was made',
+				label: 'YouTube Help: How this content was made',
 				url: 'https://support.google.com/youtube/answer/15447836'
 			},
 			{
-				label: 'YouTube Help — Disclosing use of GenAI content',
+				label: 'YouTube Help: Disclosing use of GenAI content',
 				url: 'https://support.google.com/youtube/answer/14328491'
 			}
 		]
@@ -88,11 +88,11 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'Meta — Labeling AI-generated content and manipulated media',
+				label: 'Meta: Labeling AI-generated content and manipulated media',
 				url: 'https://about.fb.com/news/2024/04/metas-approach-to-labeling-ai-generated-content-and-manipulated-media/'
 			},
 			{
-				label: 'Meta — C2PA and IPTC AI indicators',
+				label: 'Meta: C2PA and IPTC AI indicators',
 				url: 'https://about.fb.com/news/2024/02/labeling-ai-generated-images-on-facebook-instagram-and-threads/'
 			}
 		]
@@ -119,11 +119,11 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'TikTok Support — AI-generated content labeling',
+				label: 'TikTok Support: AI-generated content labeling',
 				url: 'https://support.tiktok.com/en/using-tiktok/creating-videos/ai-generated-content'
 			},
 			{
-				label: 'TikTok Newsroom — Spot, shape and understand AI content',
+				label: 'TikTok Newsroom: Spot, shape and understand AI content',
 				url: 'https://newsroom.tiktok.com/more-ways-to-spot-shape-and-understand-ai-content'
 			}
 		]
@@ -133,7 +133,7 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		labelDisplay: '“cr” pin',
 		labelKind: 'provenance',
 		labelSubtext:
-			'A Content Credentials provenance pin—not a standalone verdict that the media is AI-generated.',
+			'A Content Credentials provenance pin, not a standalone verdict that the media is AI-generated.',
 		signalSummary: 'Triggered by signed C2PA metadata (documented)',
 		detectionSummary:
 			'LinkedIn shows the lower-case “cr” pin when an image or video carries cryptographically signed C2PA Content Credentials. Opening it can show the signer’s recorded AI use, app or device, creator, issuer and date. No general LinkedIn pixel classifier is documented.',
@@ -144,11 +144,11 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'LinkedIn — C2PA AI-generated content standard',
+				label: 'LinkedIn: C2PA AI-generated content standard',
 				url: 'https://news.linkedin.com/2024/May/linkedin-rolls-out-c2pa-ai-generated-content-standard'
 			},
 			{
-				label: 'C2PA — Official Content Credentials icon',
+				label: 'C2PA: Official Content Credentials icon',
 				url: 'https://contentcredentials.org/introducing-official-content-credentials-icon/'
 			}
 		]
@@ -168,7 +168,7 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'Pinterest Help — Gen AI labels',
+				label: 'Pinterest Help: Gen AI labels',
 				url: 'https://help.pinterest.com/en/article/gen-ai-labels'
 			}
 		]
@@ -192,7 +192,7 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'Reddit Help — Manipulated content and misleading behavior',
+				label: 'Reddit Help: Manipulated content and misleading behavior',
 				url: 'https://support.reddithelp.com/hc/en-us/articles/41180423371156-Manipulated-Content-and-Misleading-Behavior'
 			}
 		]
@@ -217,15 +217,15 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'The Verge — X “Made with AI” labels',
+				label: 'The Verge: X “Made with AI” labels',
 				url: 'https://www.theverge.com/ai-artificial-intelligence/882974/x-is-working-on-made-with-ai-labels'
 			},
 			{
-				label: 'Independent test — X automatic label conditions',
+				label: 'Independent test: X automatic label conditions',
 				url: 'https://roboin.io/article/en/2026/03/24/why-x-tags-posts-as-made-with-ai-and-how-to-remove-it-testing-the-conditions/'
 			},
 			{
-				label: 'X Help — Manipulated media policy',
+				label: 'X Help: Manipulated media policy',
 				url: 'https://help.x.com/en/rules-and-policies/manipulated-media'
 			}
 		]
@@ -251,11 +251,11 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'Meta — Labeling AI-generated content and manipulated media',
+				label: 'Meta: Labeling AI-generated content and manipulated media',
 				url: 'https://about.fb.com/news/2024/04/metas-approach-to-labeling-ai-generated-content-and-manipulated-media/'
 			},
 			{
-				label: 'Meta — GenAI transparency in ads',
+				label: 'Meta: GenAI transparency in ads',
 				url: 'https://about.fb.com/news/2025/02/gen-ai-transparency-metas-ads-products/'
 			}
 		]
@@ -275,7 +275,7 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'Meta — Labeling AI-generated content and manipulated media',
+				label: 'Meta: Labeling AI-generated content and manipulated media',
 				url: 'https://about.fb.com/news/2024/04/metas-approach-to-labeling-ai-generated-content-and-manipulated-media/'
 			}
 		]
@@ -296,11 +296,11 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'Google Search Help — Find Google Image details',
+				label: 'Google Search Help: Find Google Image details',
 				url: 'https://support.google.com/websearch/answer/9789430'
 			},
 			{
-				label: 'Google — C2PA transparency in Search',
+				label: 'Google: C2PA transparency in Search',
 				url: 'https://blog.google/innovation-and-ai/products/google-gen-ai-content-transparency-c2pa/'
 			}
 		]
@@ -320,7 +320,7 @@ export const platformLabelCatalog: Record<string, PlatformLabelInfo> = {
 		lastVerified: LAST_VERIFIED,
 		sources: [
 			{
-				label: 'Amazon KDP — Content guidelines and AI disclosure',
+				label: 'Amazon KDP: Content guidelines and AI disclosure',
 				url: 'https://kdp.amazon.com/en_US/help/topic/G200672390'
 			}
 		]

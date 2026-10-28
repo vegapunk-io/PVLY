@@ -11,6 +11,7 @@ import type {
 	PlatformRule,
 	RegistryEntry,
 	RegistryResponse,
+	RemovalResult,
 	ScanDetail,
 	ScanSummary,
 	UnicodeResult
@@ -18,7 +19,7 @@ import type {
 
 export const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
 export const SCAN_ACCEPT =
-	'image/*,video/*,audio/*,text/plain,text/markdown,application/pdf,.docx,.txt,.md,.html,.mp3,.mp4,.mov,.wav,.webp,.heic,.avif,.tif,.tiff';
+	'image/*,video/*,audio/*,text/plain,text/markdown,application/pdf,.docx,.txt,.md,.html,.mp3,.mp4,.mov,.wav,.webp,.heic,.heif,.avif,.gif,.tif,.tiff';
 
 export class ApiError extends Error {
 	readonly status: number;
@@ -71,6 +72,29 @@ function detailToMessage(detail: unknown, fallback: string): string {
 	return fallback;
 }
 
+const CONNECTION_MESSAGE = 'We could not reach Provenably. Check your connection and try again.';
+
+/** Maps an HTTP failure to words a non-technical user can act on. 4xx server details are kept when they are already plain. */
+export function friendlyApiError(status: number, detail: unknown): ApiError {
+	if (status === 401) {
+		return new ApiError('This site needs an API key. Add one in Settings, then try again.', status);
+	}
+	if (status === 404) return new ApiError('We could not find that. It may have expired.', status);
+	if (status === 413) {
+		return new ApiError('That file is too large. The limit is 200 MB.', status);
+	}
+	if (status === 429) {
+		return new ApiError(
+			detailToMessage(detail, 'You are sending requests too quickly. Wait a minute and try again.'),
+			status
+		);
+	}
+	if (status >= 500) {
+		return new ApiError('Something went wrong on our side. Please try again in a moment.', status);
+	}
+	return new ApiError(detailToMessage(detail, 'That request could not be completed.'), status);
+}
+
 async function requestJson<T>(path: string, options: RequestOptions = {}): Promise<T> {
 	const { timeoutMs = 30_000, signal, headers, ...init } = options;
 	let response: Response;
@@ -84,11 +108,9 @@ async function requestJson<T>(path: string, options: RequestOptions = {}): Promi
 	} catch (error) {
 		if (error instanceof DOMException && error.name === 'AbortError') throw error;
 		if (error instanceof DOMException && error.name === 'TimeoutError') {
-			throw new ApiError('The Provenably API took too long to respond. Please try again.');
+			throw new ApiError('This is taking too long. Please try again.');
 		}
-		throw new ApiError(
-			'Could not reach the Provenably API. Check that FastAPI is running, then retry.'
-		);
+		throw new ApiError(CONNECTION_MESSAGE);
 	}
 
 	const payload: unknown = await response.json().catch(() => null);
@@ -97,10 +119,7 @@ async function requestJson<T>(path: string, options: RequestOptions = {}): Promi
 			payload && typeof payload === 'object' && 'detail' in payload
 				? (payload as { detail: unknown }).detail
 				: null;
-		throw new ApiError(
-			detailToMessage(detail, response.statusText || `HTTP ${response.status}`),
-			response.status
-		);
+		throw friendlyApiError(response.status, detail);
 	}
 
 	return payload as T;
@@ -119,9 +138,7 @@ async function postJson<T>(path: string, body: unknown, signal?: AbortSignal): P
 		});
 	} catch (error) {
 		if (error instanceof DOMException && error.name === 'AbortError') throw error;
-		throw new ApiError(
-			'Could not reach the Provenably API. Check that FastAPI is running, then retry.'
-		);
+		throw new ApiError(CONNECTION_MESSAGE);
 	}
 
 	const payload: unknown = await response.json().catch(() => null);
@@ -130,10 +147,7 @@ async function postJson<T>(path: string, body: unknown, signal?: AbortSignal): P
 			payload && typeof payload === 'object' && 'detail' in payload
 				? (payload as { detail: unknown }).detail
 				: null;
-		throw new ApiError(
-			detailToMessage(detail, response.statusText || `HTTP ${response.status}`),
-			response.status
-		);
+		throw friendlyApiError(response.status, detail);
 	}
 	return payload as T;
 }
@@ -157,7 +171,7 @@ export interface ScanUrlInput {
 export function assertFileSize(file: File): void {
 	if (!file.size) throw new ApiError('That file is empty. Choose a file with content to scan.');
 	if (file.size > MAX_UPLOAD_BYTES) {
-		throw new ApiError('That file is larger than the 200 MB deployment limit.');
+		throw new ApiError('That file is too large. The limit is 200 MB.');
 	}
 }
 
@@ -225,12 +239,7 @@ export function createFileScanWithProgress(
 				payload && typeof payload === 'object' && 'detail' in payload
 					? (payload as { detail: unknown }).detail
 					: null;
-			reject(
-				new ApiError(
-					detailToMessage(detail, request.statusText || `HTTP ${request.status}`),
-					request.status
-				)
-			);
+			reject(friendlyApiError(request.status, detail));
 		});
 		request.addEventListener('abort', () => {
 			cleanup();
@@ -238,15 +247,11 @@ export function createFileScanWithProgress(
 		});
 		request.addEventListener('timeout', () => {
 			cleanup();
-			reject(new ApiError('The upload took too long. Check the connection and try again.'));
+			reject(new ApiError('The upload is taking too long. Check your connection and try again.'));
 		});
 		request.addEventListener('error', () => {
 			cleanup();
-			reject(
-				new ApiError(
-					'Could not reach the Provenably API. Check that FastAPI is running, then retry.'
-				)
-			);
+			reject(new ApiError(CONNECTION_MESSAGE));
 		});
 
 		onProgress(0);
@@ -292,6 +297,26 @@ export function getDemoFiles(signal?: AbortSignal): Promise<{ files: DemoFile[] 
 export function listScans(limit = 25, signal?: AbortSignal): Promise<{ scans: ScanSummary[] }> {
 	const bounded = Math.max(1, Math.min(limit, 200));
 	return requestJson(`/v1/scans?limit=${bounded}`, { signal });
+}
+
+export function removeLayer1(scanId: string, signal?: AbortSignal): Promise<RemovalResult> {
+	return requestJson(`/v1/remove?scan_id=${encodeURIComponent(scanId)}&attested=true`, {
+		method: 'POST',
+		timeoutMs: 300_000,
+		signal
+	});
+}
+
+export async function downloadRemoval(url: string, signal?: AbortSignal): Promise<Blob> {
+	let response: Response;
+	try {
+		response = await fetch(url, { headers: apiHeaders(undefined), signal });
+	} catch (error) {
+		if (error instanceof DOMException && error.name === 'AbortError') throw error;
+		throw new ApiError(CONNECTION_MESSAGE);
+	}
+	if (!response.ok) throw friendlyApiError(response.status, null);
+	return response.blob();
 }
 
 export function getScan(id: string, signal?: AbortSignal): Promise<ScanDetail> {

@@ -73,7 +73,7 @@
 		height: 100%;
 		min-height: 272px;
 		padding: 1.15rem;
-		text-align: left;
+		text-align: start;
 		text-decoration: none;
 		width: 100%;
 	}

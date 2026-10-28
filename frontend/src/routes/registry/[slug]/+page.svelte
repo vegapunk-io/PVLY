@@ -34,7 +34,7 @@
 			loadError =
 				errorStatus === 404
 					? 'That generator is not in the current registry.'
-					: errorMessage(error, 'The registry entry could not be loaded.');
+					: errorMessage(error, 'We could not load this generator. Please try again.');
 		} finally {
 			if (token === runToken) loading = false;
 		}
@@ -92,7 +92,7 @@
 		<StateBlock
 			kind="loading"
 			title="Loading registry entry…"
-			description="Reading the FastAPI generator record."
+			description="Loading this generator."
 		/>
 	{:else if loadError}
 		<StateBlock
@@ -198,12 +198,12 @@
 				<h2>Test an actual {entry.tool} file</h2>
 				<p>
 					Exports, screenshots and platform processing can change what survives. The scan checks the
-					copy in front of you—not the marketing claim.
+					copy in front of you, not the marketing claim.
 				</p>
 			</div>
 			<div class="actions">
 				<a class="btn" href={resolve('/scan')}>Scan such a file</a>
-				<a class="btn btn--secondary" href={resolve('/remove')}>Review metadata removal</a>
+				<a class="btn btn--secondary" href={resolve('/remove')}>Clean such a file</a>
 				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- FastAPI path outside the Svelte route manifest. -->
 				<a
 					class="text-link"

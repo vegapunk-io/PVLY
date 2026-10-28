@@ -22,7 +22,7 @@
 			period: 'forever · no card',
 			features: [
 				'10 scans / month',
-				'5 removals / month when R0 ships',
+				'5 cleanings / month',
 				'Images + text',
 				'24-hour file retention'
 			],
@@ -35,8 +35,8 @@
 			period: '/ month',
 			features: [
 				'300 scans',
-				'300 removals when available',
-				'Image + audio + documents',
+				'300 cleanings',
+				'Images + documents',
 				'8 platform presets',
 				'7-day retention'
 			],
@@ -52,7 +52,7 @@
 				'2,000 scans / removals',
 				'Video included',
 				'Batch up to 50 files',
-				'ZIP + manifest in R3',
+				'ZIP + manifest of cleaned files',
 				'30-day retention',
 				'Priority queue'
 			],
@@ -63,7 +63,7 @@
 			name: 'API / Teams',
 			price: 'Usage',
 			period: '$0.02 image · $0.15 video-minute',
-			features: ['API keys & webhooks', 'Audit-trail export', 'Custom retention', 'SSO roadmap'],
+			features: ['API keys', 'Batch cleaning API', 'Custom retention', 'SSO (planned)'],
 			cta: { label: 'Explore the API', href: '/api' },
 			featured: false
 		}
@@ -72,7 +72,7 @@
 
 <PageHead
 	title="Pricing"
-	description="Simple scan and removal plans for creators, professionals and API teams—with graded reports, coverage and verified Layer-1 removal in every tier."
+	description="Simple scan and cleaning plans for creators, professionals and API teams, with graded reports, coverage and verified Layer-1 removal in every tier."
 />
 
 <div class="shell page">
@@ -81,16 +81,16 @@
 		<h1>Pay for volume, not for honesty.</h1>
 		<p class="lede">
 			Every plan keeps the same evidence grades, coverage disclosure, before/after hashes and
-			Layer-2 honesty. Paid tiers raise throughput, retention and automation—not the quality of the
+			Layer-2 honesty. Paid tiers raise throughput, retention and automation, not the quality of the
 			truth in a report.
 		</p>
 	</header>
 
 	<Notice tone="info" title="Planning prices, billing not enabled yet">
 		<p>
-			These are the founder-approved wireframe’s placeholder tiers. Detect is available now; removal
-			volume applies as R0–R3 endpoints ship. Checkout and account billing arrive with the
-			auth/billing milestone, so paid buttons are disabled rather than pretending to charge a card.
+			These are placeholder tiers. Scanning and cleaning work now and are not metered yet. Checkout
+			arrives with accounts and billing, so paid buttons are disabled rather than pretending to
+			charge a card.
 		</p>
 	</Notice>
 
@@ -124,7 +124,7 @@
 		<ul class="included__grid">
 			<li><Icon name="shield" size={20} /> Graded provenance reports with visible coverage</li>
 			<li>
-				<Icon name="check" size={20} /> Lossless-first, verified Layer-1 removal as formats ship
+				<Icon name="check" size={20} /> Lossless, verified Layer-1 removal for photos, video and documents
 			</li>
 			<li><Icon name="file" size={20} /> Before/after hashes and machine-readable JSON</li>
 			<li><Icon name="clock" size={20} /> Automatic file deletion and hash-only mode</li>
@@ -140,7 +140,7 @@
 			<details open>
 				<summary>Does removal delete embedded watermarks such as SynthID?</summary>
 				<p>
-					No—and Provenably will never claim that it does. Removal is for Layer-1 container
+					No, and Provenably will never claim that it does. Removal is for Layer-1 container
 					footprints. Embedded Layer-2 marks are detected or marked “not checked” according to the
 					connectors configured in the deployment.
 				</p>
@@ -308,7 +308,7 @@
 
 	@media (max-width: 600px) {
 		.included__grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.period {

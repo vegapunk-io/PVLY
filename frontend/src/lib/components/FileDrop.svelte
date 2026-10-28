@@ -148,7 +148,8 @@
 			{accept}
 			{multiple}
 			{disabled}
-			{required}
+			required={required && !files.length}
+			aria-required={required ? 'true' : undefined}
 			aria-describedby={`${hintId}${error ? ` ${errorId}` : ''}`}
 			aria-invalid={error ? 'true' : undefined}
 			onchange={onInputChange}

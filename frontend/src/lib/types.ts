@@ -109,6 +109,28 @@ export interface ScanDetail {
 	report?: Report;
 }
 
+export interface RemovalSummary {
+	provenance_class: string | null;
+	evidence_grade: string | null;
+	label: string | null;
+	layer1_present: string[];
+}
+
+export interface RemovalResult {
+	removal_id: string;
+	scan_id: string;
+	status: string;
+	modality: string;
+	input_sha256: string;
+	output_sha256: string;
+	fields_removed: string[];
+	output_download_url: string;
+	verdict: 'layer1_clean' | 'layer1_residue' | 'no_layer1_found';
+	before: RemovalSummary;
+	after: RemovalSummary;
+	layer2_disclaimer: string;
+}
+
 export interface CreateScanResponse {
 	id: string;
 	status: string;

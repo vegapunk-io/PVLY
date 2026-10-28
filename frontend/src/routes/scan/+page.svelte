@@ -149,7 +149,7 @@
 			return;
 		}
 		if (selectedFile.size > MAX_UPLOAD_BYTES) {
-			await showError('That file is larger than the 200 MB deployment limit.');
+			await showError('That file is too large. The limit is 200 MB.');
 			return;
 		}
 		const file = selectedFile;
@@ -207,7 +207,7 @@
 </script>
 
 <PageHead
-	title="Scan — Detect AI provenance"
+	title="Scan: Detect AI provenance"
 	description="Scan a file, text, public URL or bundled demo fixture for Content Credentials, AI metadata, watermarks and other graded provenance signals."
 />
 
@@ -216,9 +216,9 @@
 		<p class="eyebrow">Step 1 · Detect</p>
 		<h1>Detect AI provenance</h1>
 		<p class="lede">
-			One graded Provenance Report per input—Content Credentials, metadata forensics, open watermark
-			decoders, forensic context and text checks. A report describes signals and evidence; it is not
-			a verdict on authorship.
+			One graded Provenance Report per input: Content Credentials, metadata forensics, open
+			watermark decoders, forensic context and text checks. A report describes signals and evidence;
+			it is not a verdict on authorship.
 		</p>
 	</header>
 
@@ -253,7 +253,7 @@
 						id="scan-file"
 						name="file"
 						label="Drop a file to inspect its provenance"
-						description="Image, video, audio, PDF, DOCX or text · up to 200 MB · the file is analyzed by FastAPI, never in this page"
+						description="Image, video, audio, PDF, DOCX or text · up to 200 MB · checked on the server, never in your browser"
 						bind:files
 						disabled={isBusy}
 						required
@@ -268,7 +268,7 @@
 							disabled={isBusy}
 						/>
 						<span
-							><strong>Hash-only</strong> — delete uploaded bytes immediately after analysis, keeping
+							><strong>Hash-only</strong>: delete uploaded bytes immediately after analysis, keeping
 							only SHA-256 and the report.</span
 						>
 					</label>
@@ -416,8 +416,7 @@
 							bind:checked={urlHashOnly}
 							disabled={isBusy}
 						/>
-						<span
-							><strong>Hash-only</strong> — delete fetched bytes immediately after analysis.</span
+						<span><strong>Hash-only</strong>: delete fetched bytes immediately after analysis.</span
 						>
 					</label>
 
@@ -462,7 +461,7 @@
 					<StateBlock
 						kind="loading"
 						title="Loading demo files…"
-						description="Reading the FastAPI demo catalogue."
+						description="Loading the demo files."
 					/>
 				{:else if demoFiles.length}
 					<div class="table-wrap">
@@ -534,7 +533,7 @@
 					</div>
 					<div>
 						<dt>Forensic context</dt>
-						<dd>Container, image, audio and frame observations—never the sole verdict.</dd>
+						<dd>Container, image, audio and frame observations, never the sole verdict.</dd>
 					</div>
 					<div>
 						<dt>Text</dt>
@@ -550,7 +549,7 @@
 			<Notice title="Honest limits">
 				<p>
 					Every report shows <strong>coverage</strong>: what ran, what needs manual integration and
-					what errored. Absence of provenance is <strong>not</strong> evidence of human origin—metadata
+					what errored. Absence of provenance is <strong>not</strong> evidence of human origin. Metadata
 					is routinely stripped by screenshots, messaging apps and social platforms.
 				</p>
 				<p><a href={resolve('/api')}>Inspect this deployment’s live coverage</a></p>
@@ -597,12 +596,12 @@
 							<tr>
 								<td class="muted">{formatTimestamp(scan.created_at)}</td>
 								<th scope="row" class="mono">{scan.filename ?? scan.id}</th>
-								<td>{scan.modality ?? '—'}</td>
+								<td>{scan.modality ?? '–'}</td>
 								<td class="mono small">{scan.conclusion ?? titleCaseToken(scan.status)}</td>
 								<td
 									>{#if scan.evidence_grade}<Tag tone={gradeTone(scan.evidence_grade)}
 											>{scan.evidence_grade}</Tag
-										>{:else}<span class="muted">—</span>{/if}</td
+										>{:else}<span class="muted">–</span>{/if}</td
 								>
 								<td><a href={resolve('/report/[id]', { id: scan.id })}>report</a></td>
 							</tr>
@@ -645,7 +644,7 @@
 	}
 
 	.upload-status .spinner {
-		margin-right: 0.45rem;
+		margin-inline-end: 0.45rem;
 		vertical-align: -0.15rem;
 	}
 

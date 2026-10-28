@@ -4,6 +4,8 @@
 	import linkedinMark from '../assets/platforms/linkedin.webp';
 	import pinterestMark from '../assets/platforms/pinterest.webp';
 	import redditMark from '../assets/platforms/reddit.webp';
+	import tiktokMark from '../assets/platforms/tiktok.webp';
+	import xMark from '../assets/platforms/x.webp';
 	import youtubeMark from '../assets/platforms/youtube.webp';
 
 	interface Props {
@@ -21,6 +23,8 @@
 		linkedin: linkedinMark,
 		pinterest: pinterestMark,
 		reddit: redditMark,
+		tiktok: tiktokMark,
+		x: xMark,
 		youtube: youtubeMark
 	};
 

@@ -40,6 +40,49 @@
 	let runToken = 0;
 
 	const report = $derived(scan?.report);
+
+	const plainResult = $derived.by(() => {
+		const pc = report?.conclusion?.provenance_class ?? '';
+		const grade = report?.conclusion?.evidence_grade ?? '';
+		if (
+			pc === 'ai_generated_declared' ||
+			pc === 'ai_assisted_declared' ||
+			pc === 'ai_generated_metadata' ||
+			pc === 'ai_generated_watermark'
+		)
+			return {
+				tone: 'warn',
+				headline: 'This file shows AI signals',
+				detail: 'We found signs that this file was made or edited with AI. Strength: ' + grade + '.'
+			};
+		if (
+			pc === 'captured_declared' ||
+			pc === 'human_created_declared' ||
+			pc === 'human_edited_declared'
+		)
+			return {
+				tone: 'ok',
+				headline: 'This file looks like a real capture or human creation',
+				detail: 'A valid credential says so. Strength: ' + grade + '.'
+			};
+		if (pc === 'tampered_after_signing')
+			return {
+				tone: 'bad',
+				headline: 'This file was changed after it was signed',
+				detail: 'The original signature no longer matches the file.'
+			};
+		if (pc === 'text_hidden_characters')
+			return {
+				tone: 'warn',
+				headline: 'This text hides invisible characters',
+				detail: 'Zero-width spaces or similar characters were found.'
+			};
+		return {
+			tone: 'neutral',
+			headline: 'No AI signals found',
+			detail: 'This does not prove the file is human-made. Many files carry no signals at all.'
+		};
+	});
 	const isPending = $derived(Boolean(scan && !report && scan.status !== 'error'));
 	const liveSignals = $derived(
 		(report?.signals ?? []).filter((signal) => !isManualStatus(signal.status))
@@ -114,8 +157,8 @@
 			errorStatus = error instanceof ApiError ? error.status : 0;
 			loadError =
 				errorStatus === 404
-					? 'This scan does not exist in the current deployment, or its ID is incorrect.'
-					: errorMessage(error, 'The report could not be loaded.');
+					? 'We could not find this scan. The link may be wrong or the scan may have expired.'
+					: errorMessage(error, 'We could not load this report. Please try again.');
 		} finally {
 			if (token === runToken) loading = false;
 		}
@@ -200,7 +243,7 @@
 </script>
 
 <PageHead
-	title={scan?.filename ? `Report — ${scan.filename}` : 'Provenance report'}
+	title={scan?.filename ? `Report: ${scan.filename}` : 'Provenance report'}
 	description="A private, evidence-graded Provenably provenance report with coverage and platform label preview."
 	noindex
 />
@@ -212,12 +255,12 @@
 		<StateBlock
 			kind="loading"
 			title="Loading provenance report…"
-			description="Checking the FastAPI scan status."
+			description="Checking whether your scan has finished."
 		/>
 	{:else if loadError}
 		<StateBlock
 			kind="error"
-			title={errorStatus === 404 ? 'Report not found' : 'The report could not be loaded'}
+			title={errorStatus === 404 ? 'Report not found' : 'We could not load this report'}
 			description={loadError}
 		>
 			<button class="btn" type="button" onclick={refreshNow}>Try again</button>
@@ -303,6 +346,18 @@
 				>
 			</section>
 		{:else if report}
+			<section
+				class={`plain-banner plain-banner--${plainResult.tone}`}
+				aria-label="Plain-language result"
+			>
+				<h2>{plainResult.headline}</h2>
+				<p>{plainResult.detail}</p>
+				<p class="small muted">
+					This is a report of what we found, not a verdict on who made the file. Embedded marks may
+					still be present even when no signals are found.
+				</p>
+			</section>
+
 			<ConclusionCard
 				conclusion={report.conclusion}
 				coverage={report.coverage}
@@ -324,7 +379,7 @@
 						<dt>Retention</dt>
 						<dd>
 							{report.hash_only
-								? 'Hash-only — bytes deleted after analysis'
+								? 'Hash-only: bytes deleted after analysis'
 								: 'Bytes retained for the deployment TTL, then deleted; reports remain'}
 						</dd>
 						<dt>Trust sources</dt>
@@ -363,7 +418,7 @@
 				</section>
 
 				<section aria-labelledby="coverage-title">
-					<h2 id="coverage-title">Coverage — what actually ran</h2>
+					<h2 id="coverage-title">Coverage: what actually ran</h2>
 					<div class="coverage-metrics" role="list" aria-label="Report coverage summary">
 						<div role="listitem">
 							<strong>{report.coverage.live}</strong><span>live checks</span>
@@ -402,62 +457,66 @@
 				</section>
 			</div>
 
-			<section class="signals" aria-labelledby="signals-title">
-				<div class="row row--between row--start signals__head">
-					<div>
-						<h2 id="signals-title">Signals</h2>
-						<p class="muted">
-							{visibleLiveSignals.length} of {liveSignals.length} live signals shown. Raw payloads render
-							only when opened.
-						</p>
-					</div>
-					<div class="signal-controls no-print">
-						<div>
-							<label for="signal-search">Search signals</label>
-							<input
-								id="signal-search"
-								type="search"
-								bind:value={signalQuery}
-								placeholder="C2PA, EXIF, watermark…"
-							/>
-						</div>
-						<div>
-							<label for="signal-filter">Show</label>
-							<select id="signal-filter" bind:value={signalFilter}>
-								<option value="all">All signals</option>
-								<option value="detected">Detected</option>
-								<option value="attention">Inconclusive or error</option>
-								<option value="absent-info">Absent, info or skipped</option>
-								<option value="manual">Manual only</option>
-							</select>
-						</div>
-					</div>
-				</div>
+			<details class="details-block" open={false}>
+				<summary class="details-summary">Show technical details and all signals</summary>
 
-				{#if visibleLiveSignals.length}
-					{#each visibleLiveSignals as signal (`${signal.kind}-${signal.name}`)}
-						<SignalCard {signal} />
-					{/each}
-				{:else if signalFilter !== 'manual'}
-					<StateBlock
-						title="No live signals match"
-						description="Change the search or filter to inspect other analyzer results."
-					/>
-				{/if}
-			</section>
+				<section class="signals" aria-labelledby="signals-title">
+					<div class="row row--between row--start signals__head">
+						<div>
+							<h2 id="signals-title">Signals</h2>
+							<p class="muted">
+								{visibleLiveSignals.length} of {liveSignals.length} live signals shown. Raw payloads render
+								only when opened.
+							</p>
+						</div>
+						<div class="signal-controls no-print">
+							<div>
+								<label for="signal-search">Search signals</label>
+								<input
+									id="signal-search"
+									type="search"
+									bind:value={signalQuery}
+									placeholder="C2PA, EXIF, watermark…"
+								/>
+							</div>
+							<div>
+								<label for="signal-filter">Show</label>
+								<select id="signal-filter" bind:value={signalFilter}>
+									<option value="all">All signals</option>
+									<option value="detected">Detected</option>
+									<option value="attention">Inconclusive or error</option>
+									<option value="absent-info">Absent, info or skipped</option>
+									<option value="manual">Manual only</option>
+								</select>
+							</div>
+						</div>
+					</div>
 
-			{#if visibleManualSignals.length}
-				<section class="signals" aria-labelledby="manual-title">
-					<h2 id="manual-title">Not run in this deployment</h2>
-					<p class="muted">
-						These modules are wired into the report contract and state exactly what they would add.
-						“Not configured” is never presented as “no watermark.”
-					</p>
-					{#each visibleManualSignals as signal (`manual-${signal.kind}-${signal.name}`)}
-						<SignalCard {signal} />
-					{/each}
+					{#if visibleLiveSignals.length}
+						{#each visibleLiveSignals as signal (`${signal.kind}-${signal.name}`)}
+							<SignalCard {signal} />
+						{/each}
+					{:else if signalFilter !== 'manual'}
+						<StateBlock
+							title="No live signals match"
+							description="Change the search or filter to inspect other analyzer results."
+						/>
+					{/if}
 				</section>
-			{/if}
+
+				{#if visibleManualSignals.length}
+					<section class="signals" aria-labelledby="manual-title">
+						<h2 id="manual-title">Not run in this deployment</h2>
+						<p class="muted">
+							These modules are wired into the report contract and state exactly what they would
+							add. “Not configured” is never presented as “no watermark.”
+						</p>
+						{#each visibleManualSignals as signal (`manual-${signal.kind}-${signal.name}`)}
+							<SignalCard {signal} />
+						{/each}
+					</section>
+				{/if}
+			</details>
 
 			<section class="platforms" aria-labelledby="platform-preview-title">
 				<h2 id="platform-preview-title">Platform label preview</h2>
@@ -528,7 +587,7 @@
 				</div>
 				<p class="small muted trademark-note">
 					Platform marks identify destinations only and belong to their owners. “No” means no
-					documented file trigger was found in this scan—not that publication is risk-free.
+					documented file trigger was found in this scan, not that publication is risk-free.
 				</p>
 			</section>
 
@@ -536,14 +595,14 @@
 				<h2 id="next-title">Next step</h2>
 				<div class="grid grid--3">
 					<article class="card">
-						<h3>Remove Layer-1 footprints</h3>
+						<h3>Clean this file</h3>
 						<p>
-							Carry this scan into the R0–R2 Detect → Remove → Verify workflow and review the
-							eligible footprint policy.
+							Remove the hidden info we found (signatures, camera and location details, software
+							tags), then see a fresh scan of the cleaned copy.
 						</p>
 						<a
 							class="btn btn--secondary"
-							href={resolve(`/remove?scan=${encodeURIComponent(scanId)}`)}>Open removal flow</a
+							href={`${resolve('/remove')}?scan=${encodeURIComponent(scanId)}`}>Clean this file</a
 						>
 					</article>
 					<article class="card">
@@ -593,6 +652,39 @@
 </div>
 
 <style>
+	.plain-banner {
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		padding: 1rem 1.2rem;
+		margin-bottom: 1.2rem;
+		background: var(--canvas-soft);
+	}
+	.plain-banner h2 {
+		font-size: 1.25rem;
+		margin: 0 0 0.4rem;
+	}
+	.plain-banner--warn {
+		border-color: var(--warn, #b45309);
+		background: color-mix(in srgb, var(--warn, #b45309) 8%, var(--canvas));
+	}
+	.plain-banner--bad {
+		border-color: var(--bad, #b91c1c);
+		background: color-mix(in srgb, var(--bad, #b91c1c) 8%, var(--canvas));
+	}
+	.plain-banner--ok {
+		border-color: var(--ok, #15803d);
+		background: color-mix(in srgb, var(--ok, #15803d) 8%, var(--canvas));
+	}
+	.details-block {
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		padding: var(--space-3) var(--space-4);
+		margin-bottom: var(--space-4);
+	}
+	.details-summary {
+		cursor: pointer;
+		font-weight: var(--fw-medium);
+	}
 	.report-head {
 		align-items: flex-start;
 		display: flex;
@@ -731,7 +823,7 @@
 		}
 
 		.signal-controls {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 			min-width: 0;
 		}
 	}

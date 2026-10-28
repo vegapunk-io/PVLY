@@ -234,7 +234,7 @@
 </script>
 
 <PageHead
-	title="Batch — Many files, one evidence pass"
+	title="Batch: many files, one evidence pass"
 	description="Queue up to 50 files for sequential, per-file Provenably Detect reports with isolated errors and a downloadable JSON manifest."
 	noindex
 />
@@ -249,12 +249,11 @@
 		</p>
 	</header>
 
-	<Notice tone="info" title="What is live in batch today">
+	<Notice tone="info" title="What this page does">
 		<p>
-			This page orchestrates the existing live <code>POST /v1/scans</code> API in your browser. The
-			native
-			<code>/v1/batch</code> job, removal application and cleaned-file ZIP arrive in R3; the manifest
-			below is a real client-generated index of the Detect reports created here.
+			This page scans many files and gives you a downloadable list of the results. To clean a file,
+			open its report and choose Clean. Cleaning many files into one ZIP is available through the
+			API (<code>POST /v1/batches</code>) and is coming to this page.
 		</p>
 	</Notice>
 
@@ -291,7 +290,7 @@
 						<span style={`transform:scaleX(${overallFraction})`}></span>
 					</div>
 					{#if currentItem}<p class="small">
-							Now: <strong>{currentItem.file.name}</strong> — {titleCaseToken(currentItem.status)}
+							Now: <strong>{currentItem.file.name}</strong> · {titleCaseToken(currentItem.status)}
 						</p>{/if}
 				</div>
 
@@ -328,12 +327,12 @@
 											>{#if item.evidenceGrade}<br /><Tag tone={gradeTone(item.evidenceGrade)}
 													>{item.evidenceGrade}</Tag
 												>{/if}
-										{:else}<span class="muted">—</span>{/if}
+										{:else}<span class="muted">–</span>{/if}
 									</td>
 									<td
 										>{#if item.scanId}<a href={resolve('/report/[id]', { id: item.scanId })}
 												>report</a
-											>{:else}<span class="muted">—</span>{/if}</td
+											>{:else}<span class="muted">–</span>{/if}</td
 									>
 								</tr>
 							{/each}
@@ -356,11 +355,11 @@
 				<div class="field">
 					<label for="batch-mode">Mode</label>
 					<select id="batch-mode" aria-describedby="batch-mode-hint">
-						<option value="detect">Detect only — live</option>
-						<option value="remove" disabled>Detect → Remove → Verify — R3</option>
+						<option value="detect">Scan only</option>
+						<option value="remove" disabled>Scan and clean (use the API for now)</option>
 					</select>
 					<p class="field-hint" id="batch-mode-hint">
-						Removal stays disabled until the native batch endpoint and formats are deployed.
+						To clean files from here, open each report and choose Clean.
 					</p>
 				</div>
 
@@ -384,8 +383,7 @@
 					</div>
 					<p class="field-hint" id="batch-preset-hint">
 						<strong>{selectedPresetLabel.labelDisplay}:</strong>
-						{selectedPresetLabel.labelSubtext} Stored in the Detect manifest now; applied to outputs when
-						R3 lands.
+						{selectedPresetLabel.labelSubtext} Saved in the downloaded results list.
 					</p>
 				</div>
 
@@ -442,17 +440,16 @@
 					<Icon name="download" size={18} /> Download manifest.json
 				</button>
 				<p class="small muted">
-					A ZIP is meaningful only when R3 produces cleaned outputs; Detect does not alter your
-					originals.
+					A ZIP is meaningful onScanning never changes your original files./div>
+
+					<Notice title="Failure isolation">
+						<p>
+							Unsupported and failed files are marked inline with the API reason. Completed files
+							before and after that row remain usable.
+						</p>
+					</Notice>
 				</p>
 			</div>
-
-			<Notice title="Failure isolation">
-				<p>
-					Unsupported and failed files are marked inline with the API reason. Completed files before
-					and after that row remain usable.
-				</p>
-			</Notice>
 		</aside>
 	</div>
 </div>

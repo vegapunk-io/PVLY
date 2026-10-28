@@ -28,9 +28,17 @@
 		['GET', '/v1/scans', 'Deployment scan history summaries', 'live'],
 		['POST', '/v1/scans/demo/{name}', 'Create a scan from a bundled fixture', 'live'],
 		['GET', '/v1/demo-files', 'Bundled fixture catalogue for the frontend', 'live'],
-		['POST', '/v1/remove', 'Detect → Remove → Verify with policy, preset and attestation', 'R0–R2'],
-		['POST', '/v1/batch', 'Native multi-file job with ZIP and manifest outputs', 'R3'],
-		['GET', '/v1/presets', 'Platform preset catalogue', 'R3'],
+		[
+			'POST',
+			'/v1/remove?scan_id=…&attested=true',
+			'Remove Layer-1 footprints from a scanned file, then re-scan the output',
+			'live'
+		],
+		['GET', '/v1/removals/{id}', 'Removal record with before/after scan and hashes', 'live'],
+		['GET', '/v1/removals/{id}/download', 'Download the cleaned file', 'live'],
+		['POST', '/v1/batches', 'Clean many scanned files into one ZIP with a manifest', 'live'],
+		['GET', '/v1/batches/{id}', 'Batch status and per-file results', 'live'],
+		['GET', '/v1/batches/{id}/download', 'Download the batch ZIP (cleaned files + manifest.json)', 'live'],
 		['GET', '/v1/registry', 'Generator watermark/provenance registry', 'live'],
 		['POST', '/v1/disclosure/check', 'Jurisdiction disclosure checklist', 'live'],
 		['POST', '/v1/platforms/preview', 'Likely platform labels from report facts', 'live'],
@@ -65,14 +73,17 @@ curl -s "https://your-deployment.example/v1/scans/$scan_id" | jq .`
   -d '{"content_type":"video","is_ai_generated":true}' | jq .`
 		},
 		{
-			id: 'remove-contract',
-			title: 'Target Remove contract (R0–R2)',
-			code: `# Not deployed yet—shown so clients can design against the locked workflow.
-curl -s \\
-  -F "file=@photo.jpg" \\
-  -F "preset=instagram" \\
-  -F "attestation=true" \\
-  https://your-deployment.example/v1/remove`
+			id: 'remove',
+			title: 'Scan, clean, then download',
+			code: `scan_id=$(curl -s -F "file=@photo.jpg" -F "wait=true" \\
+  https://your-deployment.example/v1/scans | jq -r .scan_id)
+
+curl -s -X POST \\
+  "https://your-deployment.example/v1/remove?scan_id=$scan_id&attested=true" \\
+  | tee removal.json | jq '{verdict, fields_removed}'
+
+curl -s -o photo-clean.jpg \\
+  "https://your-deployment.example$(jq -r .output_download_url removal.json)"`
 		}
 	];
 
@@ -88,7 +99,7 @@ curl -s \\
 			loadError = '';
 		} catch (error) {
 			if (!(error instanceof DOMException && error.name === 'AbortError')) {
-				loadError = errorMessage(error, 'Live API status could not be loaded.');
+				loadError = errorMessage(error, 'We could not load API status. Please try again.');
 			}
 		} finally {
 			if (!signal?.aborted) loading = false;
@@ -133,9 +144,8 @@ curl -s \\
 		<p class="eyebrow">Developers</p>
 		<h1>API &amp; deployment status</h1>
 		<p class="lede">
-			SvelteKit is the interface; FastAPI remains the source of truth. This page reads live
-			capability and health endpoints so integrators can see exactly what will—and will not—run
-			before trusting a report.
+			This page reads the live capability and health endpoints, so you can see exactly what will
+			and will not run before you trust a report.
 		</p>
 		<div class="actions">
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- FastAPI path outside the Svelte route manifest. -->
@@ -263,10 +273,7 @@ curl -s \\
 		<div class="section-head">
 			<p class="eyebrow">Contract</p>
 			<h2 id="endpoints-title">Endpoints</h2>
-			<p>
-				Roadmap endpoints are listed to lock the frontend contract; their status is never shown as
-				live before FastAPI implements them.
-			</p>
+			<p>Every endpoint below is live on this deployment. Full schemas are in the OpenAPI docs.</p>
 		</div>
 		<div class="table-wrap">
 			<table>
@@ -298,9 +305,9 @@ curl -s \\
 				When a deployment sets API keys, scan endpoints require <code>X-API-Key</code>. The Settings
 				page can store a key for the current browser session only. Public production should replace
 				this hook with the selected identity provider and per-user authorization.
-			</p>
-		</Notice>
-	</div>
+			</p>, removal and batch endpoints require
+				<code>X-API-Key</code>. API calls are rate limited per client (120 per minute by default).
+				The Settings page can store a key for the current browser session only
 </div>
 
 <style>

@@ -100,7 +100,7 @@
 </script>
 
 <PageHead
-	title="Text tools — Unicode hygiene"
+	title="Text tools: Unicode hygiene"
 	description="Find zero-width characters, bidi controls, homoglyphs and suspicious typography, then produce a cleaned copy without destroying legitimate joining characters by default."
 />
 
@@ -110,7 +110,7 @@
 		<h1>Unicode hygiene, with the evidence left visible.</h1>
 		<p class="lede">
 			Find invisible characters, directional controls, homoglyphs and formatting artifacts that can
-			survive copy-paste. The cleaner returns a separate copy—your original stays untouched.
+			survive copy-paste. The cleaner returns a separate copy, and your original stays untouched.
 		</p>
 	</header>
 
@@ -158,7 +158,8 @@
 				<label class="check">
 					<input type="checkbox" bind:checked={keepJoiners} />
 					<span
-						><strong>Keep legitimate joiners</strong> — preserve ZWJ/ZWNJ where scripts need them (recommended).</span
+						><strong>Keep legitimate joiners</strong>: preserve ZWJ/ZWNJ where scripts need them
+						(recommended).</span
 					>
 				</label>
 				<label class="check">
@@ -369,7 +370,7 @@
 		}
 
 		.tools-layout {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

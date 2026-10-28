@@ -68,7 +68,7 @@
 </script>
 
 <PageHead
-	title="Platform presets — Export ready to publish"
+	title="Platform presets: Export ready to publish"
 	description="Choose YouTube, Instagram, TikTok, LinkedIn, Pinterest, Reddit, X, Facebook or a generic master and carry its output, footprint and disclosure policy into Remove."
 />
 
@@ -148,9 +148,7 @@
 			</fieldset>
 
 			<div class="actions">
-				<a class="btn" href={resolve('/remove')} onclick={() => persistPreset(selectedSlug)}>
-					Open in Remove <Icon name="arrow-right" size={18} />
-				</a>
+				<a class="btn" href={resolve('/remove')}>Clean a file</a>
 				<a class="btn btn--secondary" href={resolve('/rules')}>Review disclosure rules</a>
 			</div>
 			<p class="small muted">
@@ -183,7 +181,7 @@
 							>
 							<tr
 								><th scope="row">Embedded watermark</th><td
-									>Not removable by metadata editing—disclosed in the verification report</td
+									>Not removable by metadata editing; disclosed in the verification report</td
 								></tr
 							>
 							<tr
@@ -316,7 +314,7 @@
 
 	@media (max-width: 760px) {
 		.generic-master {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

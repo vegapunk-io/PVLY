@@ -50,6 +50,16 @@
 	--radius-small: 6px;
 	--header-height: 68px;
 	--focus-ring: 0 0 0 3px rgb(255 79 0 / 24%);
+	/* spacing scale (4px base) */
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-5: 1.25rem;
+	--space-6: 1.5rem;
+	--space-8: 2rem;
+	--space-10: 2.5rem;
+	--space-12: 3rem;
 	color-scheme: light;
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
@@ -64,6 +74,7 @@
 html {
 	scroll-behavior: smooth;
 	-webkit-text-size-adjust: 100%;
+	scroll-padding-block-start: var(--header-height);
 }
 
 body {
@@ -202,11 +213,11 @@ pre {
 }
 
 .page {
-	padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(3.5rem, 7vw, 5rem);
+	padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(3.5rem, 7vw, 5rem);
 }
 
 .page-head {
-	margin-bottom: clamp(1.8rem, 4vw, 3rem);
+	margin-block-end: clamp(1.8rem, 4vw, 3rem);
 	max-width: 850px;
 }
 
@@ -293,7 +304,7 @@ pre {
 	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.75rem;
+	gap: var(--space-3);
 }
 
 .row--between {
@@ -537,7 +548,7 @@ select {
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23201515' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
 	background-position: right 0.8rem center;
 	background-repeat: no-repeat;
-	padding-right: 2.6rem;
+	padding-inline-end: 2.6rem;
 }
 
 input::placeholder,
@@ -785,14 +796,14 @@ caption {
 	color: var(--ink);
 	font-weight: var(--fw-emphasis);
 	padding: 1rem;
-	text-align: left;
+	text-align: start;
 }
 
 th,
 td {
 	border-bottom: 1px solid var(--line);
 	padding: 0.82rem 1rem;
-	text-align: left;
+	text-align: start;
 	vertical-align: top;
 }
 
@@ -818,7 +829,7 @@ tbody tr:hover td {
 td.num,
 th.num {
 	font-variant-numeric: lining-nums tabular-nums;
-	text-align: right;
+	text-align: end;
 }
 
 .platform-cell {
@@ -966,9 +977,9 @@ details > :last-child {
 .format-strip {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.45rem;
+	gap: var(--space-2);
 	list-style: none;
-	margin: 0;
+	margin: var(--space-4) 0 0;
 	padding: 0;
 }
 
@@ -987,9 +998,9 @@ details > :last-child {
 	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.6rem;
+	gap: var(--space-2);
 	list-style: none;
-	margin: 1.7rem 0;
+	margin-block: var(--space-6);
 	padding: 0;
 }
 
@@ -1038,7 +1049,7 @@ details > :last-child {
 	font-weight: var(--fw-bold);
 	height: 2rem;
 	justify-content: center;
-	left: 0;
+	inset-inline-start: 0;
 	position: absolute;
 	top: 0;
 	width: 2rem;
@@ -1118,7 +1129,7 @@ details > :last-child {
 	background: var(--ink);
 	border-radius: 0 0 10px 10px;
 	color: var(--on-primary);
-	left: 1rem;
+	inset-inline-start: 1rem;
 	min-height: 48px;
 	padding: 0.75rem 1rem;
 	position: fixed;
@@ -1139,7 +1150,7 @@ details > :last-child {
 	}
 
 	.grid--sidebar {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 	}
 }
 
@@ -1156,11 +1167,11 @@ details > :last-child {
 	.grid--2,
 	.grid--3,
 	.grid--4 {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.kv {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 0.15rem;
 	}
 
@@ -1169,7 +1180,7 @@ details > :last-child {
 	}
 
 	.signal {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.btn,

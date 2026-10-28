@@ -5,14 +5,15 @@
 	import Icon from './Icon.svelte';
 
 	const primaryLinks = [
-		{ href: '/scan', label: 'Scan' },
-		{ href: '/remove', label: 'Remove' },
-		{ href: '/batch', label: 'Batch' },
-		{ href: '/presets', label: 'Presets' },
-		{ href: '/registry', label: 'Registry' },
-		{ href: '/rules', label: 'Rules' },
-		{ href: '/pricing', label: 'Pricing' },
-		{ href: '/api', label: 'API' }
+		{ href: '/scan', label: 'Scan', hint: 'Check a file for AI signals' },
+		{ href: '/remove', label: 'Remove', hint: 'Clean hidden info from a file' },
+		{ href: '/guide', label: 'Guide', hint: 'How it works' },
+		{ href: '/batch', label: 'Batch', hint: 'Process many files at once' },
+		{ href: '/presets', label: 'Presets', hint: 'Platform-specific policies' },
+		{ href: '/registry', label: 'AI generators', hint: 'Known AI generators and their marks' },
+		{ href: '/rules', label: 'Platform rules', hint: 'What each platform labels as AI' },
+		{ href: '/pricing', label: 'Pricing', hint: 'Plans and pricing' },
+		{ href: '/api', label: 'API', hint: 'Developer API and status' }
 	] as const;
 
 	const mobileGroups = [
@@ -21,6 +22,7 @@
 			links: [
 				{ href: '/scan', label: 'Scan' },
 				{ href: '/remove', label: 'Remove' },
+				{ href: '/guide', label: 'Guide' },
 				{ href: '/batch', label: 'Batch' },
 				{ href: '/presets', label: 'Presets' }
 			]
@@ -28,10 +30,10 @@
 		{
 			label: 'Reference',
 			links: [
-				{ href: '/registry', label: 'Registry' },
-				{ href: '/rules', label: 'Rules' },
+				{ href: '/registry', label: 'AI generators' },
+				{ href: '/rules', label: 'Platform rules' },
 				{ href: '/tools', label: 'Text tools' },
-				{ href: '/lab', label: 'Lab' },
+				{ href: '/lab', label: 'Watermark check' },
 				{ href: '/api', label: 'API & status' }
 			]
 		},
@@ -71,8 +73,10 @@
 
 		<nav class="desktop-nav" aria-label="Primary">
 			{#each primaryLinks as link (link.href)}
-				<a href={resolve(link.href)} aria-current={isCurrent(link.href) ? 'page' : undefined}
-					>{link.label}</a
+				<a
+					href={resolve(link.href)}
+					title={link.hint}
+					aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a
 				>
 			{/each}
 		</nav>
@@ -211,7 +215,7 @@
 	}
 
 	.header__actions .btn {
-		margin-left: 0.45rem;
+		margin-inline-start: 0.45rem;
 	}
 
 	.mobile-nav {

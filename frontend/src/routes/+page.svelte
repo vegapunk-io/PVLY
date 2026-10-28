@@ -22,90 +22,84 @@
 		'PDF',
 		'DOCX',
 		'TXT',
-		'HEIC*',
-		'AVIF*'
+		'HEIC',
+		'AVIF',
+		'GIF',
+		'TIFF'
 	];
 
 	const checks = [
 		[
 			'Content Credentials',
-			'C2PA signing state, trust, digital source type, actions, ingredients and hard-binding tamper checks.'
+			'Digital signature proving who signed the file and whether it was tampered with.'
 		],
 		[
-			'Metadata forensics',
-			'EXIF, XMP/IPTC source types, PNG text, document properties, ID3 and container generator strings.'
+			'Hidden metadata',
+			'Camera data, AI source tags, GPS, device details and generator fingerprints.'
 		],
 		[
-			'Open watermarks',
-			'DWT-DCT decoding for the Stable Diffusion pipeline family, reported with match strength rather than a binary guess.'
+			'Invisible watermarks',
+			'Hidden marks from AI image generators, reported with strength, not a yes/no guess.'
 		],
 		[
-			'Forensic context',
-			'JPEG, spectral, frame and container observations that support interpretation—but never become the verdict alone.'
+			'File forensics',
+			'Observations about the file itself that support, but never decide, the result.'
 		],
+		['Text signals', 'Hidden characters in text and an optional keyed watermark test.'],
 		[
-			'Text signals',
-			'Hidden Unicode characters, typography statistics and an optional keyed green-list watermark test.'
-		],
-		[
-			'Platform consequences',
-			'Likely label triggers for Meta, YouTube, TikTok, LinkedIn, Pinterest, X and the rest of the rules catalogue.'
+			'Platform labels',
+			'Whether Meta, YouTube, TikTok, LinkedIn, Pinterest, X and others would likely label it.'
 		]
 	];
 </script>
 
 <PageHead
 	title="Provenably"
-	description="See what a file says about its origin. Detect C2PA, AI metadata and provenance signals, then follow an honest Detect → Remove → Verify → Platform-ready workflow."
+	description="Check if a file was made or edited by AI. Clean its hidden info. Get proof of what changed."
 />
 
 <section class="hero shell">
 	<div class="hero__grid">
 		<div>
-			<p class="eyebrow">AI content provenance &amp; metadata control</p>
-			<h1>See what your file says about you. Then decide what stays.</h1>
+			<p class="eyebrow">For anyone who shares files online</p>
+			<h1>Check what your file hides. Clean it. Get proof.</h1>
 			<p class="lede">
-				Every photo, video, audio file and document can carry hidden cargo—Content Credentials, AI
-				source tags, GPS, device details and generator fingerprints. Provenably detects those
-				signals and is built around a lossless remove-and-verify workflow before you publish
-				anywhere.
+				Photos, videos, audio and documents can carry hidden info: AI labels, camera details, GPS,
+				and generator fingerprints. Provenably checks all of it, cleans the hidden info without
+				touching your actual file, and gives you proof of what changed.
 			</p>
 
 			<ol class="loop" aria-label="Provenably workflow">
 				<li>
-					<span class="loop__step">1 · Detect</span><span class="loop__arrow" aria-hidden="true"
+					<span class="loop__step">1 · Scan</span><span class="loop__arrow" aria-hidden="true"
 						>→</span
 					>
 				</li>
 				<li>
-					<span class="loop__step">2 · Remove</span><span class="loop__arrow" aria-hidden="true"
+					<span class="loop__step">2 · Clean</span><span class="loop__arrow" aria-hidden="true"
 						>→</span
 					>
 				</li>
 				<li>
-					<span class="loop__step">3 · Verify</span><span class="loop__arrow" aria-hidden="true"
+					<span class="loop__step">3 · Get proof</span><span class="loop__arrow" aria-hidden="true"
 						>→</span
 					>
 				</li>
-				<li><span class="loop__step">4 · Platform-ready</span></li>
+				<li><span class="loop__step">4 · Share</span></li>
 			</ol>
 
 			<div class="actions">
-				<a class="btn" href={resolve('/scan')}
-					>Scan a file — free <Icon name="arrow-right" size={19} /></a
-				>
-				<a class="btn btn--secondary" href={resolve('/remove')}>Remove metadata</a>
+				<a class="btn" href={resolve('/scan')}>Scan a file <Icon name="arrow-right" size={19} /></a>
 				<a class="text-link" href={resolve('/scan?tab=demo')}
 					>Try a signed demo <Icon name="arrow-right" size={17} /></a
 				>
 			</div>
 
-			<ul class="format-strip hero__formats" aria-label="Supported and roadmap formats">
+			<ul class="format-strip hero__formats" aria-label="Supported formats">
 				{#each formats as format (format)}<li class="format-chip">{format}</li>{/each}
 			</ul>
 			<p class="tiny muted">
-				* HEIC and AVIF complete the format roadmap in R4; detection coverage is shown on every
-				report.
+				All of these can be scanned. Audio files can be scanned but not cleaned.
 			</p>
 		</div>
 
@@ -177,7 +171,7 @@
 				<h3>A provenance report first</h3>
 				<p>
 					C2PA trust and tamper state, metadata, AI source types, generator strings and open
-					watermarks—each with an evidence grade and raw data when you need to inspect it.
+					watermarks, each with an evidence grade and raw data when you need to inspect it.
 				</p>
 				<a class="text-link" href={resolve('/scan')}
 					>Run a scan <Icon name="arrow-right" size={17} /></a
@@ -189,19 +183,19 @@
 				<p class="feature-step">Remove</p>
 				<h3>Lossless footprint removal</h3>
 				<p>
-					The production workflow targets container footprints first—C2PA manifests, metadata tags
-					and document properties—without touching pixels or samples by default.
+					Removes C2PA signatures, camera and location data, software tags and document
+					properties. Pixels, frames and text stay byte-for-byte the same.
 				</p>
 				<a class="text-link" href={resolve('/remove')}
-					>See the removal flow <Icon name="arrow-right" size={17} /></a
+					>Clean a file <Icon name="arrow-right" size={17} /></a
 				>
 			</article>
 
 			<article class="card card--canvas feature-card">
 				<span class="feature-icon"><Icon name="shield" size={25} /></span>
 				<p class="feature-step">Verify</p>
-				<h3>Proof, not promises</h3>
-				<p>
+				<Every cleaned file is scanned again by the same detectors. You get a before and after
+					result, fingerprints of both files and a plain
 					The cleaned output is designed to be re-scanned by the same detectors, producing a
 					before/after diff, input/output hashes and a precise statement of anything embedded that
 					remains.
@@ -225,8 +219,8 @@
 			<div class="row row--between">
 				<h3>Layer 1 · Removable</h3>
 				<Tag tone="tag--ok">container footprints</Tag>
-			</div>
-			<p>
+			</div>video container tags and document authors live in
+				the file container. These ar
 				C2PA manifests, EXIF/XMP/IPTC, PNG text, ID3/RIFF/MP4 tags, document authors and revision
 				history live in the file container. These can be removed and then verified absent.
 			</p>
@@ -259,7 +253,7 @@
 			<p>
 				Removing GPS, device or author metadata from your own file is a normal privacy action. It
 				does not remove a legal or platform duty to disclose synthetic content. Provenably pairs
-				technical findings with dated, confidence-graded rules—but it is not legal advice.
+				technical findings with dated, confidence-graded rules, but it is not legal advice.
 			</p>
 		</Notice>
 	</div>
@@ -272,9 +266,8 @@
 				<p class="eyebrow">Platform presets</p>
 				<h2 id="platforms-title">Export for where the file is going.</h2>
 				<p class="lede">
-					A preset combines the output target, Layer-1 footprint policy, verification step and the
-					exact label that destination can show—plus the provenance signals it is documented to
-					read. The generic verified master remains available for your own channels.
+					Each preset shows the exact label a destination can show and the provenance signals it is
+					documented to read, so you know what to expect before you post.
 				</p>
 			</div>
 			<a class="btn btn--secondary" href={resolve('/presets')}>Compare presets</a>
@@ -296,8 +289,8 @@
 	<div class="grid grid--sidebar">
 		<div>
 			<p class="eyebrow">What a Detect run checks today</p>
-			<h2 id="checks-title">Signals with receipts—not a black-box “AI score.”</h2>
-			<p class="lede">
+			<h2 id="checks-title">Signals with receipts, not a black-box “AI score.”</h2>
+			<p class="lede">, 
 				Passive forensic observations add context, but a conclusion is anchored to
 				provenance-bearing signals. Absence is reported as absence, never as proof of human
 				authorship.
@@ -330,46 +323,43 @@
 	<div class="shell">
 		<div class="section-head">
 			<p class="eyebrow">Deployment truth</p>
-			<h2 id="roadmap-title">What is live, and what ships next.</h2>
-			<p>
-				The approved end-to-end interface is now in place. Backend capabilities are labelled by
-				milestone so a roadmap workflow can never masquerade as a completed removal.
-			</p>
+			<h2 id="roadmap-titWhat works today</p>
+			<h2 id="roadmap-title">Live now, and what comes next.</h2>
+			<p>Every item below is tested end to end on this site. Anything not listed is not claimed.</p>
 		</div>
 
 		<div class="grid grid--3">
 			<article class="card card--canvas">
 				<Tag tone="tag--ok">live now</Tag>
-				<h3>Detect</h3>
+				<h3>Scan</h3>
 				<p>
-					File, text, URL and demo scans; graded reports; registry; disclosure rules; text tools;
-					and API status.
+					File, text, URL and demo scans; graded reports; generator registry; platform and
+					disclosure rules; text tools.
 				</p>
 				<a class="text-link" href={resolve('/scan')}
-					>Use Detect <Icon name="arrow-right" size={17} /></a
+					>Scan a file <Icon name="arrow-right" size={17} /></a
 				>
 			</article>
 			<article class="card card--canvas">
-				<Tag tone="tag--accent">R0–R2</Tag>
-				<h3>Remove + Verify</h3>
+				<Tag tone="tag--ok">live now</Tag>
+				<h3>Clean and verify</h3>
 				<p>
-					Images, PDF and DOCX first, then audio and video. The Svelte workflow, attestation and
-					verification contract are ready.
+					JPG, PNG, WebP, HEIC, AVIF, GIF, TIFF, MP4, MOV, WebM, PDF, DOCX and text. Every cleaned
+					file is scanned again before download.
 				</p>
 				<a class="text-link" href={resolve('/remove')}
-					>Review the workflow <Icon name="arrow-right" size={17} /></a
+					>Clean a file <Icon name="arrow-right" size={17} /></a
 				>
 			</article>
 			<article class="card card--canvas">
-				<Tag tone="tag--accent">R3–R4</Tag>
-				<h3>Batch, presets, more formats</h3>
+				<Tag tone="tag--accent">next</Tag>
+				<h3>Accounts and preset exports</h3>
 				<p>
-					Multi-file exports with ZIP manifests, platform transformations, then HEIC, AVIF, GIF and
-					TIFF coverage.
+					Sign-in, private history, billing, and presets that resize or re-encode for each
+					platform. Audio cleaning is not planned.
 				</p>
 				<a class="text-link" href={resolve('/batch')}
-					>See batch Detect <Icon name="arrow-right" size={17} /></a
-				>
+					>Scan many files
 			</article>
 		</div>
 	</div>
@@ -597,7 +587,7 @@
 	@media (max-width: 980px) {
 		.hero__grid,
 		.cta__card {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.cta__actions {

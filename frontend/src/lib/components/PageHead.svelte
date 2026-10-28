@@ -11,7 +11,7 @@
 		noindex = false
 	}: Props = $props();
 
-	const fullTitle = $derived(title === 'Provenably' ? title : `${title} — Provenably`);
+	const fullTitle = $derived(title === 'Provenably' ? title : `${title} · Provenably`);
 </script>
 
 <svelte:head>

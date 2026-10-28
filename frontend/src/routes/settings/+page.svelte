@@ -74,8 +74,7 @@
 		connectionMessage = '';
 		try {
 			await listScans(1);
-			connectionMessage =
-				'Connection succeeded. FastAPI accepted the current session configuration.';
+			connectionMessage = 'Connection works. Your key was accepted.';
 		} catch (error) {
 			connectionMessage = errorMessage(error, 'Connection failed.');
 		} finally {
@@ -94,7 +93,7 @@
 </script>
 
 <PageHead
-	title="Settings — Privacy, retention and API key"
+	title="Settings: Privacy, retention and API key"
 	description="Configure browser-local scan defaults, preferred platform preset and a session-only FastAPI key for this Provenably deployment."
 	noindex
 />
@@ -167,7 +166,7 @@
 			<label class="check">
 				<input type="checkbox" bind:checked={preferences.hashOnlyDefault} />
 				<span
-					><strong>Default new file/URL scans to hash-only</strong> — delete bytes after analysis.</span
+					><strong>Default new file/URL scans to hash-only</strong>: delete bytes after analysis.</span
 				>
 			</label>
 			<label class="check">
@@ -260,7 +259,7 @@
 				<dt>Current mode</dt>
 				<dd>Anonymous Detect</dd>
 				<dt>Deployment scans</dt>
-				<dd>{health ? health.scans_total.toLocaleString() : '—'}</dd>
+				<dd>{health ? health.scans_total.toLocaleString() : '–'}</dd>
 				<dt>Personal quota</dt>
 				<dd>Not tracked until accounts ship</dd>
 			</dl>
@@ -281,7 +280,7 @@
 			<button class="btn btn--secondary danger-button" type="button" onclick={clearLocalData}
 				>Clear browser-local data</button
 			>
-			<button class="btn btn--ghost" type="button" disabled>Delete account — auth pending</button>
+			<button class="btn btn--ghost" type="button" disabled>Delete account (needs sign-in)</button>
 		</div>
 	</section>
 </div>
@@ -328,7 +327,7 @@
 
 	@media (max-width: 820px) {
 		.settings-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.danger-zone {

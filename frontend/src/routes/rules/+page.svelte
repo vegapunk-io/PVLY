@@ -152,7 +152,7 @@
 		<h1>Disclosure checklist &amp; platform rules</h1>
 		<p class="lede">
 			Tell Provenably what the content is and what provenance it already carries. The rules engine
-			returns open, satisfied, exempt and optional items per jurisdiction—dated and
+			returns open, satisfied, exempt and optional items per jurisdiction, dated and
 			confidence-graded, never as legal advice.
 		</p>
 		{#if sourceScan}
@@ -418,7 +418,7 @@
 	<section class="reference-section" id="platforms" aria-labelledby="platform-rules-title">
 		<div class="section-head">
 			<p class="eyebrow">Platforms</p>
-			<h2 id="platform-rules-title">What viewers see—and what each platform can detect</h2>
+			<h2 id="platform-rules-title">What viewers see, and what each platform can detect</h2>
 			<p>
 				Exact viewer wording comes first. Detection notes separate signed provenance and metadata
 				from platform classifiers, creator toggles and private publisher disclosure. Records were
@@ -555,7 +555,7 @@
 
 	.recommendations {
 		margin: 0.5rem 0 0;
-		padding-left: 1.25rem;
+		padding-inline-start: 1.25rem;
 	}
 
 	.result-list {
@@ -598,7 +598,7 @@
 
 	@media (max-width: 620px) {
 		.jurisdiction-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

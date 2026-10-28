@@ -65,7 +65,7 @@
 			loadError = '';
 		} catch (error) {
 			if (!(error instanceof DOMException && error.name === 'AbortError')) {
-				loadError = errorMessage(error, 'History could not be loaded from FastAPI.');
+				loadError = errorMessage(error, 'We could not load your history. Please try again.');
 			}
 		} finally {
 			if (!signal?.aborted) loading = false;
@@ -93,7 +93,7 @@
 </script>
 
 <PageHead
-	title="History — Scans, removals and exports"
+	title="History: Scans, removals and exports"
 	description="Review recent Provenably Detect scans in this deployment, reopen reports, and track where removal and batch records will appear."
 	noindex
 />
@@ -110,9 +110,9 @@
 
 	<Notice tone="info" title="Deployment history until accounts ship">
 		<p>
-			The current FastAPI prototype is not account-scoped. This page shows scans visible to this
-			deployment (or to the API key configured in Settings). Per-user isolation arrives with the
-			auth milestone; do not use a shared demo deployment for private files.
+			History is not private to you yet. This page shows every scan on this site (or those visible
+			to the API key in Settings). Accounts are coming; until then, do not scan private files on a
+			shared demo site.
 		</p>
 	</Notice>
 
@@ -185,16 +185,12 @@
 		</p>
 
 		{#if loadError}
-			<StateBlock kind="error" title="History could not be loaded" description={loadError}>
+			<StateBlock kind="error" title="We could not load your history" description={loadError}>
 				<button class="btn" type="button" onclick={refresh}>Retry</button>
 				<a class="btn btn--secondary" href={resolve('/api')}>Check deployment status</a>
 			</StateBlock>
 		{:else if loading && !scans.length}
-			<StateBlock
-				kind="loading"
-				title="Loading scans…"
-				description="Reading the latest FastAPI scan records."
-			/>
+			<StateBlock kind="loading" title="Loading scans…" description="Loading your recent scans." />
 		{:else if filteredScans.length}
 			<div class="table-wrap">
 				<table>
@@ -218,11 +214,11 @@
 										)}</span
 									>
 								</th>
-								<td class="mono small">{scan.conclusion ?? '—'}</td>
+								<td class="mono small">{scan.conclusion ?? '–'}</td>
 								<td
 									>{#if scan.evidence_grade}<Tag tone={gradeTone(scan.evidence_grade)}
 											>{scan.evidence_grade}</Tag
-										>{:else}<span class="muted">—</span>{/if}</td
+										>{:else}<span class="muted">–</span>{/if}</td
 								>
 								<td class="mono small">{shortenHash(scan.sha256, 7)}</td>
 								<td>
@@ -231,7 +227,10 @@
 											class="btn btn--secondary btn--small"
 											href={resolve('/report/[id]', { id: scan.id })}>Report</a
 										>
-										<a href={resolve(`/remove?scan=${scan.id}`)}>Remove</a>
+										<a
+											class="btn btn--ghost btn--small"
+											href={`${resolve('/remove')}?scan=${encodeURIComponent(scan.id)}`}>Clean</a
+										>
 									</div>
 								</td>
 							</tr>
@@ -268,10 +267,10 @@
 		hidden={activeTab !== 'removals'}
 	>
 		<StateBlock
-			title="No removal records yet"
-			description="When POST /v1/remove ships in R0, this tab will list preset, before/after verdict, input/output sizes, hashes, cleaned-file download and the RemoveReport JSON. It will also state when Layer-1 is clean but an embedded Layer-2 mark may remain."
+			title="Cleaning history is not listed here yet"
+			description="Cleaning works now: open a scan and choose Clean, or start from the Remove page. Each result shows what was removed, the before and after scan, and a download link. A list of past cleanings will appear here in a later update."
 		>
-			<a class="btn" href={resolve('/remove')}>Review the ready Remove workflow</a>
+			<a class="btn" href={resolve('/remove')}>Clean a file</a>
 		</StateBlock>
 	</div>
 
@@ -284,7 +283,7 @@
 	>
 		<StateBlock
 			title="Batch records are session-local today"
-			description="Batch Detect currently creates individual scan records and a downloadable manifest in the browser session. Native batch jobs, ZIP exports and server-side batch history arrive in R3."
+			description="The Batch page scans many files and gives you a downloadable list of results. Each file also appears under Scans. A list of past batches will appear here in a later update."
 		>
 			<a class="btn" href={resolve('/batch')}>Start a batch</a>
 			<a
