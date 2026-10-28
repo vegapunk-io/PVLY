@@ -1,8 +1,10 @@
-data/blobs/
-data/*.sqlite3*
-data/trust/
-data/certs/
+data/
 demo_assets/
 __pycache__/
 .pytest_cache/
 .env
+.DS_Store
+.coverage
+htmlcov/
+# local scratch folder; canonical platform marks live in frontend/src/lib/assets/platforms/
+ICON/
