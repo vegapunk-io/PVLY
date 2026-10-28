@@ -383,7 +383,7 @@ Important prototype limitations:
 
 | # | Integration | Required work |
 |---:|---|---|
-| 1 | Official C2PA trust list | Run `python tools/fetch_trust_list.py`; schedule refresh and configure production anchors. |
+| 1 | Official C2PA trust list | **Done (2026-10-28)**: fetched 27 anchors into `data/trust/anchors.pem`; `official_c2pa_trust_list` now `true`. Schedule refresh + production anchors remain. |
 | 2 | OpenAI Verify connector | Obtain partner API access; confirm the endpoint/response schema and configure the wired connector. |
 | 3 | Google SynthID detector connector | Obtain partner/API access for the relevant image, video, audio, and text paths; configure endpoint and credentials. |
 | 4 | Meta AudioSeal | Add the torch/torchaudio/AudioSeal model to an audio/GPU worker. |
@@ -405,11 +405,11 @@ Important prototype limitations:
 | Stage | Scope | Status |
 |---|---|---|
 | **Detect** | Image, audio, video, document, and text scanning with graded evidence | **Live prototype** |
-| **R0 — Remove foundation** | Lossless-first Layer-1 removal for JPG, PNG, WebP, PDF, DOCX, and text; post-removal re-scan and before/after diff | **Next backend milestone** |
+| **R0 — Remove foundation** | Layer-1 removal for JPG, PNG, WebP, PDF, DOCX, and text; lossless-first; post-removal re-scan and before/after diff; Layer-2 disclaimer; output blob TTL | **In progress (images/PDF/DOCX/text live, 2026-10-28)** |
 | **R1 — Audio** | WAV, MP3, M4A/AAC, FLAC, and OGG tag/C2PA-chunk removal with samples untouched | Planned |
-| **R2 — Video** | MP4, MOV, and WebM container/C2PA-box removal, stream-copy first and explicit where conversion is necessary | Planned |
-| **R3 — Platform-ready delivery** | Applied presets, native batch jobs, cleaned outputs, manifests/archives | Preset catalog and browser Batch Detect live |
-| **R4 — Extended formats** | HEIC, AVIF, GIF, TIFF, and additional containers | Planned |
+| **R2 — Video** | MP4, MOV, and WebM container/C2PA-box removal via ffmpeg stream-copy (lossless); falls back to not_configured when ffmpeg absent | **In progress (MP4/MOV/WebM live, 2026-10-28)** |
+| **R3 — Platform-ready delivery** | Applied presets, native batch jobs, cleaned outputs, manifests/archives (zip + manifest.json) | **In progress (batch + manifest live, 2026-10-28)** |
+| **R4 — Extended formats** | HEIC/AVIF (HEIF item tables rewritten, coded image copied verbatim), GIF (application extensions), TIFF (IFD metadata tags); C2PA + EXIF/XMP/IPTC/GPS removed, pixels byte-identical, re-scan verified | **Live (2026-10-28)** |
 
 Near-term engineering priorities include fixing K1, adding CI, production authentication/ownership, official trust operations, durable jobs/storage, parser isolation, and report-schema versioning.
 

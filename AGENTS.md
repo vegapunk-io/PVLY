@@ -14,8 +14,11 @@
 **Provenably** — AI content provenance & compliance. One graded **Provenance Report** per
 file (image, audio, video, text). **Philosophy: DETECT → REMOVE → VERIFY, platform-ready**
 (founder clarification 2026-10-24, `PHILOSOPHY.md`, P-011/A-013). NOTE the honest gap:
-code is *currently* Detect-only (removal was deleted under the superseded P-010); restoring
-removal is roadmap R0–R4 — do not describe removal as shipped until it is.
+code now includes R0 Layer-1 removal (images JPG/PNG/WebP, PDF, DOCX, text) and R2
+(video MP4/MOV/WebM via ffmpeg stream-copy). Audio removal (R1) intentionally omitted
+(low value). Removal is NOT undetectable-AI: Layer-2 marks are never touched or claimed
+removed; every result carries the Layer-2 disclaimer. R3 (batch zip + manifest) and R4
+(HEIC/AVIF/GIF/TIFF) are live; preset-specific output policies remain.
 
 - **Detect:** C2PA/Content Credentials validation, metadata forensics, open watermark
   decoders, forensic context, text hygiene, platform-label preview, jurisdiction
@@ -121,7 +124,7 @@ curl -s localhost:8000/v1/capabilities   # live vs manual integration status
 
 | # | Issue | Evidence | Required fix |
 |---|---|---|---|
-| K1 | Demo trust anchor not honored: signed fixtures grade `moderate`, expected `strong`. 5 failing tests (`test_pipeline_conclusions` for signed jpg/composite/wav/mp4). | `pytest -q` (2026-10-24). Suspect per-thread c2pa-rs settings in `app/analyzers/c2pa_an.py::_load_trust`. | Fix anchor loading; suite must be green before feature work. |
+| K1 | ~~Demo trust anchor not honored~~ **RESOLVED 2026-10-28**: migrated `_load_trust` to explicit `c2pa.Context(settings=...)` passed to `Reader`. Suite now 19/19 green. | — | — |
 | K2 | No CI — K1 shipped unnoticed. | `.github/` absent. | Add GitHub Actions: install → dev_cert → demo assets → pytest. |
 | K3 | ~~README contradictions (test count, "no removal", homepage)~~ **RESOLVED 2026-10-24** by the Detect-only decision: README/test count corrected, "no removal" is true again, homepage is Scan. | Fix in commit "Make Detect the product wedge…" | — |
 | K4 | ~~Sanitized outputs never expire~~ **RESOLVED 2026-10-24** — sanitizer (and its blobs/table) removed entirely. | — | — |
